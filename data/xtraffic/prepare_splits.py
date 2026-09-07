@@ -7,6 +7,7 @@ so no dataloader changes are required.
 """
 
 import argparse
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -54,6 +55,20 @@ def required_file(dataset_dir, filename):
     return path
 
 
+def load_samples(path):
+    try:
+        return np.load(path, allow_pickle=True)
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"numpy._core", "numpy._core.multiarray"}:
+            raise
+
+        # NumPy 2 pickles use a private module path unavailable in NumPy 1.24.
+        import numpy.core.multiarray as multiarray
+
+        sys.modules.setdefault("numpy._core.multiarray", multiarray)
+        return np.load(path, allow_pickle=True)
+
+
 def main():
     args = parse_args()
     validate_ratios(args.train_ratio, args.val_ratio, args.test_ratio)
@@ -73,7 +88,7 @@ def main():
             "Split files already exist. Use --overwrite to replace them:\n  " + joined
         )
 
-    samples = np.load(all_file, allow_pickle=True)
+    samples = load_samples(all_file)
     total_samples = len(samples)
     if total_samples == 0:
         raise ValueError(f"No samples found in {all_file}")
