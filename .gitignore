@@ -30,5 +30,4 @@ Thumbs.db
 *.tar.gz
 *.tgz
 .kaggle_upload/
-data/xtraffic/*/
-
+data/xtraffic/*
