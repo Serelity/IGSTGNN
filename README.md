@@ -131,14 +131,26 @@ python experiments/IGSTGNN/main.py \
 ```
 
 For the other released datasets, replace `Alameda` with `Contra_Costa` or `Orange`.
+Use `--bs 48` for Contra_Costa and `--bs 24` for Orange.
 
 ### Preset Script
 
-Run the provided experiment preset:
+On an allocated GPU node, run a city-specific reproduction preset:
 
 ```bash
-bash experiments/IGSTGNN/run.sh
+bash experiments/IGSTGNN/run.sh Contra_Costa
+bash experiments/IGSTGNN/run.sh Orange
 ```
+
+With no argument, the script still selects Alameda. It checks CUDA and dataset
+files before training, creates splits with the existing script only when all
+three splits are absent, and never overwrites existing splits. It records the
+code commit, local Git changes, Python executable, package versions, and GPU in
+standard output. Model definitions, losses, and training schedules are unchanged.
+
+For unattended training on the SEU platform, use the single-GPU Slurm submission
+instructions in [Server Reproduction](docs/server_reproduction.md). Do not run
+training directly on a login node.
 
 ## Input Features
 

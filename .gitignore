@@ -18,6 +18,8 @@ Thumbs.db
 *.log
 *.pt
 *.pth
+slurm-*.out
+slurm-*.err
 
 # Large local datasets and generated artifacts
 *.npy
