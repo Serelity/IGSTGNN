@@ -100,3 +100,42 @@ The allocation is released when the process exits, including early stopping or
 failure. Requested wall time is a safety ceiling; actual charges depend on the
 platform's allocation duration and billing policy. No local or remote GPU job
 is started by preparing or downloading these scripts.
+
+## Orange First-Batch CUDA OOM
+
+The original graph convolution broadcasts each sample's dense graph across
+time steps before matrix multiplication. On PyTorch 2.3.1, this can materialize
+and retain repeated graph storage for backward. For Orange at batch 24, a
+single FP32 `[24, 6, 990, 2970]` expansion occupies about 1.58 GiB.
+
+The graph convolution now uses an equivalent `einsum` contraction without
+copying the graph across time. This does not change model parameters, checkpoint
+keys, batch size, data splits, loss, or training schedules. Floating-point
+results need not be bit-identical; tests compare outputs and gradients against
+the original expression, including a small five-layer model with incident and
+sensor inputs. A regression test rejects retained time-expanded graph storage.
+
+These local tests do not establish full-dataset V100 memory usage or final
+forecasting accuracy. Keep completed Alameda and Contra_Costa results; update
+the code before submitting a new Orange-only task:
+
+```bash
+git pull --ff-only origin main
+```
+
+For an existing platform submission workflow, request one V100 and use this
+startup script inside the allocated GPU task:
+
+```bash
+set -e
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-code
+conda activate igstgnn
+set -o pipefail
+bash experiments/IGSTGNN/run.sh Orange 2>&1 | tee "Orange_$(date +%Y%m%d_%H%M%S).log"
+```
+
+The shared-directory log persists after the task exits and includes the full
+CUDA error if another failure occurs. `pipefail` preserves a training failure
+as a nonzero task exit status even when `tee` succeeds. Existing complete split
+files are reused. This shell script relies on the platform task for its lifetime;
+it does not detach training from an ordinary SSH session.

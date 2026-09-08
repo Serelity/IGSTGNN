@@ -509,11 +509,11 @@ class STLocalizedConv(nn.Module):
     def gconv(self, support, X_k, X_0):
         out = [X_0]
         for graph in support:
+            # Contract directly to avoid copying dense graphs across time steps.
             if len(graph.shape) == 2:
-                pass
+                H_k = torch.einsum('nm,btmf->btnf', graph, X_k)
             else:
-                graph = graph.unsqueeze(1)
-            H_k = torch.matmul(graph, X_k)
+                H_k = torch.einsum('bnm,btmf->btnf', graph, X_k)
             out.append(H_k)
         out = torch.cat(out, dim=-1)
         out = self.gcn_updt(out)
