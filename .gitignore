@@ -33,3 +33,4 @@ slurm-*.err
 *.tgz
 .kaggle_upload/
 data/xtraffic/*
+!data/xtraffic/check_overlap.py

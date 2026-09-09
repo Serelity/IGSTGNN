@@ -150,13 +150,38 @@ def _clean_text(value):
     return value if value else 'Unknown'
 
 
-def _float_value(value, default):
-    try:
-        if value is None or str(value).strip() == '':
-            return default
-        return float(value)
-    except ValueError:
-        return default
+def _sensor_numeric_values(rows, field, unit_factors, canonical_unit, default, logger):
+    values = []
+    missing = 0
+    for row_number, row in enumerate(rows, start=2):
+        raw_value = row.get(field)
+        text = '' if raw_value is None else str(raw_value).strip().lower()
+        factor = 1.0
+        for unit, multiplier in unit_factors.items():
+            if text.endswith(unit):
+                text = text[:-len(unit)].strip()
+                factor = multiplier
+                break
+        if not text:
+            values.append(default)
+            missing += 1
+            continue
+        try:
+            value = float(text) * factor
+            if not np.isfinite(value):
+                raise ValueError('Non-finite sensor value')
+        except ValueError as exc:
+            raise ValueError(
+                f'sensors.csv row {row_number}: invalid {field} value {raw_value!r}; '
+                f'expected {", ".join(unit_factors)} or a bare {canonical_unit} value.'
+            ) from exc
+        values.append(value)
+
+    logger.info(
+        f'Sensor field {field} -> {canonical_unit}: missing={missing}, default={default}; '
+        f'bare values use {canonical_unit}'
+    )
+    return values
 
 
 def _first_column(row, candidates, default=None):
@@ -193,17 +218,19 @@ def _load_sensor_info(data_path, node_num, args, logger):
             f'sensors.csv has {len(rows)} rows, but dataset {args.dataset} expects {node_num} nodes.'
         )
 
-    sensor_type_values = [_first_column(row, ['Sensor Type', 'Type'], 'Unknown') for row in rows]
+    sensor_type_values = [_first_column(row, ['Type'], 'Unknown') for row in rows]
     surface_values = [_first_column(row, ['Surface'], 'Unknown') for row in rows]
     roadway_use_values = [_first_column(row, ['Roadway Use'], 'Unknown') for row in rows]
-    road_width_values = [
-        _float_value(_first_column(row, ['Road Width'], 0.0), 0.0)
-        for row in rows
-    ]
-    speed_limit_values = [
-        _float_value(_first_column(row, ['Design Speed Limit', 'Speed Limit'], 50.0), 50.0)
-        for row in rows
-    ]
+    # Table 2 uses lane width; retain the model's existing road_width tensor key.
+    road_width_values = _sensor_numeric_values(
+        rows, 'Lane Width', {'ft': 0.3048, 'm': 1.0}, 'm', 0.0, logger
+    )
+    speed_limit_field = 'Design Speed Limit'
+    if rows and speed_limit_field not in rows[0]:
+        speed_limit_field = 'Speed Limit'
+    speed_limit_values = _sensor_numeric_values(
+        rows, speed_limit_field, {'mph': 1.609344, 'km/h': 1.0}, 'km/h', 50.0, logger
+    )
 
     sensor_type, sensor_type_mapping = _encode_categories(sensor_type_values)
     surface, surface_mapping = _encode_categories(surface_values)

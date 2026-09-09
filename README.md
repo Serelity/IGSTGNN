@@ -1,5 +1,12 @@
 # IGSTGNN: Incident-Guided Spatiotemporal Traffic Forecasting
 
+This branch contains the **paper-aligned v1** corrections. Sensor fields and
+ICSF/TIID now follow the audited paper definitions; results are not guaranteed
+to improve, and old checkpoints are not compatible. See
+[Paper Alignment](docs/paper_alignment.md) for exact changes, implementation
+assumptions, data-overlap limits, tests, and server commands. The prior released
+implementation baseline remains at commit `558ab01` on `main`.
+
 This repository contains the official implementation of **IGSTGNN (Incident-Guided Spatiotemporal Graph Neural Network)** for incident-aware traffic forecasting. IGSTGNN injects incident context into spatiotemporal traffic modeling and explicitly captures heterogeneous spatial influence and temporal impact decay.
 
 ## Overview
@@ -156,7 +163,7 @@ training directly on a login node.
 
 The model uses historical traffic time series plus two contextual sources:
 
-- **Sensor meta-features**: roadway and sensor attributes such as road type, speed limit, surface, and roadway use.
+- **Sensor meta-features**: `Type`, `Lane Width`, `Design Speed Limit`, `Surface`, and `Roadway Use` (Table 2). Width is represented in metres and speed in km/h; these units are an explicit implementation convention.
 - **Incident information**: incident type, description, relative timing, spatial position, and incident-sensor distance features stored in each sample.
 
 ## Visualization

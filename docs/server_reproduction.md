@@ -1,5 +1,10 @@
 # Server Reproduction
 
+This page documents the earlier released-code baseline at `558ab01`. On the
+`fix/paper-alignment` branch, follow [Paper Alignment](paper_alignment.md): the
+model and sensor inputs changed, run directories are labeled `paper_aligned_v1`,
+and existing checkpoints must not be used to resume the corrected model.
+
 These presets finish the remaining single-seed baselines without changing the
 IGSTGNN model, data split, loss, optimizer, learning-rate schedule, or curriculum.
 Keep the existing Alameda result as a reference.

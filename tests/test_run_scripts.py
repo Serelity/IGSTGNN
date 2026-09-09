@@ -91,7 +91,7 @@ class RunScriptsTest(unittest.TestCase):
                 self.assertEqual(train[:2], ["-u", "experiments/IGSTGNN/main.py"])
                 expected = {
                     "--dataset": dataset, "--bs": batch_size, "--seed": "2025",
-                    "--device": "cuda:0", "--model_name": "igstgnn",
+                    "--device": "cuda:0", "--model_name": "igstgnn_paper",
                     "--max_epochs": "100", "--patience": "20",
                     "--warm_epoch": "30", "--cl_epoch": "3",
                 }
@@ -112,6 +112,14 @@ class RunScriptsTest(unittest.TestCase):
         self.assertEqual(calls[1], ["-u", "data/xtraffic/prepare_splits.py", "--dataset", "Contra_Costa"])
         self.assertIn("experiments/IGSTGNN/main.py", calls[2])
         self.assertTrue((directory / "incident_test.npy").exists())
+
+    def test_smoke_checks_the_real_batch_size_for_one_epoch(self):
+        self.make_dataset("Contra_Costa")
+        result = self.run_script("Contra_Costa", "--smoke")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        train = self.calls()[-1]
+        self.assertEqual(train[train.index("--max_epochs") + 1], "1")
+        self.assertEqual(train[train.index("--bs") + 1], "48")
 
     def test_rejects_partial_splits_without_overwriting(self):
         directory = self.make_dataset("Orange", splits=False)

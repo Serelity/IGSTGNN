@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Create IGSTGNN train/val/test split files from incident_all.npy.
 
-The released incident_all.npy is already ordered and normalized. This
-script only slices it into the files expected by the existing dataloader,
-so no dataloader changes are required.
+The released incident_all.npy is normalized. This script preserves its
+published array order and slices it into the files expected by the existing
+dataloader. It does not verify absolute time order or cross-split independence.
 """
 
 import argparse

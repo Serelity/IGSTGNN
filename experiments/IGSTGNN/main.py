@@ -45,7 +45,6 @@ def get_config():
     parser.add_argument('--clip_grad_value', type=float, default=5)
     
     # Incident related parameters
-    parser.add_argument('--icsf_dim', type=int, default=64)
     parser.add_argument('--module_name', type=str, default='igstgnn')
 
     # TIID parameters. lambda_incident is kept as an ablation scale and defaults
@@ -53,11 +52,13 @@ def get_config():
     parser.add_argument('--lambda_incident', type=float, default=1.0, help='Ablation scale for TIID incident context')
     parser.add_argument('--sigma_t', type=float, default=1.0, help='Temporal decay parameter')
     args = parser.parse_args()
+    args.implementation = 'paper_aligned_v1'
+    args.icsf_dim = args.num_hidden
 
     # Log directory configuration
     args.module_name = IGSTGNN.__module__.split('.')[-1]
     args.run_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-    run_name = '{}_{}_s{}_{}'.format(args.dataset, args.module_name, args.seed, args.run_time)
+    run_name = '{}_{}_{}_s{}_{}'.format(args.dataset, args.module_name, args.implementation, args.seed, args.run_time)
     if args.use_sensor_info:
         log_dir = './experiments/{}/{}/'.format(args.model_name, run_name)
     else:
@@ -65,6 +66,8 @@ def get_config():
     logger = get_logger(log_dir, __name__, 'record_{}_s{}_{}.log'.format(args.module_name, args.seed, args.run_time))
     print("model_name", args.module_name)
     logger.info(args)
+    if args.incident:
+        logger.info('Paper Eq.6/7 with one incident per sample: connected-node ICSF attention equals 1.')
     
     return args, log_dir, logger
 

@@ -73,6 +73,7 @@ class IGSTGNN(BaseModel):
         self.tiid_module = TemporalIncidentImpactDecay(
             incident_dim=self._hidden_dim,
             forecast_dim=self._forecast_dim,
+            sensor_dim=self._hidden_dim if model_args.get('use_sensor_info', False) else 0,
             sigma_t=model_args.get('sigma_t', 1.0),
             incident_scale=model_args.get('lambda_incident', 1.0),
         )
@@ -117,11 +118,11 @@ class IGSTGNN(BaseModel):
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
 
         history_data = self.embedding(history_data)
-        incident_context = None
+        incident_inputs = None
         if incident_data is not None:
             incident_tod_feat = time_in_day_feat[:, -1, 0, :]
             incident_day_feat = day_in_week_feat[:, -1, 0, :]
-            history_data, incident_context = self.icsf_module(
+            history_data, incident_inputs = self.icsf_module(
                 history_data,
                 incident_data,
                 sensor_data,
@@ -148,13 +149,19 @@ class IGSTGNN(BaseModel):
         inh_forecast_hidden = sum(inh_forecast_hidden_list)
         forecast_hidden = dif_forecast_hidden + inh_forecast_hidden
 
-        if incident_context is not None:
-            forecast_hidden = self.tiid_module(forecast_hidden, incident_context)
+        return self._decode_forecast(forecast_hidden, incident_inputs)
 
-        forecast = self.out_fc_2(F.relu(self.out_fc_1(F.relu(forecast_hidden))))
-
-        forecast = forecast.transpose(1,2).contiguous().view(forecast.shape[0], forecast.shape[2], -1)
-        return forecast.transpose(1, 2).unsqueeze(-1)
+    def _decode_forecast(self, forecast_hidden, incident_inputs):
+        # The released backbone predicts gap-sized blocks. Apply Eq.14 at each
+        # real future step, while retaining the block head's channel ordering.
+        gap = self._model_args['gap']
+        step_hidden = forecast_hidden.repeat_interleave(gap, dim=1)[:, :self.horizon]
+        if incident_inputs is not None:
+            step_hidden = self.tiid_module(step_hidden, **incident_inputs)
+        forecast = self.out_fc_2(F.relu(self.out_fc_1(F.relu(step_hidden))))
+        channels = torch.arange(self.horizon, device=forecast.device) % gap
+        channels = channels.view(1, -1, 1, 1).expand(forecast.shape[0], -1, self.node_num, 1)
+        return forecast.gather(-1, channels)
 
 
 class TemporalIncidentImpactDecay(nn.Module):
@@ -166,13 +173,24 @@ class TemporalIncidentImpactDecay(nn.Module):
     decayed incident context before the prediction head maps hidden states
     to traffic forecasts.
     """
-    def __init__(self, incident_dim, forecast_dim, sigma_t=1.0, incident_scale=1.0):
+    def __init__(self, incident_dim, forecast_dim, sigma_t=1.0, incident_scale=1.0, sensor_dim=0):
         super().__init__()
+        # Eq.13 constructs its own context from K, sensor features and D.
+        self.context_fusion = nn.Sequential(
+            nn.Linear(incident_dim + sensor_dim + 3, 64),
+            nn.ReLU(),
+            nn.Linear(64, incident_dim),
+        )
         self.context_projection = nn.Linear(incident_dim, forecast_dim, bias=False)
         self.register_buffer('sigma_t', torch.tensor(float(sigma_t)))
         self.incident_scale = float(incident_scale)
 
-    def forward(self, forecast_hidden, incident_context):
+    def forward(self, forecast_hidden, incident_key, sensor_features, distances):
+        distance_mask = (distances.abs().sum(dim=-1, keepdim=True) > 0).to(forecast_hidden.dtype)
+        localized_key = incident_key.unsqueeze(1).expand(-1, distances.shape[1], -1) * distance_mask
+        context_input = torch.cat([localized_key, sensor_features, distances], dim=-1)
+        # Keep disconnected nodes at zero even when the MLP has a bias.
+        incident_context = self.context_fusion(context_input) * distance_mask
         forecast_len = forecast_hidden.shape[1]
         time_steps = torch.arange(
             1,
@@ -234,13 +252,6 @@ class IncidentContextSpatialFusion(nn.Module):
         self.q_proj = nn.Linear(hidden_dim, self.icsf_dim, bias=False)
         self.k_proj = nn.Linear(hidden_dim, self.icsf_dim, bias=False)
         self.v_proj = nn.Linear(hidden_dim, self.icsf_dim, bias=False)
-        self.distance_encoder = nn.Sequential(
-            nn.Linear(3, 32),
-            nn.ReLU(),
-            nn.Linear(32, 16),
-            nn.ReLU(),
-            nn.Linear(16, self.icsf_dim)
-        )
         
         self.use_sensor_info = use_sensor_info
         
@@ -261,8 +272,8 @@ class IncidentContextSpatialFusion(nn.Module):
                 nn.Linear(32, self.icsf_dim)
             )
         
-        self.attn_dim = self.icsf_dim
-        self.distance_dim = self.icsf_dim
+        self.attn_dim = 1
+        self.distance_dim = 3
         self.sensor_dim = self.icsf_dim if self.use_sensor_info else 0
         self.icsf_fusion_dim = self.attn_dim + self.distance_dim + self.sensor_dim
         
@@ -270,7 +281,7 @@ class IncidentContextSpatialFusion(nn.Module):
             nn.Linear(self.icsf_fusion_dim, 64),
             nn.ReLU(),
             nn.Dropout(0.1),
-            nn.Linear(64, self.icsf_dim)
+            nn.Linear(64, 1)
         )
         self.output_norm = nn.LayerNorm(hidden_dim)
 
@@ -320,15 +331,6 @@ class IncidentContextSpatialFusion(nn.Module):
         
         return incident_embedding
 
-    def get_attention_weights(self, distances):
-        """
-        Calculate distance-based attention weights
-        """
-        attention_logits = self.distance_encoder(distances)
-        attention_weights = F.softmax(attention_logits, dim=1)
-            
-        return attention_weights
-
     def process_sensor_info(self, sensor_data, num_nodes):
         """
         Process sensor information, return sensor embeddings
@@ -371,8 +373,6 @@ class IncidentContextSpatialFusion(nn.Module):
         
         distance_mask = (incident_distances.abs().sum(dim=-1) > 0).float().unsqueeze(-1)
         
-        distance_context = self.get_attention_weights(incident_distances)
-        
         K_incident = self.k_proj(incident_embedding).unsqueeze(1)
         V_incident = self.v_proj(incident_embedding).unsqueeze(1)
         
@@ -382,26 +382,33 @@ class IncidentContextSpatialFusion(nn.Module):
         Q = self.q_proj(history_data[:, -1, :, :])
         attn_logits = (Q * K_expanded).sum(dim=-1, keepdim=True) / math.sqrt(hidden_dim)
         attn_logits_masked = attn_logits.masked_fill(distance_mask == 0, -1e7)
-        semantic_attention = F.softmax(attn_logits_masked, dim=1) * distance_mask
+        # Eq.6 normalizes incidents for each node, not nodes for each incident.
+        # The released samples contain M=1: connected-node weights are exactly 1.
+        semantic_attention = F.softmax(attn_logits_masked, dim=-1) * distance_mask
 
-        fusion_parts = [semantic_attention.expand(-1, -1, hidden_dim), distance_context]
+        sensor_embed = history_data.new_empty(history_data.shape[0], num_nodes, 0)
+        fusion_parts = [semantic_attention, incident_distances]
         if self.use_sensor_info:
             sensor_embed = self.process_sensor_info(sensor_data, num_nodes)
             if sensor_embed is None:
-                sensor_embed = torch.zeros_like(distance_context)
+                sensor_embed = torch.zeros_like(K_expanded)
             fusion_parts.append(sensor_embed)
 
         fusion_input = torch.cat(fusion_parts, dim=-1)
             
         enhanced_attn = self.icsf_fusion_mlp(fusion_input)
         enhanced_attn_masked = enhanced_attn.masked_fill(distance_mask == 0, -1e7)
-        final_attn_weights = F.softmax(enhanced_attn_masked, dim=1) * distance_mask
+        final_attn_weights = F.softmax(enhanced_attn_masked, dim=-1) * distance_mask
             
         incident_context = final_attn_weights * V_expanded
         enhanced_data = history_data.clone()
         enhanced_data[:, -1, :, :] = self.output_norm(history_data[:, -1, :, :] + incident_context)
         
-        return enhanced_data, incident_context
+        return enhanced_data, {
+            'incident_key': K_incident.squeeze(1),
+            'sensor_features': sensor_embed,
+            'distances': incident_distances,
+        }
         
 
 class DecoupleLayer(nn.Module):
@@ -571,7 +578,7 @@ class DifForecast(nn.Module):
     def __init__(self, hidden_dim, forecast_hidden_dim=None, **model_args):
         super().__init__()
         self.k_t = model_args['k_t']
-        self.output_seq_len = model_args['seq_len']
+        self.output_seq_len = model_args['horizon']
         self.forecast_fc = nn.Linear(hidden_dim, forecast_hidden_dim)
         self.model_args = model_args
 
@@ -580,7 +587,7 @@ class DifForecast(nn.Module):
         predict = []
         history = gated_history_data
         predict.append(hidden_states_dif[:, -1, :, :].unsqueeze(1))
-        for _ in range(int(self.output_seq_len / self.model_args['gap'])-1):
+        for _ in range(math.ceil(self.output_seq_len / self.model_args['gap'])-1):
             _1 = predict[-self.k_t:]
             if len(_1) < self.k_t:
                 sub = self.k_t - len(_1)
@@ -679,7 +686,7 @@ class TransformerLayer(nn.Module):
 class InhForecast(nn.Module):
     def __init__(self, hidden_dim, fk_dim, **model_args):
         super().__init__()
-        self.output_seq_len = model_args['seq_len']
+        self.output_seq_len = model_args['horizon']
         self.model_args = model_args
 
         self.forecast_fc = nn.Linear(hidden_dim, fk_dim)
@@ -689,7 +696,7 @@ class InhForecast(nn.Module):
         [batch_size, _, node_num, num_feat] = X.shape
 
         predict = [Z[-1, :, :].unsqueeze(0)]
-        for _ in range(int(self.output_seq_len / self.model_args['gap'])-1):
+        for _ in range(math.ceil(self.output_seq_len / self.model_args['gap'])-1):
             _gru = rnn_layer.gru_cell(predict[-1][0], RNN_H[-1]).unsqueeze(0)
             RNN_H = torch.cat([RNN_H, _gru], dim=0)
 

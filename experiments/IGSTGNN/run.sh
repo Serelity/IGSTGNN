@@ -2,12 +2,16 @@
 
 set -euo pipefail
 
-if (( $# > 1 )); then
-    echo "Usage: bash experiments/IGSTGNN/run.sh [Alameda|Contra_Costa|Orange]" >&2
+if (( $# > 2 )) || [[ -n "${2:-}" && "${2:-}" != "--smoke" ]]; then
+    echo "Usage: bash experiments/IGSTGNN/run.sh [Alameda|Contra_Costa|Orange] [--smoke]" >&2
     exit 2
 fi
 
 dataset="${1:-Alameda}"
+max_epochs=100
+if [[ "${2:-}" == "--smoke" ]]; then
+    max_epochs=1
+fi
 case "$dataset" in
     Alameda|Contra_Costa) batch_size=48 ;;
     Orange) batch_size=24 ;;
@@ -38,7 +42,7 @@ if (( split_count == 0 )) && [[ ! -f "$data_dir/incident_all.npy" ]]; then
     exit 1
 fi
 
-printf 'Dataset: %s, batch size: %s, seed: 2025\n' "$dataset" "$batch_size"
+printf 'Dataset: %s, batch size: %s, seed: 2025, max epochs: %s, implementation: paper_aligned_v1\n' "$dataset" "$batch_size" "$max_epochs"
 printf 'Host: %s, Slurm job: %s\n' "$(hostname)" "${SLURM_JOB_ID:-none}"
 date -Is
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -72,13 +76,13 @@ fi
 
 exec python -u experiments/IGSTGNN/main.py \
     --dataset "$dataset" \
-    --model_name igstgnn \
+    --model_name igstgnn_paper \
     --seed 2025 \
     --bs "$batch_size" \
     --incident \
     --device cuda:0 \
     --use_sensor_info \
-    --max_epochs 100 \
+    --max_epochs "$max_epochs" \
     --patience 20 \
     --warm_epoch 30 \
     --cl_epoch 3
