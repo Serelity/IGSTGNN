@@ -6,6 +6,9 @@ import os
 import json
 
 from src.base.model import BaseModel
+from src.models.incident_response import (
+    IncidentTimeResponse, ReportLocationEncoder, forecast_clock_embeddings, history_state,
+)
 
 class IGSTGNN(BaseModel):
     '''
@@ -17,6 +20,17 @@ class IGSTGNN(BaseModel):
         super(IGSTGNN, self).__init__(**base_args)
         self.model_args = model_args
         model_args.update(args)
+        self._incident_schema = model_args.get('incident_schema', 'legacy')
+        self._time_response_mode = model_args.get('time_response', 'fixed')
+        if self._incident_schema not in ('legacy', 'report_location_v1'):
+            raise ValueError('Unknown incident_schema')
+        if self._time_response_mode not in ('fixed', 'shared', 'conditioned'):
+            raise ValueError('Unknown time_response')
+        if self._incident_schema == 'report_location_v1':
+            if model_args.get('use_sensor_info', False) or self.horizon != 12 or model_args.get('sigma_t', 1.0) != 1.0:
+                raise ValueError('report_location_v1 requires no sensor attributes, horizon=12 and sigma_t=1')
+        elif self._time_response_mode != 'fixed':
+            raise ValueError('Learned time response requires report_location_v1')
         
         self._in_feat = model_args['num_feat'] 
         self._hidden_dim = model_args['num_hidden'] 
@@ -54,20 +68,23 @@ class IGSTGNN(BaseModel):
 
         data_dir = model_args.get('data_path') or os.path.join('.', 'data', model_args['dataset'])
         
-        with open(os.path.join(data_dir, 'desc_mapping.json'), 'r') as f:
-            desc_mapping = json.load(f)
-        with open(os.path.join(data_dir, 'type_mapping.json'), 'r') as f:
-            type_mapping = json.load(f)
+        num_desc = num_types = 0
+        if self._incident_schema == 'legacy':
+            with open(os.path.join(data_dir, 'desc_mapping.json'), 'r') as f:
+                num_desc = len(json.load(f))
+            with open(os.path.join(data_dir, 'type_mapping.json'), 'r') as f:
+                num_types = len(json.load(f))
         
         self.icsf_module = IncidentContextSpatialFusion(
             hidden_dim=self._hidden_dim,
             time_emb_dim=model_args['time_emb_dim'],
             use_sensor_info=model_args.get('use_sensor_info', False),
-            num_desc=len(desc_mapping),
-            num_types=len(type_mapping),
+            num_desc=num_desc,
+            num_types=num_types,
             sensor_type_size=model_args.get('sensor_type_size', 1),
             surface_size=model_args.get('surface_size', 1),
             roadway_use_size=model_args.get('roadway_use_size', 1),
+            incident_schema=self._incident_schema,
         )
 
         self.tiid_module = TemporalIncidentImpactDecay(
@@ -79,6 +96,9 @@ class IGSTGNN(BaseModel):
         )
 
         self.reset_parameter()
+        # All A/B/C common parameters have already consumed the same RNG draws.
+        if self._time_response_mode != 'fixed':
+            self.tiid_module.time_response = IncidentTimeResponse(self._time_response_mode, self.horizon)
 
     def reset_parameter(self):
         nn.init.xavier_uniform_(self.node_emb_u)
@@ -115,13 +135,18 @@ class IGSTGNN(BaseModel):
         return history_data, node_emb_u, node_emb_d, time_in_day_feat, day_in_week_feat
 
     def forward(self, history_data, label=None, incident_data=None, sensor_data=None):  # (b, t, n, f)
+        state = history_state(history_data) if self._time_response_mode == 'conditioned' else None
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
 
         history_data = self.embedding(history_data)
         incident_inputs = None
         if incident_data is not None:
-            incident_tod_feat = time_in_day_feat[:, -1, 0, :]
-            incident_day_feat = day_in_week_feat[:, -1, 0, :]
+            if self._incident_schema == 'report_location_v1':
+                incident_tod_feat, incident_day_feat = forecast_clock_embeddings(
+                    incident_data, self.T_i_D_emb, self.D_i_W_emb)
+            else:
+                incident_tod_feat = time_in_day_feat[:, -1, 0, :]
+                incident_day_feat = day_in_week_feat[:, -1, 0, :]
             history_data, incident_inputs = self.icsf_module(
                 history_data,
                 incident_data,
@@ -129,6 +154,8 @@ class IGSTGNN(BaseModel):
                 incident_tod_feat,
                 incident_day_feat,
             )
+            if state is not None:
+                incident_inputs['history_state'] = state
         static_graph, dynamic_graph = self._graph_constructor(node_embedding_u=node_embedding_u, node_embedding_d=node_embedding_d, 
                                                               history_data=history_data, time_in_day_feat=time_in_day_feat, 
                                                               day_in_week_feat=day_in_week_feat)
@@ -184,8 +211,9 @@ class TemporalIncidentImpactDecay(nn.Module):
         self.context_projection = nn.Linear(incident_dim, forecast_dim, bias=False)
         self.register_buffer('sigma_t', torch.tensor(float(sigma_t)))
         self.incident_scale = float(incident_scale)
+        self.time_response = None
 
-    def forward(self, forecast_hidden, incident_key, sensor_features, distances):
+    def forward(self, forecast_hidden, incident_key, sensor_features, distances, history_state=None):
         distance_mask = (distances.abs().sum(dim=-1, keepdim=True) > 0).to(forecast_hidden.dtype)
         localized_key = incident_key.unsqueeze(1).expand(-1, distances.shape[1], -1) * distance_mask
         context_input = torch.cat([localized_key, sensor_features, distances], dim=-1)
@@ -201,6 +229,8 @@ class TemporalIncidentImpactDecay(nn.Module):
         sigma_t = self.sigma_t.to(device=forecast_hidden.device, dtype=forecast_hidden.dtype)
         temporal_decay = torch.exp(-(time_steps ** 2) / (2 * sigma_t ** 2))
         temporal_decay = temporal_decay.view(1, forecast_len, 1, 1)
+        if self.time_response is not None:
+            temporal_decay = self.time_response(temporal_decay, history_state)
 
         projected_context = self.context_projection(incident_context)
         temporal_context = projected_context.unsqueeze(1) * temporal_decay
@@ -221,6 +251,7 @@ class IncidentContextSpatialFusion(nn.Module):
         sensor_type_size=1,
         surface_size=1,
         roadway_use_size=1,
+        incident_schema='legacy',
     ):
         super(IncidentContextSpatialFusion, self).__init__()
 
@@ -229,24 +260,27 @@ class IncidentContextSpatialFusion(nn.Module):
         self.type_emb_dim = 8
         self.holiday_emb_dim = 4
         self.context_time_emb_dim = 2 * time_emb_dim
+        self.incident_schema = incident_schema
+        if incident_schema == 'report_location_v1':
+            self.report_encoder = ReportLocationEncoder(hidden_dim, time_emb_dim)
+        else:
+            self.position_embedding = nn.Embedding(12, self.position_emb_dim)
+            self.desc_embedding = nn.Embedding(num_desc, self.desc_emb_dim)
+            self.incident_type_embedding = nn.Embedding(num_types, self.type_emb_dim)
+            self.holiday_embedding = nn.Embedding(2, self.holiday_emb_dim)
 
-        self.position_embedding = nn.Embedding(12, self.position_emb_dim)
-        self.desc_embedding = nn.Embedding(num_desc, self.desc_emb_dim)
-        self.incident_type_embedding = nn.Embedding(num_types, self.type_emb_dim)
-        self.holiday_embedding = nn.Embedding(2, self.holiday_emb_dim)
-
-        self.incident_input_dim = (
-            self.position_emb_dim
-            + self.desc_emb_dim
-            + self.type_emb_dim
-            + self.holiday_emb_dim
-            + self.context_time_emb_dim
-        )
-        self.incident_fusion = nn.Sequential(
-            nn.Linear(self.incident_input_dim, 64),
-            nn.ReLU(),
-            nn.Linear(64, hidden_dim)
-        )
+            self.incident_input_dim = (
+                self.position_emb_dim
+                + self.desc_emb_dim
+                + self.type_emb_dim
+                + self.holiday_emb_dim
+                + self.context_time_emb_dim
+            )
+            self.incident_fusion = nn.Sequential(
+                nn.Linear(self.incident_input_dim, 64),
+                nn.ReLU(),
+                nn.Linear(64, hidden_dim)
+            )
         
         self.icsf_dim = hidden_dim
         self.q_proj = nn.Linear(hidden_dim, self.icsf_dim, bias=False)
@@ -289,6 +323,8 @@ class IncidentContextSpatialFusion(nn.Module):
         """
         Embed incident features
         """
+        if self.incident_schema == 'report_location_v1':
+            return self.report_encoder(incident_data['report_age_minutes'], incident_tod_feat, incident_day_feat)
         incident_features = incident_data['incident']
         batch_size = incident_features.size(0)
         embeddings = []

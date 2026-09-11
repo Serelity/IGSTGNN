@@ -1,0 +1,3 @@
+-r requirements.txt
+# Only the v8 source downloader adds this dependency; smoke uses the original stack.
+requests==2.34.2

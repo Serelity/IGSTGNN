@@ -1,5 +1,12 @@
 # IGSTGNN: Incident-Guided Spatiotemporal Traffic Forecasting
 
+The `research/chronological-tiid` branch adds a separate **conditional development**
+pipeline for v8 Contra traffic, explicit missing-value masks, and fixed/shared/
+state-conditioned time-response checks. See [Chronological Research](docs/chronological_research.md)
+for the input assumptions, data bundle, and Python smoke command. This is not a
+new accuracy result or a full training release. The existing reproduction entry
+point retains its paper-aligned defaults and checkpoint format.
+
 This branch contains the **paper-aligned v1** corrections. Sensor fields and
 ICSF/TIID now follow the audited paper definitions; results are not guaranteed
 to improve, and old checkpoints are not compatible. See
