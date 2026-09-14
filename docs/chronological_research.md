@@ -34,7 +34,7 @@
 
 ## 服务器：数据包及Python检查命令
 
-本地实测已通过：496站完整train/val包、59项回归测试，以及CPU上A/B/C同批次各两次反向更新。参数量为443645／443657／443913；共同state逐tensor一致，初始预测差均为0。三组更新总计约5.03秒（不含校验包、构模和验证前向），不是完整训练耗时。B/C的H12损失梯度非零，C第二步早层损失梯度非零；这些均在优化器执行前检查。
+本地实测已通过：496站完整train/val包、66项回归测试，以及CPU上A/B/C同批次各两次反向更新。参数量为443645／443657／443913；共同state逐tensor一致，初始预测差均为0。三组更新总计约5.03秒（不含校验包、构模和验证前向），不是完整训练耗时。B/C的H12损失梯度非零，C第二步早层损失梯度非零；这些均在优化器执行前检查。
 
 本轮准备的独立文件为`Contra_Costa_v8_trainval_dev_20260911.tar.gz`，89,340,908字节（约89.34MB），包含原始窗口、训练统计、事件上下文、固定邻接、清单和来源指纹，不包含下载缓存。25个文件及其中23个载荷指纹已从压缩包验证。数据和结果不随Git提交。
 
@@ -71,6 +71,51 @@ python experiments/chronological/smoke.py \
 若已分配GPU任务，可把`--device cpu`改成`--device cuda:0`并使用新的output-dir。本轮无需为几步检查申请长时GPU；bs=2不能证明正式bs=48的显存或吞吐。已有服务器Python3.10/PyTorch2.3.1+cu121/NumPy1.24.4可先运行；本地实测版本见运行JSON，不为这一步重装原环境。
 
 成功输出目录含`summary.json`与`batch_predictions.npz`，状态为`CONDITIONAL_REAL_BATCH_SMOKE_PASS`。输出目录已存在就报错，重跑使用新目录名。该脚本只做工程更新，**没有保存可用于正式评价的训练模型，也没有运行一整轮或完整验证**。
+
+## 免费V100测试环境：串行筛选
+
+平台的测试环境和付费运行环境相互独立。测试环境可重复申请，每次免费使用最多6小时；本阶段任一时刻只开一个V100测试会话，不并发占用多个会话。协议中的`free_test_session_hours=6.0`表示单次会话上限，不是整个筛选的总GPU预算。A、B、C依次完成，前一个变体完成或暂停并关闭会话后，再申请下一个免费会话。首轮筛选原则上不用付费运行环境。
+
+代码推送后，在第一个免费测试会话中先运行最复杂的C分支工程检查。CUDA确定性要求在Python启动前设置`CUBLAS_WORKSPACE_CONFIG`：
+
+```bash
+CUBLAS_WORKSPACE_CONFIG=:4096:8 OMP_NUM_THREADS=3 python experiments/chronological/train.py \
+  --data-dir ../data/chronological/Contra_Costa_v8_dev \
+  --output-dir experiments/chronological_runs/contra_conditioned_cuda_check_01 \
+  --variant conditioned \
+  --device cuda:0 \
+  --seed 2025 \
+  --check
+```
+
+`summary.json`须显示`ENGINEERING_CHECK_PASS`、`initial_max_abs_difference_from_A=0`、`deterministic_algorithms=true`及`tf32=false`。该检查只使用两个训练和两个验证样本，不能用于模型排名。
+
+正式筛选仍采用一个变体一个结果目录。先运行一轮获取真实耗时：
+
+```bash
+CUBLAS_WORKSPACE_CONFIG=:4096:8 OMP_NUM_THREADS=3 python experiments/chronological/train.py \
+  --data-dir ../data/chronological/Contra_Costa_v8_dev \
+  --output-dir experiments/chronological_runs/contra_fixed_s2025 \
+  --variant fixed \
+  --device cuda:0 \
+  --seed 2025 \
+  --stop-after-epoch 1
+```
+
+完成后查看`summary.json`中的`runtime_epochs[0].seconds`。按单轮实测时间计算本次可完成的最后轮数，并至少为会话关闭预留30分钟；随后在同一结果目录恢复到指定轮末：
+
+```bash
+CUBLAS_WORKSPACE_CONFIG=:4096:8 OMP_NUM_THREADS=3 python experiments/chronological/train.py \
+  --data-dir ../data/chronological/Contra_Costa_v8_dev \
+  --output-dir experiments/chronological_runs/contra_fixed_s2025 \
+  --variant fixed \
+  --device cuda:0 \
+  --seed 2025 \
+  --resume \
+  --stop-after-epoch N
+```
+
+这里`N`是累计完成轮数，不是本次新增轮数。每轮结束都会原子保存`last_checkpoint.pt`；下一次免费会话继续使用同一命令并把`N`增大。预计能在当前会话自然完成全部训练时，去掉`--stop-after-epoch`。A完成后，把结果目录和`--variant`依次改为`contra_shared_s2025`/`shared`、`contra_conditioned_s2025`/`conditioned`，仍然串行运行。不要在工程检查目录上启动正式训练，也不要混用不同变体的结果目录。
 
 ## 本地重建与回归
 
