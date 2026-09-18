@@ -7,7 +7,8 @@ import json
 
 from src.base.model import BaseModel
 from src.models.incident_response import (
-    IncidentTimeResponse, ReportLocationEncoder, forecast_clock_embeddings, history_state,
+    ConstrainedPhaseResponse, IncidentTimeResponse, ReportLocationEncoder,
+    forecast_clock_embeddings, history_state,
 )
 
 class IGSTGNN(BaseModel):
@@ -24,7 +25,7 @@ class IGSTGNN(BaseModel):
         self._time_response_mode = model_args.get('time_response', 'fixed')
         if self._incident_schema not in ('legacy', 'report_location_v1'):
             raise ValueError('Unknown incident_schema')
-        if self._time_response_mode not in ('fixed', 'shared', 'conditioned'):
+        if self._time_response_mode not in ('fixed', 'shared', 'conditioned', 'phase'):
             raise ValueError('Unknown time_response')
         if self._incident_schema == 'report_location_v1':
             if model_args.get('use_sensor_info', False) or self.horizon != 12 or model_args.get('sigma_t', 1.0) != 1.0:
@@ -96,9 +97,11 @@ class IGSTGNN(BaseModel):
         )
 
         self.reset_parameter()
-        # All A/B/C common parameters have already consumed the same RNG draws.
-        if self._time_response_mode != 'fixed':
+        # Common parameters have already consumed the same RNG draws.
+        if self._time_response_mode in ('shared', 'conditioned'):
             self.tiid_module.time_response = IncidentTimeResponse(self._time_response_mode, self.horizon)
+        elif self._time_response_mode == 'phase':
+            self.tiid_module.time_response = ConstrainedPhaseResponse(self.horizon)
 
     def reset_parameter(self):
         nn.init.xavier_uniform_(self.node_emb_u)
@@ -135,7 +138,8 @@ class IGSTGNN(BaseModel):
         return history_data, node_emb_u, node_emb_d, time_in_day_feat, day_in_week_feat
 
     def forward(self, history_data, label=None, incident_data=None, sensor_data=None):  # (b, t, n, f)
-        state = history_state(history_data) if self._time_response_mode == 'conditioned' else None
+        state = (history_state(history_data)
+                 if self._time_response_mode in ('conditioned', 'phase') else None)
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
 
         history_data = self.embedding(history_data)
@@ -156,6 +160,8 @@ class IGSTGNN(BaseModel):
             )
             if state is not None:
                 incident_inputs['history_state'] = state
+            if self._time_response_mode == 'phase':
+                incident_inputs['report_age_minutes'] = incident_data['report_age_minutes']
         static_graph, dynamic_graph = self._graph_constructor(node_embedding_u=node_embedding_u, node_embedding_d=node_embedding_d, 
                                                               history_data=history_data, time_in_day_feat=time_in_day_feat, 
                                                               day_in_week_feat=day_in_week_feat)
@@ -213,7 +219,8 @@ class TemporalIncidentImpactDecay(nn.Module):
         self.incident_scale = float(incident_scale)
         self.time_response = None
 
-    def forward(self, forecast_hidden, incident_key, sensor_features, distances, history_state=None):
+    def forward(self, forecast_hidden, incident_key, sensor_features, distances,
+                history_state=None, report_age_minutes=None):
         distance_mask = (distances.abs().sum(dim=-1, keepdim=True) > 0).to(forecast_hidden.dtype)
         localized_key = incident_key.unsqueeze(1).expand(-1, distances.shape[1], -1) * distance_mask
         context_input = torch.cat([localized_key, sensor_features, distances], dim=-1)
@@ -230,7 +237,12 @@ class TemporalIncidentImpactDecay(nn.Module):
         temporal_decay = torch.exp(-(time_steps ** 2) / (2 * sigma_t ** 2))
         temporal_decay = temporal_decay.view(1, forecast_len, 1, 1)
         if self.time_response is not None:
-            temporal_decay = self.time_response(temporal_decay, history_state)
+            temporal_decay = self.time_response(
+                temporal_decay,
+                history_state,
+                connected_mask=distance_mask,
+                report_age_minutes=report_age_minutes,
+            )
 
         projected_context = self.context_projection(incident_context)
         temporal_context = projected_context.unsqueeze(1) * temporal_decay

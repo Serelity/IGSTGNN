@@ -7,9 +7,11 @@ import torch
 
 from src.models.igstgnn import IGSTGNN, TemporalIncidentImpactDecay
 try:
-    from src.models.incident_response import IncidentTimeResponse, ReportLocationEncoder
+    from src.models.incident_response import (
+        ConstrainedPhaseResponse, IncidentTimeResponse, ReportLocationEncoder,
+    )
 except ModuleNotFoundError:
-    IncidentTimeResponse = ReportLocationEncoder = None
+    ConstrainedPhaseResponse = IncidentTimeResponse = ReportLocationEncoder = None
 
 
 def model_args():
@@ -119,7 +121,8 @@ class IncidentResponseTest(unittest.TestCase):
 
     def positive_context(self, mode):
         module = TemporalIncidentImpactDecay(2, 2)
-        module.time_response = IncidentTimeResponse(mode, 12)
+        module.time_response = (ConstrainedPhaseResponse(12) if mode == 'phase'
+                                else IncidentTimeResponse(mode, 12))
         with torch.no_grad():
             for parameter in module.context_fusion.parameters():
                 parameter.zero_()
@@ -129,16 +132,21 @@ class IncidentResponseTest(unittest.TestCase):
 
     def test_disconnected_nodes_have_no_tiid_effect_after_response_changes(self):
         self.require_response()
-        for mode in ('shared', 'conditioned'):
+        for mode in ('shared', 'conditioned', 'phase'):
             module = self.positive_context(mode)
             with torch.no_grad():
-                module.time_response.b.fill_(-.5)
+                if hasattr(module.time_response, 'b'):
+                    module.time_response.b.fill_(-.5)
             hidden = torch.ones(1, 12, 2, 2)
             actual = module(hidden, torch.ones(1, 2), torch.empty(1, 2, 0),
                             torch.tensor([[[0., 1., 0.], [0., 0., 0.]]]),
-                            history_state=torch.ones(1, 2, 3))
+                            history_state=torch.ones(1, 2, 3),
+                            report_age_minutes=(torch.ones(1) if mode == 'phase' else None))
             torch.testing.assert_close(actual[:, :, 1], hidden[:, :, 1], atol=0, rtol=0)
-            self.assertLess(actual[0, -1, 0, 0].item(), hidden[0, -1, 0, 0].item())
+            if mode != 'phase':
+                self.assertLess(actual[0, -1, 0, 0].item(), hidden[0, -1, 0, 0].item())
+            else:
+                self.assertGreater(actual[0, -1, 0, 0].item(), hidden[0, -1, 0, 0].item())
 
     def test_horizon_twelve_offset_gradient_does_not_vanish_with_gaussian(self):
         self.require_response()
@@ -168,6 +176,38 @@ class IncidentResponseTest(unittest.TestCase):
         self.assertEqual(early_gradients[0], 0.0)
         self.assertGreater(early_gradients[1], 0.0)
         self.assertGreater((response.mlp[0].weight - before).abs().sum().item(), 0.)
+
+    def test_phase_response_is_event_level_nonnegative_and_trainable_at_h12(self):
+        self.assertIsNotNone(ConstrainedPhaseResponse)
+        response = ConstrainedPhaseResponse(horizon=12)
+        gaussian = torch.exp(-torch.arange(1, 13, dtype=torch.float32).square() / 2).view(1, 12, 1, 1)
+        state = torch.tensor([[[1., 2., .5], [3., 4., -.5], [100., 100., 100.]],
+                              [[3., 4., -.5], [1., 2., .5], [-100., -100., -100.]]])
+        connected = torch.tensor([[[1.], [1.], [0.]], [[1.], [1.], [0.]]])
+        age = torch.tensor([2., 2.])
+        actual = response(gaussian, state, connected, age)
+
+        self.assertEqual(actual.shape, (2, 12, 1, 1))
+        self.assertTrue(torch.all(actual >= 0))
+        torch.testing.assert_close(actual[0], actual[1], atol=0, rtol=0)
+        self.assertLess(float((actual - gaussian).abs().max()), .001)
+        self.assertTrue(torch.all(response.phase_bases >= 0))
+
+        actual[:, -1].sum().backward()
+        self.assertGreater(response.phase_encoder[-1].weight.grad.abs().sum().item(), 0.)
+
+    def test_phase_model_keeps_common_weights_and_near_baseline_initialization(self):
+        fixed = make_research('fixed')
+        phase = make_research('phase')
+        for key, value in fixed.state_dict().items():
+            torch.testing.assert_close(phase.state_dict()[key], value, atol=0, rtol=0)
+        self.assertEqual(sum(p.numel() for p in phase.parameters())
+                         - sum(p.numel() for p in fixed.parameters()), 144)
+        x, incident = inputs()
+        with torch.no_grad():
+            fixed_prediction = fixed(x, incident_data=incident)
+            phase_prediction = phase(x, incident_data=incident)
+        self.assertLess(float((phase_prediction - fixed_prediction).abs().max()), .001)
 
 
 if __name__ == '__main__':

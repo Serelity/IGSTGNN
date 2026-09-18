@@ -1,4 +1,4 @@
-"""Train one frozen A/B/C chronological screening run."""
+"""Train one frozen chronological time-response screening run."""
 
 import argparse
 import copy
@@ -27,7 +27,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-dir', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
-    parser.add_argument('--variant', choices=('fixed', 'shared', 'conditioned'), required=True)
+    parser.add_argument('--variant', choices=('fixed', 'shared', 'conditioned', 'phase'), required=True)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--seed', type=int, default=2025)
     parser.add_argument('--protocol', type=Path,
@@ -246,7 +246,7 @@ def build_model(data_dir, node_count, device, variant, seed):
     missing, unexpected = model.load_state_dict(copy.deepcopy(common), strict=False)
     if unexpected or set(missing) != extras or any(
             not key.startswith('tiid_module.time_response.') for key in extras):
-        raise ValueError('Unexpected differences in common A/B/C state')
+        raise ValueError('Unexpected differences in common time-response state')
     for key, value in common.items():
         if not torch.equal(model.state_dict()[key].cpu(), value):
             raise ValueError(f'Common initialization mismatch: {key}')
@@ -315,6 +315,8 @@ def main(argv=None):
     train = ChronologicalDataset(data_dir, 'train')
     val = ChronologicalDataset(data_dir, 'val')
     validate_protocol(protocol, package_hashes, len(train), len(val), len(train.station_ids))
+    if protocol.get('candidate_variant') not in (None, args.variant):
+        raise ValueError('Protocol candidate variant differs from the requested model')
     if not np.array_equal(train.station_ids, val.station_ids):
         raise ValueError('Train and validation station axes differ')
 

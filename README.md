@@ -2,7 +2,9 @@
 
 The `research/chronological-tiid` branch adds a separate **conditional development**
 pipeline for v8 Contra traffic, explicit missing-value masks, and fixed/shared/
-state-conditioned time-response checks. See [Chronological Research](docs/chronological_research.md)
+state-conditioned time-response checks. A constrained event-level phase candidate
+is documented in [Constrained Phase Response](docs/constrained_phase_response.md).
+See [Chronological Research](docs/chronological_research.md)
 for the input assumptions, data bundle, and Python smoke command. This is not a
 new accuracy result or a full training release. The existing reproduction entry
 point retains its paper-aligned defaults and checkpoint format.

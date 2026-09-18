@@ -1,4 +1,4 @@
-"""Run equal-initialization A/B/C checks on real conditional train/val batches."""
+"""Run time-response checks on real conditional train/val batches."""
 
 import argparse
 import copy
@@ -120,13 +120,13 @@ def main():
         initial_prediction = forecast(reference, train_batch, train.scaler).detach().cpu().numpy()
     del reference
     results, predictions = {}, {'train_initial_A': initial_prediction}
-    for variant in ('fixed', 'shared', 'conditioned'):
+    for variant in ('fixed', 'shared', 'conditioned', 'phase'):
         set_seed(args.seed)
         model = make_model(args.data_dir, len(train.station_ids), device, variant)
         extras = set(model.state_dict()) - set(common)
         missing, unexpected = model.load_state_dict(copy.deepcopy(common), strict=False)
         if unexpected or set(missing) != extras or any(not k.startswith('tiid_module.time_response.') for k in extras):
-            raise ValueError('Unexpected differences in common A/B/C state')
+            raise ValueError('Unexpected differences in common time-response state')
         for key, value in common.items():
             if not torch.equal(model.state_dict()[key].cpu(), value):
                 raise ValueError(f'Common initialization mismatch: {key}')
@@ -161,13 +161,22 @@ def main():
                 if any(p.grad is None for p in response.values()):
                     raise ValueError(f'{variant} time response is disconnected from loss')
                 current_response_gradients = {name: float(p.grad.abs().sum()) for name, p in response.items()}
-                h12 = float(model.tiid_module.time_response.b.grad[-1].abs())
-                current_response_gradients['h12_offset_gradient_abs'] = h12
-                if h12 == 0:
-                    raise ValueError(f'{variant} real batch has no H12 offset loss gradient')
-                if variant == 'conditioned' and step >= 1:
-                    if float(model.tiid_module.time_response.mlp[0].weight.grad.abs().sum()) == 0:
-                        raise ValueError('C early layer has no loss gradient after the first update')
+                response_module = model.tiid_module.time_response
+                if hasattr(response_module, 'b'):
+                    h12 = float(response_module.b.grad[-1].abs())
+                    current_response_gradients['h12_offset_gradient_abs'] = h12
+                    if h12 == 0:
+                        raise ValueError(f'{variant} real batch has no H12 offset loss gradient')
+                else:
+                    phase_gradient = float(response_module.phase_encoder[-1].weight.grad.abs().sum())
+                    current_response_gradients['phase_output_gradient_l1'] = phase_gradient
+                    if phase_gradient == 0:
+                        raise ValueError('Phase response has no real-batch loss gradient')
+                if variant in ('conditioned', 'phase') and step >= 1:
+                    early = (response_module.mlp[0] if variant == 'conditioned'
+                             else response_module.phase_encoder[0])
+                    if float(early.weight.grad.abs().sum()) == 0:
+                        raise ValueError(f'{variant} early layer has no loss gradient after the first update')
             response_gradients.append(current_response_gradients)
             grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 5.)
             optimizer.step()

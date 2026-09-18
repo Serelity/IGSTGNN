@@ -103,6 +103,7 @@ class ChronologicalTrainTests(unittest.TestCase):
         self.assertIn('--resume', result.stdout)
         self.assertIn('--stop-after-epoch', result.stdout)
         self.assertIn('--check', result.stdout)
+        self.assertIn('phase', result.stdout)
 
     def test_cuda_determinism_requires_cublas_workspace_configuration(self):
         with patch.dict(os.environ, {}, clear=False):
