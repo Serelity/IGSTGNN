@@ -9,9 +9,11 @@ from src.models.igstgnn import IGSTGNN, TemporalIncidentImpactDecay
 try:
     from src.models.incident_response import (
         ConstrainedPhaseResponse, IncidentTimeResponse, ReportLocationEncoder,
+        ResidualPhaseResponse,
     )
 except ModuleNotFoundError:
     ConstrainedPhaseResponse = IncidentTimeResponse = ReportLocationEncoder = None
+    ResidualPhaseResponse = None
 
 
 def model_args():
@@ -121,18 +123,24 @@ class IncidentResponseTest(unittest.TestCase):
 
     def positive_context(self, mode):
         module = TemporalIncidentImpactDecay(2, 2)
-        module.time_response = (ConstrainedPhaseResponse(12) if mode == 'phase'
-                                else IncidentTimeResponse(mode, 12))
+        if mode == 'phase':
+            module.time_response = ConstrainedPhaseResponse(12)
+        elif mode == 'phase_residual':
+            module.time_response = ResidualPhaseResponse(12)
+        else:
+            module.time_response = IncidentTimeResponse(mode, 12)
         with torch.no_grad():
             for parameter in module.context_fusion.parameters():
                 parameter.zero_()
             module.context_fusion[-1].bias.fill_(1)
             module.context_projection.weight.copy_(torch.eye(2))
+            if mode == 'phase_residual':
+                module.time_response.phase_encoder[-1].weight.fill_(.01)
         return module
 
     def test_disconnected_nodes_have_no_tiid_effect_after_response_changes(self):
         self.require_response()
-        for mode in ('shared', 'conditioned', 'phase'):
+        for mode in ('shared', 'conditioned', 'phase', 'phase_residual'):
             module = self.positive_context(mode)
             with torch.no_grad():
                 if hasattr(module.time_response, 'b'):
@@ -141,9 +149,10 @@ class IncidentResponseTest(unittest.TestCase):
             actual = module(hidden, torch.ones(1, 2), torch.empty(1, 2, 0),
                             torch.tensor([[[0., 1., 0.], [0., 0., 0.]]]),
                             history_state=torch.ones(1, 2, 3),
-                            report_age_minutes=(torch.ones(1) if mode == 'phase' else None))
+                            report_age_minutes=(torch.ones(1)
+                                                if mode in ('phase', 'phase_residual') else None))
             torch.testing.assert_close(actual[:, :, 1], hidden[:, :, 1], atol=0, rtol=0)
-            if mode != 'phase':
+            if mode not in ('phase', 'phase_residual'):
                 self.assertLess(actual[0, -1, 0, 0].item(), hidden[0, -1, 0, 0].item())
             else:
                 self.assertGreater(actual[0, -1, 0, 0].item(), hidden[0, -1, 0, 0].item())
@@ -208,6 +217,51 @@ class IncidentResponseTest(unittest.TestCase):
             fixed_prediction = fixed(x, incident_data=incident)
             phase_prediction = phase(x, incident_data=incident)
         self.assertLess(float((phase_prediction - fixed_prediction).abs().max()), .001)
+
+    def test_residual_phase_starts_exactly_at_A_and_has_direct_h12_gradient(self):
+        self.assertIsNotNone(ResidualPhaseResponse)
+        torch.manual_seed(12)
+        response = ResidualPhaseResponse(horizon=12)
+        with torch.no_grad():
+            response.phase_encoder[0].weight.zero_()
+            response.phase_encoder[0].bias.fill_(1.)
+        gaussian = torch.exp(
+            -torch.arange(1, 13, dtype=torch.float32).square() / 2).view(1, 12, 1, 1)
+        state = torch.tensor([[[1., 2., .5], [3., 4., -.5]],
+                              [[5., 7., 1.], [8., 9., 2.]]])
+        connected = torch.ones(2, 2, 1)
+        age = torch.tensor([2., 4.])
+        actual = response(gaussian, state, connected, age)
+
+        torch.testing.assert_close(actual, gaussian.expand_as(actual), atol=0, rtol=0)
+        self.assertTrue(torch.all(actual >= 0))
+        actual[:, -1].sum().backward()
+        output_gradient = response.phase_encoder[-1].weight.grad.abs().sum().item()
+        self.assertGreater(output_gradient, 1e-4)
+
+        with torch.no_grad():
+            response.phase_encoder[0].weight.zero_()
+            response.phase_encoder[0].bias.zero_()
+            response.phase_encoder[0].weight[0, 0] = .1
+            response.phase_encoder[-1].weight.zero_()
+            response.phase_encoder[-1].weight[:, 0] = .2
+            changed, coefficients, _ = response.components(gaussian, state, connected, age)
+        self.assertTrue(torch.all(changed >= 0))
+        self.assertGreater(float((changed - gaussian.reshape(1, 12)).abs().max()), 0.)
+        self.assertGreater(float((coefficients[0] - coefficients[1]).abs().max()), 0.)
+
+    def test_residual_phase_model_preserves_common_weights_and_exact_prediction(self):
+        fixed = make_research('fixed')
+        residual = make_research('phase_residual')
+        for key, value in fixed.state_dict().items():
+            torch.testing.assert_close(residual.state_dict()[key], value, atol=0, rtol=0)
+        self.assertEqual(sum(p.numel() for p in residual.parameters())
+                         - sum(p.numel() for p in fixed.parameters()), 128)
+        x, incident = inputs()
+        with torch.no_grad():
+            fixed_prediction = fixed(x, incident_data=incident)
+            residual_prediction = residual(x, incident_data=incident)
+        torch.testing.assert_close(residual_prediction, fixed_prediction, atol=0, rtol=0)
 
 
 if __name__ == '__main__':

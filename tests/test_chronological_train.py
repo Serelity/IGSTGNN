@@ -88,6 +88,7 @@ class ChronologicalTrainTests(unittest.TestCase):
             'train_samples': 2, 'val_samples': 2, 'stations': 2, 'batch_size': 2,
             'max_epochs': 100, 'patience': 20, 'learning_rate': .002,
             'weight_decay': 1e-5, 'adam_eps': 1e-8, 'clip_grad_norm': 5.,
+            'phase_learning_rate': .002, 'phase_weight_decay': 0.,
             'lr_milestones': [1, 38], 'lr_gamma': .5, 'supervised_horizons': 12,
             'selection_metric': 'all_nodes.mae_macro', 'min_delta': 0.,
             'first_screen_seed': 2025, 'free_test_session_hours': 6.}
@@ -104,6 +105,7 @@ class ChronologicalTrainTests(unittest.TestCase):
         self.assertIn('--stop-after-epoch', result.stdout)
         self.assertIn('--check', result.stdout)
         self.assertIn('phase', result.stdout)
+        self.assertIn('phase_residual', result.stdout)
 
     def test_cuda_determinism_requires_cublas_workspace_configuration(self):
         with patch.dict(os.environ, {}, clear=False):
@@ -149,6 +151,34 @@ class ChronologicalTrainTests(unittest.TestCase):
             validate(protocol, dict(package, **{'summary.json': 'other'}), 5, 3, 2)
         with self.assertRaisesRegex(ValueError, 'shape'):
             validate(protocol, package, 6, 3, 2)
+        residual = dict(protocol, candidate_variant='phase_residual',
+                        phase_learning_rate=.002, phase_weight_decay=0.)
+        self.assertEqual(validate(residual, package, 5, 3, 2)['phase_weight_decay'], 0.)
+        with self.assertRaisesRegex(ValueError, 'weight decay'):
+            validate(dict(residual, phase_weight_decay=1e-5), package, 5, 3, 2)
+
+    def test_residual_phase_optimizer_uses_separate_zero_decay_group(self):
+        from src.models.igstgnn import IGSTGNN
+
+        torch.manual_seed(1234)
+        model = IGSTGNN(
+            model_args=dict(num_feat=1, num_hidden=8, node_hidden=4, time_emb_dim=4,
+                            layer=5, k_s=2, k_t=3, tpd=288, dropout=0., gap=3,
+                            adjs=[torch.eye(3)] * 2, incident_schema='report_location_v1',
+                            time_response='phase_residual', use_sensor_info=False),
+            node_num=3, input_dim=3, output_dim=1, seq_len=12, horizon=12,
+            dataset='unused', data_path='/unused-report-schema-path')
+        protocol = {'learning_rate': .002, 'phase_learning_rate': .004,
+                    'weight_decay': 1e-5, 'phase_weight_decay': 0., 'adam_eps': 1e-8}
+        optimizer = train.build_optimizer(model, protocol, 'phase_residual')
+        self.assertEqual([group['group_name'] for group in optimizer.param_groups],
+                         ['common', 'phase_response'])
+        self.assertEqual([group['lr'] for group in optimizer.param_groups], [.002, .004])
+        self.assertEqual([group['weight_decay'] for group in optimizer.param_groups], [1e-5, 0.])
+        expected = {id(parameter) for name, parameter in model.named_parameters()
+                    if name.startswith('tiid_module.time_response.')}
+        actual = {id(parameter) for parameter in optimizer.param_groups[1]['params']}
+        self.assertEqual(actual, expected)
 
     def test_metric_totals_matches_independent_float64_metrics(self):
         prediction = np.array(
@@ -230,7 +260,7 @@ class ChronologicalTrainTests(unittest.TestCase):
             def run(output, *extra):
                 command = [sys.executable, 'experiments/chronological/train.py',
                            '--data-dir', str(data), '--output-dir', str(output),
-                           '--protocol', str(protocol), '--variant', 'conditioned',
+                           '--protocol', str(protocol), '--variant', 'phase_residual',
                            '--device', 'cpu', '--seed', '2025', '--check', *extra]
                 result = subprocess.run(command, cwd=REPO, text=True, capture_output=True,
                                         env=dict(os.environ, OMP_NUM_THREADS='1'), timeout=90)
@@ -243,6 +273,12 @@ class ChronologicalTrainTests(unittest.TestCase):
             self.assertEqual(direct['status'], 'ENGINEERING_CHECK_PASS')
             self.assertEqual(direct['completed_epoch'], 2)
             self.assertEqual(direct['initial_max_abs_difference_from_A'], 0.)
+            self.assertEqual(direct['initial_phase_response_diagnostics'][
+                'max_abs_response_difference_from_A'], 0.)
+            self.assertGreater(direct['history'][0]['time_response_gradient_l1_before_clipping'][
+                'tiid_module.time_response.phase_encoder.2.weight']['mean_l1'], 0.)
+            self.assertGreater(direct['best_phase_response_diagnostics'][
+                'event_fraction_different_from_A_gt_1e-6'], 0.)
             self.assertEqual(direct['selection_metric'], 'all_nodes.mae_macro')
             self.assertEqual(direct['best_metric'],
                              direct['best_validation_metrics']['all_nodes']['mae_macro'])

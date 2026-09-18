@@ -120,7 +120,7 @@ def main():
         initial_prediction = forecast(reference, train_batch, train.scaler).detach().cpu().numpy()
     del reference
     results, predictions = {}, {'train_initial_A': initial_prediction}
-    for variant in ('fixed', 'shared', 'conditioned', 'phase'):
+    for variant in ('fixed', 'shared', 'conditioned', 'phase', 'phase_residual'):
         set_seed(args.seed)
         model = make_model(args.data_dir, len(train.station_ids), device, variant)
         extras = set(model.state_dict()) - set(common)
@@ -136,7 +136,18 @@ def main():
         initial_diff = float(np.max(np.abs(actual - initial_prediction)))
         if initial_diff > .001:
             raise ValueError(f'{variant} initial output differs from A by {initial_diff}')
-        optimizer = torch.optim.Adam(model.parameters(), lr=.002, weight_decay=1e-5, eps=1e-8)
+        if variant == 'phase_residual':
+            response_prefix = 'tiid_module.time_response.'
+            common_parameters = [parameter for name, parameter in model.named_parameters()
+                                 if not name.startswith(response_prefix)]
+            response_parameters = [parameter for name, parameter in model.named_parameters()
+                                   if name.startswith(response_prefix)]
+            optimizer = torch.optim.Adam(
+                [{'params': common_parameters, 'weight_decay': 1e-5},
+                 {'params': response_parameters, 'weight_decay': 0.}],
+                lr=.002, eps=1e-8)
+        else:
+            optimizer = torch.optim.Adam(model.parameters(), lr=.002, weight_decay=1e-5, eps=1e-8)
         before = {name: p.detach().clone() for name, p in model.named_parameters()}
         losses, grad_norms, response_gradients = [], [], []
         if device.type == 'cuda':
@@ -172,7 +183,7 @@ def main():
                     current_response_gradients['phase_output_gradient_l1'] = phase_gradient
                     if phase_gradient == 0:
                         raise ValueError('Phase response has no real-batch loss gradient')
-                if variant in ('conditioned', 'phase') and step >= 1:
+                if variant in ('conditioned', 'phase', 'phase_residual') and step >= 1:
                     early = (response_module.mlp[0] if variant == 'conditioned'
                              else response_module.phase_encoder[0])
                     if float(early.weight.grad.abs().sum()) == 0:

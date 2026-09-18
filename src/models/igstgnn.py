@@ -7,7 +7,7 @@ import json
 
 from src.base.model import BaseModel
 from src.models.incident_response import (
-    ConstrainedPhaseResponse, IncidentTimeResponse, ReportLocationEncoder,
+    ConstrainedPhaseResponse, IncidentTimeResponse, ReportLocationEncoder, ResidualPhaseResponse,
     forecast_clock_embeddings, history_state,
 )
 
@@ -25,7 +25,8 @@ class IGSTGNN(BaseModel):
         self._time_response_mode = model_args.get('time_response', 'fixed')
         if self._incident_schema not in ('legacy', 'report_location_v1'):
             raise ValueError('Unknown incident_schema')
-        if self._time_response_mode not in ('fixed', 'shared', 'conditioned', 'phase'):
+        if self._time_response_mode not in ('fixed', 'shared', 'conditioned', 'phase',
+                                             'phase_residual'):
             raise ValueError('Unknown time_response')
         if self._incident_schema == 'report_location_v1':
             if model_args.get('use_sensor_info', False) or self.horizon != 12 or model_args.get('sigma_t', 1.0) != 1.0:
@@ -102,6 +103,8 @@ class IGSTGNN(BaseModel):
             self.tiid_module.time_response = IncidentTimeResponse(self._time_response_mode, self.horizon)
         elif self._time_response_mode == 'phase':
             self.tiid_module.time_response = ConstrainedPhaseResponse(self.horizon)
+        elif self._time_response_mode == 'phase_residual':
+            self.tiid_module.time_response = ResidualPhaseResponse(self.horizon)
 
     def reset_parameter(self):
         nn.init.xavier_uniform_(self.node_emb_u)
@@ -139,7 +142,7 @@ class IGSTGNN(BaseModel):
 
     def forward(self, history_data, label=None, incident_data=None, sensor_data=None):  # (b, t, n, f)
         state = (history_state(history_data)
-                 if self._time_response_mode in ('conditioned', 'phase') else None)
+                 if self._time_response_mode in ('conditioned', 'phase', 'phase_residual') else None)
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
 
         history_data = self.embedding(history_data)
@@ -160,7 +163,7 @@ class IGSTGNN(BaseModel):
             )
             if state is not None:
                 incident_inputs['history_state'] = state
-            if self._time_response_mode == 'phase':
+            if self._time_response_mode in ('phase', 'phase_residual'):
                 incident_inputs['report_age_minutes'] = incident_data['report_age_minutes']
         static_graph, dynamic_graph = self._graph_constructor(node_embedding_u=node_embedding_u, node_embedding_d=node_embedding_d, 
                                                               history_data=history_data, time_in_day_feat=time_in_day_feat, 

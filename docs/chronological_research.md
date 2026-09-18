@@ -4,7 +4,8 @@
 
 2026-09-18完成的A/B/C筛选未支持无约束时间响应：A的全节点MAE为22.6867，
 B/C分别为22.8141/22.7802。后续候选`phase`使用独立v2协议，设计、反驳条件和
-运行边界见[受约束事件级阶段响应](constrained_phase_response.md)。本页以下A/B/C
+运行边界见[受约束事件级阶段响应](constrained_phase_response.md)。C'失败后的可学习性
+修复使用独立`phase_residual`和v3协议，见[事件级残差阶段响应](residual_phase_response.md)。本页以下A/B/C
 内容保留为v1实验记录，不因新候选而改写。
 
 这里接续已完成的IGSTGNN复现，验证新的数据加载、事件输入和A/B/C时间权重能否在真实batch上正确运行。**A是采用共同新输入约定的研究基线，不等同论文原表设置；这里没有全量训练后的精度结论。** 原 `experiments/IGSTGNN/main.py` 的默认行为和论文对齐版checkpoint格式保留。

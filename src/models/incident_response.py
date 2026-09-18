@@ -123,3 +123,70 @@ class ConstrainedPhaseResponse(nn.Module):
         baseline = gaussian.to(state).reshape(1, self.horizon)
         response = (1 - gate) * baseline + gate * mixture
         return response.unsqueeze(-1).unsqueeze(-1)
+
+
+class ResidualPhaseResponse(nn.Module):
+    """Event-level smooth log-residual around the fixed Gaussian response.
+
+    Zero output weights make the initial response exactly equal to the fixed
+    baseline.  A positive floor keeps gradients available after the Gaussian
+    has numerically decayed, while the final clamp retains nonnegative time
+    weights.  The three signed coefficients are prediction controls rather
+    than identified physical phase effects.
+    """
+    def __init__(self, horizon=12, hidden_dim=16, response_floor=.05):
+        super().__init__()
+        if horizon < 2 or hidden_dim < 1 or response_floor <= 0:
+            raise ValueError('Residual phase response requires valid dimensions and a positive floor')
+        self.horizon = int(horizon)
+        self.phase_encoder = nn.Sequential(
+            nn.Linear(4, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 3, bias=False),
+        )
+        nn.init.zeros_(self.phase_encoder[-1].weight)
+
+        steps = torch.arange(1, horizon + 1, dtype=torch.float32)
+        peak_scale = torch.exp(torch.tensor(-0.5))
+        immediate = torch.exp(-steps.square() / 2)
+        sustained = peak_scale * torch.exp(-(steps - 1) / 6)
+        delayed = peak_scale * torch.exp(-(steps - 6).square() / (2 * 2.5 ** 2))
+        self.register_buffer('phase_bases', torch.stack([immediate, sustained, delayed]))
+        self.register_buffer('response_floor', torch.tensor(float(response_floor)))
+
+    def components(self, gaussian, state, connected_mask, report_age_minutes):
+        if gaussian.ndim != 4 or gaussian.shape[1] != self.horizon:
+            raise ValueError('Residual phase response requires gaussian [1,horizon,1,1]')
+        if state is None or state.ndim != 3 or state.shape[-1] != 3:
+            raise ValueError('Residual phase response requires historical state [batch,node,3]')
+        if connected_mask is None:
+            raise ValueError('Residual phase response requires a connected-node mask')
+        if connected_mask.ndim == 3 and connected_mask.shape[-1] == 1:
+            connected_mask = connected_mask.squeeze(-1)
+        if connected_mask.shape != state.shape[:2]:
+            raise ValueError('Connected-node mask must match the history state node axis')
+        if (report_age_minutes is None or report_age_minutes.ndim != 1
+                or report_age_minutes.shape[0] != state.shape[0]
+                or not torch.isfinite(report_age_minutes).all()
+                or torch.any(report_age_minutes < 0)):
+            raise ValueError('Residual phase response requires finite nonnegative report age [batch]')
+
+        weights = connected_mask.to(state)
+        counts = weights.sum(dim=1, keepdim=True)
+        if torch.any(counts == 0):
+            raise ValueError('Each residual phase-response sample requires at least one connected node')
+        event_state = (state * weights.unsqueeze(-1)).sum(dim=1) / counts
+        age = report_age_minutes.to(state).unsqueeze(-1) / 5
+        coefficients = torch.tanh(self.phase_encoder(torch.cat([event_state, age], dim=-1)))
+        log_adjustment = coefficients @ self.phase_bases.to(state)
+
+        baseline = gaussian.to(state).reshape(1, self.horizon)
+        floor = self.response_floor.to(state)
+        response = baseline + (baseline + floor) * torch.expm1(log_adjustment)
+        response = response.clamp_min(0)
+        return response, coefficients, log_adjustment
+
+    def forward(self, gaussian, state=None, connected_mask=None, report_age_minutes=None):
+        response, _, _ = self.components(
+            gaussian, state, connected_mask, report_age_minutes)
+        return response.unsqueeze(-1).unsqueeze(-1)
