@@ -72,7 +72,7 @@ class ConstrainedPhaseResponse(nn.Module):
     effects.  Traffic state is pooled over connected nodes so it can choose one
     event curve, while the existing TIID context retains spatial heterogeneity.
     """
-    def __init__(self, horizon=12, hidden_dim=16, initial_gate_logit=-6.0):
+    def __init__(self, horizon=12, hidden_dim=16, initial_gate_logit=-8.0):
         super().__init__()
         if horizon < 2 or hidden_dim < 1:
             raise ValueError('Phase response requires horizon >= 2 and a positive hidden dimension')
