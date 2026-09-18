@@ -106,6 +106,8 @@ class ChronologicalTrainTests(unittest.TestCase):
         self.assertIn('--check', result.stdout)
         self.assertIn('phase', result.stdout)
         self.assertIn('phase_residual', result.stdout)
+        self.assertIn('traffic_only', result.stdout)
+        self.assertIn('shuffled_incident', result.stdout)
 
     def test_cuda_determinism_requires_cublas_workspace_configuration(self):
         with patch.dict(os.environ, {}, clear=False):
@@ -156,6 +158,40 @@ class ChronologicalTrainTests(unittest.TestCase):
         self.assertEqual(validate(residual, package, 5, 3, 2)['phase_weight_decay'], 0.)
         with self.assertRaisesRegex(ValueError, 'weight decay'):
             validate(dict(residual, phase_weight_decay=1e-5), package, 5, 3, 2)
+        control_design = {
+            'permutation_scope': 'within_split',
+            'shuffled_fields': ['report_age_minutes', 'distances'],
+            'preserved_fields': ['forecast_tod', 'forecast_dow'],
+            'exclude_self': True,
+            'exclude_same_t0': True,
+            'evaluation_association_source': 'true_incident',
+        }
+        controls = dict(protocol, candidate_variants=['traffic_only', 'shuffled_incident'],
+                        incident_control=control_design)
+        self.assertEqual(validate(controls, package, 5, 3, 2)['incident_control'],
+                         control_design)
+        with self.assertRaisesRegex(ValueError, 'frozen design'):
+            validate(dict(controls, incident_control=dict(control_design, exclude_same_t0=False)),
+                     package, 5, 3, 2)
+
+    def test_incident_permutation_is_deterministic_and_excludes_duplicate_windows(self):
+        rows = [
+            {'sample_index': str(index + 10), 'split': 'val', 't0': t0}
+            for index, t0 in enumerate([
+                '2023-09-01T01:00:00', '2023-09-01T01:00:00',
+                '2023-09-01T02:00:00', '2023-09-01T03:00:00',
+            ])
+        ]
+        sources, diagnostics = train.incident_permutation(rows, 2025, 'val')
+        repeated, repeated_diagnostics = train.incident_permutation(rows, 2025, 'val')
+        self.assertEqual(sources, repeated)
+        self.assertEqual(diagnostics, repeated_diagnostics)
+        self.assertEqual(sorted(sources), list(range(len(rows))))
+        self.assertTrue(all(target != source for target, source in enumerate(sources)))
+        self.assertTrue(all(rows[target]['t0'] != rows[source]['t0']
+                            for target, source in enumerate(sources)))
+        self.assertEqual(diagnostics['self_matches'], 0)
+        self.assertEqual(diagnostics['same_t0_matches'], 0)
 
     def test_residual_phase_optimizer_uses_separate_zero_decay_group(self):
         from src.models.igstgnn import IGSTGNN
@@ -315,6 +351,49 @@ class ChronologicalTrainTests(unittest.TestCase):
                                   'sample_indices', 'station_ids'})
                 for key in left_prediction.files:
                     np.testing.assert_array_equal(left_prediction[key], right_prediction[key])
+
+    def test_negative_controls_complete_real_model_checks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            data = base / 'data'
+            data.mkdir()
+            protocol = self._write_tiny_package(data)
+            summaries = {}
+            for variant in ('traffic_only', 'shuffled_incident'):
+                output = base / variant
+                command = [
+                    sys.executable, 'experiments/chronological/train.py',
+                    '--data-dir', str(data), '--output-dir', str(output),
+                    '--protocol', str(protocol), '--variant', variant,
+                    '--device', 'cpu', '--seed', '2025', '--check',
+                ]
+                result = subprocess.run(
+                    command, cwd=REPO, text=True, capture_output=True,
+                    env=dict(os.environ, OMP_NUM_THREADS='1'), timeout=90)
+                self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+                summary = json.loads((output / 'summary.json').read_text())
+                summaries[variant] = summary
+                self.assertEqual(summary['status'], 'ENGINEERING_CHECK_PASS')
+                self.assertEqual(summary['variant'], variant)
+                self.assertEqual(summary['incident_intervention']['train']['mode'], variant)
+                self.assertEqual(summary['incident_intervention']['validation'][
+                    'evaluation_association_source'], 'true_incident')
+                self.assertEqual(summary['parameters'], 443645)
+                self.assertTrue((output / 'best_validation_predictions.npz').exists())
+
+            shuffled = summaries['shuffled_incident']['incident_intervention']
+            self.assertEqual(shuffled['train']['self_matches'], 0)
+            self.assertEqual(shuffled['validation']['same_t0_matches'], 0)
+            with np.load(base / 'shuffled_incident' /
+                         'best_validation_predictions.npz') as predictions:
+                self.assertIn('incident_source_sample_index', predictions.files)
+                np.testing.assert_array_equal(
+                    predictions['incident_source_sample_index'], np.array([4, 3]))
+                self.assertTrue(predictions['associated'].all())
+            with np.load(base / 'traffic_only' /
+                         'best_validation_predictions.npz') as predictions:
+                self.assertNotIn('incident_source_sample_index', predictions.files)
+                self.assertTrue(predictions['associated'].all())
 
 
 if __name__ == '__main__':

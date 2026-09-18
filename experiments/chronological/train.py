@@ -1,4 +1,4 @@
-"""Train one frozen chronological time-response screening run."""
+"""Train one frozen chronological screening run."""
 
 import argparse
 import copy
@@ -24,12 +24,18 @@ from src.models.incident_response import history_state
 from src.utils.chronological import ChronologicalDataset, masked_flow_mae
 
 
+CONTROL_VARIANTS = ('traffic_only', 'shuffled_incident')
+SHUFFLED_INCIDENT_FIELDS = ('report_age_minutes', 'distances')
+PRESERVED_CLOCK_FIELDS = ('forecast_tod', 'forecast_dow')
+
+
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-dir', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--variant',
-                        choices=('fixed', 'shared', 'conditioned', 'phase', 'phase_residual'),
+                        choices=('fixed', 'shared', 'conditioned', 'phase', 'phase_residual',
+                                 *CONTROL_VARIANTS),
                         required=True)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--seed', type=int, default=2025)
@@ -79,7 +85,95 @@ def validate_protocol(protocol, package_hashes, train_samples, val_samples, stat
             raise ValueError('Residual phase protocol requires a positive phase learning rate')
         if protocol.get('phase_weight_decay') != 0:
             raise ValueError('Residual phase parameters must exclude weight decay')
+    candidates = protocol.get('candidate_variants')
+    if candidates is not None:
+        expected_control = {
+            'permutation_scope': 'within_split',
+            'shuffled_fields': list(SHUFFLED_INCIDENT_FIELDS),
+            'preserved_fields': list(PRESERVED_CLOCK_FIELDS),
+            'exclude_self': True,
+            'exclude_same_t0': True,
+            'evaluation_association_source': 'true_incident',
+        }
+        if candidates != list(CONTROL_VARIANTS):
+            raise ValueError('Negative-control protocol has unexpected candidate variants')
+        if protocol.get('incident_control') != expected_control:
+            raise ValueError('Negative-control intervention differs from the frozen design')
     return dict(protocol)
+
+
+def incident_permutation(rows, seed, split):
+    """Create a fixed within-split shuffle with no self or duplicate-window matches."""
+    if split not in ('train', 'val') or len(rows) < 2:
+        raise ValueError('Incident permutation requires a recognized split with at least two rows')
+    if any(row.get('split') != split for row in rows):
+        raise ValueError('Incident permutation rows must come from exactly one split')
+    split_offset = 17 if split == 'train' else 29
+    rng = random.Random(int(seed) * 1_000_003 + split_offset)
+    targets = list(range(len(rows)))
+    for _ in range(10_000):
+        sources = targets.copy()
+        rng.shuffle(sources)
+        if all(target != source and rows[target]['t0'] != rows[source]['t0']
+               for target, source in enumerate(sources)):
+            source_samples = [int(rows[source]['sample_index']) for source in sources]
+            encoded = json.dumps(source_samples, separators=(',', ':')).encode()
+            return sources, {
+                'split': split,
+                'samples': len(rows),
+                'mapping_sha256': hashlib.sha256(encoded).hexdigest(),
+                'self_matches': 0,
+                'same_t0_matches': 0,
+            }
+    raise ValueError('Could not construct an incident shuffle without duplicate-window matches')
+
+
+class ShuffledIncidentDataset:
+    """Pair traffic windows with unrelated incident reports from the same split."""
+
+    def __init__(self, dataset, seed, split):
+        self.dataset = dataset
+        self.rows = dataset.rows
+        self.station_ids = dataset.station_ids
+        self.scaler = dataset.scaler
+        self.context = dataset.context
+        self.source_positions, self.diagnostics = incident_permutation(
+            self.rows, seed, split)
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        sample = self.dataset[index]
+        true_distances = sample['incident']['distances']
+        sample['evaluation_associated'] = np.any(true_distances != 0, axis=-1)
+        source = self.source_positions[index]
+        incident = dict(sample['incident'])
+        for field in SHUFFLED_INCIDENT_FIELDS:
+            incident[field] = self.context[field][source]
+        sample['incident'] = incident
+        sample['incident_source_sample_index'] = np.int64(
+            self.rows[source]['sample_index'])
+        return sample
+
+
+def prepare_incident_intervention(dataset, variant, seed, split):
+    if variant == 'shuffled_incident':
+        controlled = ShuffledIncidentDataset(dataset, seed, split)
+        details = dict(controlled.diagnostics)
+        details.update({
+            'mode': variant,
+            'shuffled_fields': list(SHUFFLED_INCIDENT_FIELDS),
+            'preserved_fields': list(PRESERVED_CLOCK_FIELDS),
+            'evaluation_association_source': 'true_incident',
+        })
+        return controlled, details
+    return dataset, {
+        'mode': variant if variant == 'traffic_only' else 'true_incident',
+        'split': split,
+        'samples': len(dataset),
+        'evaluation_association_source': 'true_incident',
+    }
 
 
 def save_checkpoint(path, payload):
@@ -191,6 +285,12 @@ def optimizer_learning_rates(optimizer):
     }
 
 
+def controlled_forecast(model, batch, scaler):
+    if getattr(model, '_incident_control', 'true_incident') == 'traffic_only':
+        return model(batch['x'], incident_data=None) * scaler['std'] + scaler['mean']
+    return forecast(model, batch, scaler)
+
+
 def train_epoch(model, optimizer, dataset, plan, device, scaler, clip_grad_norm):
     model.train()
     totals = MetricTotals()
@@ -199,7 +299,7 @@ def train_epoch(model, optimizer, dataset, plan, device, scaler, clip_grad_norm)
     for batch in batches(dataset, plan['order'], plan['batch_size']):
         batch = device_batch(batch, device)
         optimizer.zero_grad(set_to_none=True)
-        prediction = forecast(model, batch, scaler)
+        prediction = controlled_forecast(model, batch, scaler)
         loss = masked_flow_mae(prediction, batch['y_flow'], batch['y_valid'])
         loss.backward()
         gradients = [parameter.grad for parameter in model.parameters() if parameter.grad is not None]
@@ -289,11 +389,14 @@ def evaluate(model, dataset, sample_indices, batch_size, device, scaler, collect
     with torch.inference_mode():
         for batch in batches(dataset, sample_indices, batch_size):
             batch = device_batch(batch, device)
-            prediction = forecast(model, batch, scaler)
+            prediction = controlled_forecast(model, batch, scaler)
             if not torch.isfinite(prediction).all():
                 raise ValueError('Validation produced non-finite predictions')
             totals.update(prediction, batch['y_flow'], batch['y_valid'])
-            associated = (batch['incident']['distances'].abs().sum(-1) > 0)
+            if 'evaluation_associated' in batch:
+                associated = batch['evaluation_associated'].bool()
+            else:
+                associated = (batch['incident']['distances'].abs().sum(-1) > 0)
             associated = associated[:, None, :, None].expand_as(batch['y_valid'])
             associated_valid = batch['y_valid'] & associated
             associated_totals.update(prediction, batch['y_flow'], associated_valid)
@@ -302,6 +405,9 @@ def evaluate(model, dataset, sample_indices, batch_size, device, scaler, collect
                 saved['target'].append(batch['y_flow'].cpu().numpy())
                 saved['valid'].append(batch['y_valid'].cpu().numpy())
                 saved['associated'].append(associated.cpu().numpy())
+                if 'incident_source_sample_index' in batch:
+                    saved.setdefault('incident_source_sample_index', []).append(
+                        batch['incident_source_sample_index'].cpu().numpy())
     all_nodes = totals.result()
     associated_nodes = associated_totals.result()
     for metrics in (all_nodes, associated_nodes):
@@ -345,11 +451,14 @@ def atomic_npz(path, **arrays):
 def build_model(data_dir, node_count, device, variant, seed):
     set_seed(seed)
     reference = make_model(data_dir, node_count, device, 'fixed')
+    reference._incident_control = 'true_incident'
     common = cpu_state(reference.state_dict())
     if variant == 'fixed':
         return reference, common, None
     set_seed(seed)
-    model = make_model(data_dir, node_count, device, variant)
+    architecture_variant = 'fixed' if variant in CONTROL_VARIANTS else variant
+    model = make_model(data_dir, node_count, device, architecture_variant)
+    model._incident_control = variant if variant in CONTROL_VARIANTS else 'true_incident'
     extras = set(model.state_dict()) - set(common)
     missing, unexpected = model.load_state_dict(copy.deepcopy(common), strict=False)
     if unexpected or set(missing) != extras or any(
@@ -420,11 +529,19 @@ def main(argv=None):
     protocol_path = args.protocol.resolve()
     protocol = json.loads(protocol_path.read_text())
     package_hashes = verify_package(data_dir)
-    train = ChronologicalDataset(data_dir, 'train')
-    val = ChronologicalDataset(data_dir, 'val')
-    validate_protocol(protocol, package_hashes, len(train), len(val), len(train.station_ids))
+    raw_train = ChronologicalDataset(data_dir, 'train')
+    raw_val = ChronologicalDataset(data_dir, 'val')
+    validate_protocol(
+        protocol, package_hashes, len(raw_train), len(raw_val), len(raw_train.station_ids))
     if protocol.get('candidate_variant') not in (None, args.variant):
         raise ValueError('Protocol candidate variant differs from the requested model')
+    if (protocol.get('candidate_variants') is not None and
+            args.variant not in protocol['candidate_variants']):
+        raise ValueError('Requested model is outside the protocol candidate variants')
+    train, train_intervention = prepare_incident_intervention(
+        raw_train, args.variant, args.seed, 'train')
+    val, val_intervention = prepare_incident_intervention(
+        raw_val, args.variant, args.seed, 'val')
     if not np.array_equal(train.station_ids, val.station_ids):
         raise ValueError('Train and validation station axes differ')
 
@@ -443,20 +560,23 @@ def main(argv=None):
     model, common, reference = build_model(
         data_dir, len(train.station_ids), device, args.variant, args.seed)
     initial_batch = device_batch(next(batches(train, train_indices[:batch_size], batch_size)), device)
+    reference_batch = device_batch(
+        next(batches(raw_train, train_indices[:batch_size], batch_size)), device)
     model.eval()
     with torch.inference_mode():
-        initial_prediction = forecast(model, initial_batch, train.scaler)
+        initial_prediction = controlled_forecast(model, initial_batch, train.scaler)
         if reference is None:
             initial_difference = 0.
         else:
             reference.eval()
-            reference_prediction = forecast(reference, initial_batch, train.scaler)
+            reference_prediction = controlled_forecast(
+                reference, reference_batch, raw_train.scaler)
             initial_difference = float((initial_prediction - reference_prediction).abs().max())
-    if initial_difference > .001:
+    if args.variant not in CONTROL_VARIANTS and initial_difference > .001:
         raise ValueError(f'{args.variant} initial output differs from A by {initial_difference}')
     initial_phase_diagnostics = phase_response_diagnostics(
         model, val, val_indices, batch_size, device)
-    del reference, initial_batch, initial_prediction
+    del reference, reference_batch, initial_batch, initial_prediction
     optimizer = build_optimizer(model, protocol, args.variant)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=protocol['lr_milestones'], gamma=protocol['lr_gamma'])
@@ -473,6 +593,10 @@ def main(argv=None):
         'common_initialization_sha256': state_sha256(common),
         'batch_size': batch_size,
         'max_epochs': max_epochs,
+        'incident_intervention': {
+            'train': train_intervention,
+            'validation': val_intervention,
+        },
         'source_sha256': {str(path.relative_to(REPO)): sha256(path) for path in source_paths},
         'torch_version': torch.__version__,
         'numpy_version': np.__version__,
@@ -589,6 +713,7 @@ def main(argv=None):
     summary['stop_reason'] = stop_reason
     summary['parameters'] = sum(parameter.numel() for parameter in model.parameters())
     summary['initial_max_abs_difference_from_A'] = initial_difference
+    summary['incident_intervention'] = identity['incident_intervention']
     if initial_phase_diagnostics is not None:
         summary['initial_phase_response_diagnostics'] = initial_phase_diagnostics
     summary['environment'] = {
