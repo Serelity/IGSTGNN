@@ -110,13 +110,29 @@ class ChronologicalTrainTests(unittest.TestCase):
         self.assertIn('shuffled_incident', result.stdout)
 
     def test_cuda_determinism_requires_cublas_workspace_configuration(self):
-        with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop('CUBLAS_WORKSPACE_CONFIG', None)
-            with self.assertRaisesRegex(RuntimeError, 'CUBLAS_WORKSPACE_CONFIG'):
+        original = {
+            'algorithms': torch.are_deterministic_algorithms_enabled(),
+            'benchmark': torch.backends.cudnn.benchmark,
+            'cudnn_deterministic': torch.backends.cudnn.deterministic,
+            'cuda_tf32': getattr(torch.backends.cuda.matmul, 'allow_tf32', None),
+            'cudnn_tf32': getattr(torch.backends.cudnn, 'allow_tf32', None),
+        }
+        try:
+            with patch.dict(os.environ, {}, clear=False):
+                os.environ.pop('CUBLAS_WORKSPACE_CONFIG', None)
+                with self.assertRaisesRegex(RuntimeError, 'CUBLAS_WORKSPACE_CONFIG'):
+                    train.configure_determinism(torch.device('cuda:0'))
+            with patch.dict(os.environ, {'CUBLAS_WORKSPACE_CONFIG': ':4096:8'}):
                 train.configure_determinism(torch.device('cuda:0'))
-        with patch.dict(os.environ, {'CUBLAS_WORKSPACE_CONFIG': ':4096:8'}):
-            train.configure_determinism(torch.device('cuda:0'))
-            self.assertTrue(torch.are_deterministic_algorithms_enabled())
+                self.assertTrue(torch.are_deterministic_algorithms_enabled())
+        finally:
+            torch.use_deterministic_algorithms(original['algorithms'])
+            torch.backends.cudnn.benchmark = original['benchmark']
+            torch.backends.cudnn.deterministic = original['cudnn_deterministic']
+            if original['cuda_tf32'] is not None:
+                torch.backends.cuda.matmul.allow_tf32 = original['cuda_tf32']
+            if original['cudnn_tf32'] is not None:
+                torch.backends.cudnn.allow_tf32 = original['cudnn_tf32']
 
     def test_epoch_plan_is_paired_complete_and_keeps_tail(self):
         make_plan = getattr(train, 'epoch_plan', lambda *args, **kwargs: None)
@@ -378,7 +394,8 @@ class ChronologicalTrainTests(unittest.TestCase):
                 self.assertEqual(summary['incident_intervention']['train']['mode'], variant)
                 self.assertEqual(summary['incident_intervention']['validation'][
                     'evaluation_association_source'], 'true_incident')
-                self.assertEqual(summary['parameters'], 443645)
+                # The fixture has two nodes; 443645 is the real 496-node package count.
+                self.assertEqual(summary['parameters'], 431789)
                 self.assertTrue((output / 'best_validation_predictions.npz').exists())
 
             shuffled = summaries['shuffled_incident']['incident_intervention']

@@ -161,3 +161,32 @@ full repository suite could not run in the local WSL system interpreter because 
 neither NumPy nor PyTorch. No dependency was installed. Full regression remains a server-side gate
 in the existing `igstgnn` Conda environment; this environment limitation is not recorded as a test
 pass.
+
+## 2026-09-19: Server regression corrected three test-boundary defects
+
+### Evidence
+
+The first server full-suite run used the existing `igstgnn` Conda environment and reported 72 tests,
+with one failure and four errors. None arose from the matched-control auditor:
+
+- the v8 source module imported optional `requests` at module load, preventing non-network builder
+  tests from loading when the downloader dependency was absent;
+- the CUDA determinism unit test enabled PyTorch deterministic algorithms globally and did not
+  restore the prior process state, causing three later CUDA convolution cases to fail for missing
+  `CUBLAS_WORKSPACE_CONFIG` even though those cases did not request deterministic execution;
+- the negative-control integration test built a two-node fixture but asserted the 496-node production
+  parameter count, producing `431789 != 443645`.
+
+### Correction and non-impact
+
+`source_v8.py` now imports `requests` optionally and raises an explicit error only when a network
+download is actually requested. The two HTTP-specific tests skip when that optional dependency is
+absent; cache, header, range validation, and all packaged-data paths remain testable. The determinism
+test now restores algorithm, cuDNN, and TF32 global state in `finally`. The negative-control test now
+asserts the correct 431,789 parameters for its two-node fixture and documents that 443,645 belongs to
+the real 496-node package.
+
+These changes do not alter model construction, production parameter counts, training determinism, or
+matched-control candidates. They correct dependency scope, test isolation, and a fixture-specific
+expected value. The server full suite must be rerun after pulling this correction; an optional-test
+skip is acceptable only for the two HTTP cases when `requests` is absent.

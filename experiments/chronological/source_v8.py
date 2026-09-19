@@ -9,8 +9,12 @@ import re
 import threading
 import time
 
-import requests
-from urllib3.exceptions import HTTPError
+try:
+    import requests
+    from urllib3.exceptions import HTTPError
+except ImportError:  # Optional for packaged-data training and non-network tests.
+    requests = None
+    HTTPError = OSError
 
 
 def sha256(path):
@@ -115,6 +119,8 @@ class V8Reader:
             return dict(self._stats)
 
     def signed_url(self, filename):
+        if requests is None:
+            raise RuntimeError('The v8 source downloader requires the optional requests dependency')
         for attempt in range(4):
             self.add('signed_url_attempts')
             try:
@@ -135,6 +141,8 @@ class V8Reader:
     def read_range(self, url, start, end, total=None):
         if start < 0 or end < start:
             raise ValueError('Invalid byte range')
+        if requests is None:
+            raise RuntimeError('The v8 source downloader requires the optional requests dependency')
         for attempt in range(4):
             self.add('range_attempts')
             try:

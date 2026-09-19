@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import numpy as np
 
+from experiments.chronological import source_v8
 from experiments.chronological.build_data import (
     TrainMoments, month_plan, select_development_rows, window_slots,
 )
@@ -84,6 +85,7 @@ class StatisticsTests(unittest.TestCase):
 
 
 class SourceTests(unittest.TestCase):
+    @unittest.skipIf(source_v8.requests is None, 'optional requests dependency is not installed')
     def test_http_failure_retries_without_consuming_full_body_or_leaking_url(self):
         class Response:
             status_code = 200
@@ -107,6 +109,7 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(external.call_count, 4)
         self.assertEqual(reader.stats()['range_failures'], 4)
 
+    @unittest.skipIf(source_v8.requests is None, 'optional requests dependency is not installed')
     def test_truncated_range_body_is_retried_then_rejected(self):
         class Response:
             status_code = 206
