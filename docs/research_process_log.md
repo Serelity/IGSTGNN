@@ -190,3 +190,93 @@ These changes do not alter model construction, production parameter counts, trai
 matched-control candidates. They correct dependency scope, test isolation, and a fixture-specific
 expected value. The server full suite must be rerun after pulling this correction; an optional-test
 skip is acceptable only for the two HTTP cases when `requests` is absent.
+
+## 2026-09-19: Traffic-X-only scoring and unique control assignment
+
+### Question and frozen design
+
+The metadata audit established that routine-window candidates exist, but it did not establish that
+their pre-event traffic state resembles the corresponding incident window or select one final
+control per positive. The second gate asks whether the v1 candidates can be assigned at useful
+coverage without consulting the forecast target, test split, incident description, or incident
+type.
+
+Protocol: `experiments/chronological/matched_nonincident_x_v2.json`.
+
+Scorer: `experiments/chronological/score_matched_controls.py`.
+
+For each v1 candidate, the scorer reads only the 12 history slots from T-65 through T-10 on the
+positive event's affected nodes. It excludes non-finite and negative source values, requires at
+least 90% pairwise valid overlap, and ranks eligible edges by mean absolute raw-flow difference
+divided by the frozen train global standard deviation. Missing-pattern mismatch, absolute day
+distance, and candidate timestamp are deterministic tie breakers. A preference-ordered augmenting
+path algorithm maximizes assignment cardinality while limiting each candidate timestamp to one
+positive. It does not claim globally minimum total matching cost or a causal counterfactual.
+
+Acceptance was frozen before execution: at least 95% train and 88% validation assignment coverage,
+median valid overlap at least 98%, maximum absolute SMD at most 0.1 across affected-node history
+mean, last-step mean, and late-three-minus-early-three trend, and candidate reuse no greater than
+one. Passing remains an offline data-construction gate and does not by itself authorize the main
+model experiment.
+
+### Pre-execution corrections and tests
+
+Review before the first real run found that the assignment CSV schema omitted fields present in its
+rows, which would have caused `csv.DictWriter` to fail after all scoring work. The schema now equals
+the complete edge-score schema plus preference rank. Balance summaries were also made JSON-safe for
+an all-nonfinite feature: unavailable values are written as JSON `null`, and an unobserved SMD cannot
+silently pass the balance gate. Protocol validation now requires all four prohibited input classes,
+not only forecast Y.
+
+Ten new tests cover those output and information boundaries, input-fingerprint drift, negative and
+non-finite traffic filtering, the 90% overlap rule, a history window crossing a month boundary,
+JSON-safe unavailable balance, deterministic assignment, candidate capacity, and an example where
+an augmenting path is required to recover maximum cardinality. Together with the nine v1 tests,
+19/19 targeted tests pass in the existing local Conda environment. No package was installed or
+environment changed.
+
+### Reference execution
+
+The first two validation outputs, `v2_x_assignment_01` and `v2_x_assignment_02`, are byte-identical.
+Protocol enforcement was then tightened to reject drift in source year/version, station axis,
+history spacing, node scope, valid-value rule, and distance definition. Because this changed the
+recorded code fingerprint, the final reference output is
+`../论文学习/匹配常规窗口审计_20260919/v2_x_assignment_03`. Its three CSV artifacts remain
+byte-identical to the first two runs; its summary values are identical and its summary file differs
+only by the corrected code fingerprint. Each run verified 4,960 cached row reads totaling
+521,109,504 bytes and all ten monthly source-manifest fingerprints.
+
+| Split | Positives | Assigned | Coverage | Median X distance | Median overlap | Maximum preference rank |
+|---|---:|---:|---:|---:|---:|---:|
+| train | 3,604 | 3,519 | 97.64% | 0.1484 | 100% | 4 |
+| validation | 917 | 820 | 89.42% | 0.1566 | 100% | 3 |
+
+All 4,339 selected controls have zero missing-pattern mismatch, and 3,921 use their positive's
+first-ranked candidate. Thirty train and 32 validation positives remain unmatched because candidate
+capacity is exhausted; another 55 train and 65 validation positives had no v1 metadata candidate.
+Candidate reuse is exactly one at maximum. Across the six split-feature balance checks, absolute SMD
+ranges from 0.0148 to 0.0428 and passes the 0.1 gate. Fifty-four assignments have normalized X
+distance above 0.5 and nine exceed 1.0; these tails must remain visible in later sensitivity analysis
+rather than being hidden by aggregate balance.
+
+Validation SR4-E remains the weakest stratum: 291/353 positives are assigned (82.44%), including 48
+without a metadata candidate and 14 lost to capacity conflict. Overall validation passes the frozen
+gate, but a population-wide claim may not rely on the 89.42% aggregate alone. Later evaluation must
+report road/direction coverage and the unmatched population explicitly.
+
+Reference output fingerprints are:
+
+- `assignments.csv`: `de2c1b65e6601c3613239407f45cb0112ee6406ac2fbd41ab398200cf2c0a7bc`
+- `edge_scores.csv`: `17b14bac7db198b51888227b00598cc3f528bf29b99b2d8adde1fcd2f7d76d25`
+- `unmatched.csv`: `d9d548e9a36e748e9b0308c1158863d6bc50e1b393b3bcb13a042684855e45b1`
+- `summary.json`: `59fa1532ce6845a8cb6e75085e02b2b1517b1b3bc6a961ade95031aedb7d5875`
+
+### Decision and next gate
+
+The v2 X-only assignment gate passes and the assignment is now frozen for downstream construction.
+The next step is a separate materialization protocol that reads the selected candidate timestamps
+and extracts their complete 26-slot raw windows only after assignment. That step may expose routine
+future observations as supervised targets, but it may not rerank or replace controls using those
+future values. It must verify source fingerprints, split confinement, byte-stable reconstruction,
+window overlap diagnostics, and exact preservation of the frozen assignment before any
+incident-versus-routine model objective is designed.

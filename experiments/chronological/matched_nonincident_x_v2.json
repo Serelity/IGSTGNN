@@ -1,0 +1,67 @@
+{
+  "protocol_id": "contra_v8_matched_nonincident_x_v2",
+  "scope": "offline_x_only_control_assignment",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "candidate_audit": {
+    "protocol_id": "contra_v8_matched_nonincident_v1",
+    "summary_sha256": "075f258ce586a085497c7726283c677956e538532a20c8b2169a601756f3efd6",
+    "candidate_pairs_sha256": "aad59cbc9e183399ce1e91d82cd95a7d0f6e9ce448db0e05d3f413fff37c061a",
+    "sample_audit_sha256": "1b0bebb1adc4b77a2d402045f94dede3af5f4105dc1cbe6004e3df1a7ee162bf"
+  },
+  "data_inputs": {
+    "summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "scaler_sha256": "abc1853df9ca35de9a42bc15ff3db67dff3978c7c028a0daa19eed027eb540ba",
+    "station_ids_sha256": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+    "sensors_sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094"
+  },
+  "x_similarity": {
+    "positive_X_slice": [0, 12],
+    "candidate_X_start_minutes_from_t0": -65,
+    "steps": 12,
+    "step_minutes": 5,
+    "node_scope": "positive_incident_affected_nodes",
+    "valid_value": "finite_and_nonnegative",
+    "minimum_pairwise_valid_overlap_fraction": 0.9,
+    "ranking_distance": "mean_absolute_raw_flow_difference_divided_by_train_global_std",
+    "missing_pattern_mismatch": "diagnostic_and_tie_break_only",
+    "prohibited_inputs": [
+      "forecast_Y",
+      "test_split",
+      "incident_description",
+      "incident_type"
+    ]
+  },
+  "assignment": {
+    "candidate_capacity": 1,
+    "objective_order": [
+      "maximum_cardinality",
+      "preference_ordered_augmenting_paths"
+    ],
+    "edge_preference": [
+      "x_distance",
+      "missing_pattern_mismatch",
+      "absolute_day_distance",
+      "candidate_t0"
+    ],
+    "global_cost_optimality_claimed": false,
+    "unmatched_candidates_are_not_relaxed": true
+  },
+  "balance_features": [
+    "affected_history_mean",
+    "affected_last_step_mean",
+    "affected_late3_minus_early3"
+  ],
+  "acceptance": {
+    "minimum_assignment_coverage": {
+      "train": 0.95,
+      "val": 0.88
+    },
+    "minimum_median_pairwise_valid_overlap_fraction": 0.98,
+    "maximum_absolute_feature_smd": 0.1,
+    "maximum_candidate_reuse": 1
+  },
+  "terminology": "X-matched recorded-incident-free control; not a causal counterfactual"
+}
