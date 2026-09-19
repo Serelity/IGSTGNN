@@ -1,0 +1,61 @@
+{
+  "protocol_id": "contra_v8_matched_nonincident_v1",
+  "scope": "metadata_only_candidate_audit",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "splits": {
+    "train": {
+      "start": "2023-01-01T00:00:00",
+      "end_exclusive": "2023-09-01T00:00:00"
+    },
+    "val": {
+      "start": "2023-09-01T00:00:00",
+      "end_exclusive": "2023-11-01T00:00:00"
+    }
+  },
+  "candidate_matching": {
+    "search_radius_days": 56,
+    "exact_weekday": true,
+    "exact_five_minute_slot": true,
+    "exclude_same_t0": true,
+    "excluded_nominal_dates": [
+      "2023-03-12",
+      "2023-11-05"
+    ]
+  },
+  "window": {
+    "support_start_minutes_from_t0": -70,
+    "support_end_exclusive_minutes_from_t0": 65
+  },
+  "incident_blackout": {
+    "pre_report_minutes": 60,
+    "minimum_post_report_minutes": 120,
+    "duration_missing_or_invalid_minutes": 120,
+    "duration_unit_assumption": "minutes_not_independently_certified",
+    "duration_usage": "offline_exclusion_only"
+  },
+  "spatial_exposure": {
+    "road_key": "numeric_freeway_and_direction",
+    "postmile_radius": 10.0,
+    "candidate_is_clean_when": "no_recorded_incident_affects_any_positive_affected_sensor_during_support"
+  },
+  "acceptance": {
+    "minimum_coverage": {
+      "train": 0.98,
+      "val": 0.9
+    },
+    "minimum_median_candidates": {
+      "train": 3,
+      "val": 2
+    }
+  },
+  "prohibited_matching_inputs": [
+    "forecast_Y",
+    "test_split",
+    "incident_description",
+    "incident_type"
+  ],
+  "terminology": "recorded-incident-free matched candidate; not a causal counterfactual"
+}
