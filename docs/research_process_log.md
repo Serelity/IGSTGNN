@@ -1046,3 +1046,51 @@ No oracle/router threshold, cohort, outcome, or model-error result was changed; 
 before any matched-cohort model output was produced. The v6a protocol SHA-256 is now
 `a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710`, and v6b was rebound to this
 corrected prospective input identity.
+
+The corrected server engineering check completed at Git commit `68b3c81` with status
+`ENGINEERING_CHECK_PASS` and process exit code zero. It strictly loaded the frozen checkpoint
+`b0c712ad9c00007417ccc6ea6268f373852d04063efba2d15d3f49f5497b8e13`, reproduced every frozen
+input hash, reported the single expected train geometric-only boundary pair and zero validation
+differences, performed no training or gradient computation, and did not read test. All eight
+two-sample output files were produced. Their metric values are engineering diagnostics only and
+must not be interpreted as evidence of branch benefit.
+
+### Complete v6a materialization
+
+The complete server v6a run finished and saved all branch-error materializations. Frozen A's
+`incident_on` validation MAE on all 917 positive samples was `22.686666155323856`, agreeing with the
+prospectively required `22.686666155323852` to floating-point precision. The corresponding
+`incident_off` MAE was `23.575018080312375`.
+
+The common-triple aggregate all-cell MAEs also favored `incident_on`: validation incident
+`21.764078348179172` versus `22.53537939615877`, C1 `21.07278643726087` versus
+`21.83962609825824`, and C2 `20.981900671493552` versus `21.74491309274208`. This is not yet the
+prospective oracle/router decision, but it cautions against interpreting the existing branch as a
+purely accident-specific expert: paired positive report context also improved average prediction on
+the routine pseudo-event controls. v6b must now determine whether any report-time-identifiable
+event/node onset subset benefits from selective branch suppression while satisfying the frozen
+global and placebo gates.
+
+### Pre-v6b real-input feature-source correction
+
+Before running v6b, a real-path audit found that the complete positive manifest intentionally does
+not duplicate report freeway/direction fields. The first v6b implementation nevertheless attempted
+to read those columns for the 917-sample `incident_full` validation population. Unit tests used
+synthetic rows and had not exercised this real manifest schema; executing v6b would therefore have
+failed before producing an audit result.
+
+The frozen router already declared freeway and direction as report-time inputs, so dropping those
+features after seeing v6a aggregate errors would be an unjustified protocol change. Instead, v6b now
+derives the category from the nonzero `report_location_v1` distance support and the exact static
+sensor metadata used to create that context. The sensor CSV is bound by SHA-256
+`682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094`, and that hash must also appear
+in the positive package's frozen `context_manifest.json` source list.
+
+A full read-only check found exactly one freeway/direction category for every one of the 3,604 train
+and 917 validation report contexts. All 3,106 train and 618 validation common-triple categories agree
+with their frozen manifests, and both splits contain the same six categories: 4-E, 4-W, 24-E, 24-W,
+242-N, and 242-S. The v6b implementation now enforces these properties, and focused tests cover
+unique-category derivation and mixed-support rejection. This correction changes only how an already
+declared report-time feature is recovered from its authoritative inputs; no router feature, target,
+threshold, validation outcome, or v6b result was inspected or changed. The corrected v6b protocol
+SHA-256 is `dcee4932cb8adde46f3a27737f130c705514153f5a18b01a2706e677c10ef55d`.

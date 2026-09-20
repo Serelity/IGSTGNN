@@ -13,6 +13,12 @@
     "train": 3604,
     "val": 917
   },
+  "sensor_metadata": {
+    "sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+    "role": "derive_report_freeway_direction_from_nonzero_distance_support",
+    "required_unique_categories": ["4-E", "4-W", "24-E", "24-W", "242-N", "242-S"],
+    "matched_manifest_agreement_required": true
+  },
   "v6a_input": {
     "protocol_id": "contra_v8_incident_branch_materialize_v6a",
     "protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",

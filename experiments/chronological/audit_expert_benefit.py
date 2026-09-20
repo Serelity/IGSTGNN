@@ -11,7 +11,9 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from experiments.chronological.audit_matched_controls import read_csv, sha256, write_csv
+from experiments.chronological.audit_matched_controls import (
+    parse_direction, parse_freeway, read_csv, sha256, write_csv,
+)
 
 
 SPLITS = ('train', 'val')
@@ -33,6 +35,14 @@ def load_protocol(path):
         raise ValueError('v6b common-triple cohort changed')
     if protocol.get('expected_positive_samples') != {'train': 3604, 'val': 917}:
         raise ValueError('v6b full positive cohort changed')
+    sensor_metadata = protocol.get('sensor_metadata', {})
+    if sensor_metadata != {
+            'sha256': '682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094',
+            'role': 'derive_report_freeway_direction_from_nonzero_distance_support',
+            'required_unique_categories': [
+                '4-E', '4-W', '24-E', '24-W', '242-N', '242-S'],
+            'matched_manifest_agreement_required': True}:
+        raise ValueError('v6b sensor-metadata identity or role changed')
     estimand = protocol.get('estimand', {})
     if (estimand.get('activation_advantage') !=
             'absolute_error_off_minus_absolute_error_on' or
@@ -108,7 +118,7 @@ def verify_package(directory):
 
 
 def verify_inputs(data_dir, primary_dir, secondary_dir, materialized_dir,
-                  placebo_dir, protocol):
+                  placebo_dir, sensors_path, protocol):
     materialized_dir, placebo_dir = Path(materialized_dir), Path(placebo_dir)
     summary = json.loads((materialized_dir / 'summary.json').read_text(encoding='utf-8'))
     expected_v6a = protocol['v6a_input']
@@ -131,6 +141,12 @@ def verify_inputs(data_dir, primary_dir, secondary_dir, materialized_dir,
     package = verify_package(data_dir)
     if package != summary['inputs']['positive_package']:
         raise ValueError('Positive package differs from v6a materialization')
+    sensors_hash = sha256(sensors_path)
+    context_manifest = json.loads(
+        (Path(data_dir) / 'context_manifest.json').read_text(encoding='utf-8'))
+    if (sensors_hash != protocol['sensor_metadata']['sha256'] or
+            sensors_hash not in context_manifest.get('sources', {}).values()):
+        raise ValueError('Sensor metadata differs from the report-location context source')
     for directory, key in ((primary_dir, 'primary_controls'),
                            (secondary_dir, 'secondary_controls')):
         actual = {name: sha256(Path(directory) / name)
@@ -175,16 +191,47 @@ def history_features(raw, scaler):
     ])
 
 
+def ordered_sensor_categories(path, station_ids):
+    rows = read_csv(path)
+    by_id = {int(row['station_id']): row for row in rows}
+    if len(by_id) != len(station_ids) or set(by_id) != set(map(int, station_ids)):
+        raise ValueError('Sensor metadata and station axis differ')
+    freeways, directions = [], []
+    for station in station_ids:
+        row = by_id[int(station)]
+        freeways.append(str(parse_freeway(row['Fwy'])))
+        directions.append(parse_direction(row['Direction']))
+    return np.asarray(freeways), np.asarray(directions)
+
+
+def location_category(candidate, freeways, directions):
+    candidate = np.asarray(candidate)
+    freeways, directions = np.asarray(freeways), np.asarray(directions)
+    if (candidate.dtype != np.bool_ or candidate.ndim != 1 or
+            freeways.shape != candidate.shape or directions.shape != candidate.shape or
+            not candidate.any()):
+        raise ValueError('Invalid candidate support for location-category derivation')
+    categories = {
+        (str(freeway), str(direction))
+        for freeway, direction in zip(freeways[candidate], directions[candidate])
+    }
+    if len(categories) != 1:
+        raise ValueError('Nonzero distance support spans multiple freeway/direction categories')
+    return next(iter(categories))
+
+
 class FeatureSource:
     """Report-time-safe features in the exact v6a common-triple order."""
 
-    def __init__(self, data_dir, primary_dir, secondary_dir, split, expected_count,
-                 expected_positive_count, expected_nodes):
+    def __init__(self, data_dir, primary_dir, secondary_dir, sensors_path, split,
+                 expected_count, expected_positive_count, expected_nodes):
         self.split = split
         self.data_dir = Path(data_dir)
         self.scaler = json.loads((self.data_dir / 'scaler.json').read_text(encoding='utf-8'))
         self.station_ids = np.load(
             self.data_dir / 'station_ids.npy', allow_pickle=False)
+        self.sensor_freeways, self.sensor_directions = ordered_sensor_categories(
+            sensors_path, self.station_ids)
         self.positive_rows = read_csv(self.data_dir / f'{split}_manifest.csv')
         self.positive_positions = {
             int(row['sample_index']): index for index, row in enumerate(self.positive_rows)
@@ -193,6 +240,12 @@ class FeatureSource:
             self.data_dir / f'{split}_flow.npy', mmap_mode='r', allow_pickle=False)
         with np.load(self.data_dir / f'{split}_context.npz', allow_pickle=False) as stored:
             self.context = {key: stored[key].copy() for key in stored.files}
+        self.location_categories = {
+            location_category(
+                np.any(distances != 0, axis=-1),
+                self.sensor_freeways, self.sensor_directions)
+            for distances in self.context['distances']
+        }
         self.primary_rows = read_csv(Path(primary_dir) / f'{split}_control_manifest.csv')
         self.primary_by_sample = {
             int(row['positive_sample_index']): row for row in self.primary_rows
@@ -221,7 +274,7 @@ class FeatureSource:
             raw = self.positive_flow[positive_position]
             timestamp = positive['t0']
             incident_id = positive['incident_id']
-            freeway, direction = str(positive['freeway']), positive['direction']
+            manifest_category = None
         else:
             secondary = self.secondary_rows[position]
             sample = int(secondary['positive_sample_index'])
@@ -229,7 +282,7 @@ class FeatureSource:
             positive = self.positive_rows[positive_position]
             primary = self.primary_by_sample[sample]
             incident_id = secondary['incident_id']
-            freeway, direction = str(secondary['freeway']), secondary['direction']
+            manifest_category = (str(secondary['freeway']), secondary['direction'])
             if cohort == 'incident':
                 raw = self.positive_flow[positive_position]
                 timestamp = positive['t0']
@@ -245,6 +298,10 @@ class FeatureSource:
         candidate = np.any(distances != 0, axis=-1)
         if not candidate.any():
             raise ValueError('Common triple has no candidate nodes')
+        freeway, direction = location_category(
+            candidate, self.sensor_freeways, self.sensor_directions)
+        if manifest_category is not None and (freeway, direction) != manifest_category:
+            raise ValueError('Derived report location and matched manifest category differ')
         return {
             'sample': sample, 'incident_id': incident_id,
             'timestamp': timestamp, 'positive_t0': positive['t0'],
@@ -677,24 +734,32 @@ def gate_decision(validation, oracle, protocol):
 
 
 def audit(data_dir, primary_dir, secondary_dir, materialized_dir, placebo_dir,
-          protocol_path, output):
+          sensors_path, protocol_path, output):
     output = Path(output)
     if output.exists():
         raise FileExistsError('v6b output exists; preserve it and use a new directory')
     protocol = load_protocol(protocol_path)
     v6a_summary = verify_inputs(
-        data_dir, primary_dir, secondary_dir, materialized_dir, placebo_dir, protocol)
+        data_dir, primary_dir, secondary_dir, materialized_dir, placebo_dir,
+        sensors_path, protocol)
     high_values, high_threshold = load_high_impact(placebo_dir)
     high_impact = {key: value >= high_threshold for key, value in high_values.items()}
     sources = {
         split: FeatureSource(
-            data_dir, primary_dir, secondary_dir, split,
+            data_dir, primary_dir, secondary_dir, sensors_path, split,
             protocol['expected_common_triples'][split],
             protocol['expected_positive_samples'][split],
             protocol['expected_sensor_count'])
         for split in SPLITS
     }
     categories = category_schema(sources['train'])
+    required_categories = {
+        tuple(value.split('-', 1))
+        for value in protocol['sensor_metadata']['required_unique_categories']
+    }
+    for split, source in sources.items():
+        if source.location_categories != required_categories:
+            raise ValueError(f'{split} report-location category support changed')
     for split in SPLITS:
         samples = {int(row['positive_sample_index']) for row in sources[split].secondary_rows}
         if samples != {sample for current_split, sample in high_values if current_split == split}:
@@ -766,6 +831,7 @@ def audit(data_dir, primary_dir, secondary_dir, materialized_dir, placebo_dir,
         'v5c_label_used_as_router_input': False,
         'high_impact_train_q75_raw': high_threshold,
         'categorical_schema_fit_on_train': categories,
+        'report_location_category_source': protocol['sensor_metadata']['role'],
         'oracle_reported_as_model_performance': False,
         'oracle': oracle, 'validation_router': validation,
         'development_gate': decision,
@@ -784,6 +850,7 @@ def audit(data_dir, primary_dir, secondary_dir, materialized_dir, placebo_dir,
             'v5c_summary_sha256': sha256(Path(placebo_dir) / 'summary.json'),
             'v5c_triple_metrics_sha256': sha256(
                 Path(placebo_dir) / 'triple_metrics.csv'),
+            'sensors_sha256': sha256(sensors_path),
             'protocol_sha256': sha256(protocol_path), 'code_sha256': sha256(__file__),
         },
     }
@@ -811,12 +878,14 @@ def main():
     parser.add_argument('--secondary-control-dir', type=Path, required=True)
     parser.add_argument('--materialized-dir', type=Path, required=True)
     parser.add_argument('--placebo-dir', type=Path, required=True)
+    parser.add_argument('--sensors', type=Path, required=True)
     parser.add_argument('--protocol', type=Path, default=Path(__file__).with_name(
         'expert_benefit_audit_v6b.json'))
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     audit(args.data_dir, args.primary_control_dir, args.secondary_control_dir,
-          args.materialized_dir, args.placebo_dir, args.protocol, args.output)
+          args.materialized_dir, args.placebo_dir, args.sensors, args.protocol,
+          args.output)
 
 
 if __name__ == '__main__':

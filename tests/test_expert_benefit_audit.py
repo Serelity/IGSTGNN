@@ -9,7 +9,7 @@ import numpy as np
 
 from experiments.chronological.audit_expert_benefit import (
     aggregate_advantage, fit_weighted_ridge, gate_decision, load_protocol,
-    oracle_summary, predicted_gate_matrix, routed_error,
+    location_category, oracle_summary, predicted_gate_matrix, routed_error,
 )
 
 
@@ -29,6 +29,9 @@ class ProtocolTests(unittest.TestCase):
         self.assertTrue(protocol['information_boundary']['test_split_prohibited'])
         self.assertFalse(protocol['v5c_stratification_input'][
             'high_impact_label_is_router_input'])
+        self.assertEqual(
+            protocol['sensor_metadata']['sha256'],
+            '682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094')
 
     def test_protocol_rejects_post_result_threshold_weakening(self):
         protocol = json.loads(PROTOCOL.read_text(encoding='utf-8'))
@@ -76,6 +79,20 @@ class OracleTests(unittest.TestCase):
             arrays['candidate_mask'], gate, 'event_node')
         np.testing.assert_array_equal(routed[:, 6:], arrays['absolute_error_on'][:, 6:])
         np.testing.assert_array_equal(routed[:, :, 2], arrays['absolute_error_on'][:, :, 2])
+
+
+class LocationCategoryTests(unittest.TestCase):
+    def test_category_is_derived_from_unique_nonzero_distance_support(self):
+        category = location_category(
+            np.array([True, True, False]),
+            np.array(['4', '4', '24']), np.array(['E', 'E', 'W']))
+        self.assertEqual(category, ('4', 'E'))
+
+    def test_mixed_location_support_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'multiple freeway/direction'):
+            location_category(
+                np.array([True, True]),
+                np.array(['4', '24']), np.array(['E', 'W']))
 
 
 class RidgeTests(unittest.TestCase):
