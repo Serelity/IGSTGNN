@@ -372,3 +372,114 @@ that protocol must specify the prediction target on affected nodes, how the inci
 routine branches share parameters, how overlapping controls are sampled or weighted, paired and
 unmatched evaluation populations, and road/direction reporting for the weak SR4-E validation
 stratum. Test access remains prohibited.
+
+## 2026-09-20: Matched outcome audit before paired model development
+
+### Why the model refactor was paused
+
+The v3 controls make paired training technically possible, but they do not establish that the
+future incident/control difference is stable enough to justify a new incident-residual model. The
+v4 gate therefore examines outcomes only after assignment was frozen. It reads no test data or model
+prediction and cannot change, replace, or remove a match using Y.
+
+Protocol: `experiments/chronological/matched_outcome_audit_v4.json`.
+
+Auditor: `experiments/chronological/audit_matched_outcomes.py`.
+
+For each pair and time step, flow is first averaged over that event's affected nodes. The primary
+matched change contrast is then
+
+```text
+(incident_t - control_t) - mean_t=-20,-15,-10(incident_t - control_t)
+```
+
+and events, rather than sensor values, receive equal weight. H1-H6 and H7-H12 were frozen as early
+and late horizons. Main uncertainty uses 2,000 positive-incident ISO-week cluster-bootstrap draws.
+A deterministic outcome-blind sensitivity subset greedily excludes a pair whenever any of its 52
+positive/control source slots was already used on either side of an accepted pair. This is stricter
+than checking positive and control overlap separately.
+
+The primary phenomenon gate was frozen before the first Y audit: both train and validation must
+have an absolute H7-H12 contrast of at least 0.05 train standard deviations, week-block intervals
+must exclude zero, directions must agree, and the strict non-overlap subsets must agree in direction
+with at least 0.025 standard deviations. These thresholds are not relaxed after observing failure.
+The estimand is explicitly a matched observational contrast, not a causal treatment effect.
+
+### Implementation corrections
+
+The first local command invoked the file directly under Windows Conda and failed at import time
+because the repository package root was not on that interpreter's module path. No data was read and
+no output directory was created. The supported invocation is now
+`python -m experiments.chronological.audit_matched_outcomes`, which also avoids local/server path
+differences.
+
+Static review before reading outcomes corrected NumPy boolean indexing from a mixed advanced-index
+form to a two-stage `[sample][:, mask]` form so that time remains the first axis. It also passes the
+train standard deviation explicitly instead of reconstructing it from a possibly zero observed
+contrast.
+
+The first completed output, `v4_outcome_audit_01`, contained the frozen primary gate but omitted
+early-horizon intervals and the promised road/direction table. That reporting omission did not
+change any match or primary criterion. The final protocol adds those descriptive outputs and
+explicitly prohibits them from changing the primary gate. A later test-only correction isolated the
+cross-side overlap case by removing a redundant same-side overlap; it did not change production
+logic or the four CSV files. `v4_outcome_audit_04` is the final reference, and an independent
+`v4_outcome_audit_05` rerun is byte-identical for all five artifacts.
+
+Eleven v4 tests cover the information boundary, frozen horizons, non-overlap cross-side exclusion,
+cluster-bootstrap determinism and missing strata, and positive and negative gate cases. Together
+with v1-v3, 40/40 matched-control tests pass in the existing local Conda base environment. No
+environment or package was created or modified.
+
+The wider local discovery run executed 67 test entries: available non-PyTorch tests passed and 11
+Linux launch-script tests skipped as designed, but seven existing modules could not import because
+the Windows Conda base environment has no PyTorch and no Linux-only `resource` module. This is an
+environment limitation, not a full-suite pass. The complete repository regression remains a
+server-side gate in the existing Linux `igstgnn` Conda environment.
+
+### Reference result and failed primary gate
+
+| Split/population | Pairs | Pre pair MAE | H1-H6 pair MAE | H7-H12 pair MAE | H1-H6 change | H7-H12 change |
+|---|---:|---:|---:|---:|---:|---:|
+| Train/all matched | 3,519 | 25.735 | 30.934 | 29.151 | -1.810 | 0.163 |
+| Train/non-overlap | 638 | 23.479 | 28.226 | 26.903 | -2.002 | 0.827 |
+| Validation/all matched | 820 | 26.210 | 29.730 | 28.530 | -0.699 | 1.184 |
+| Validation/non-overlap | 154 | 23.469 | 27.110 | 26.241 | -4.478 | -2.423 |
+
+The all-matched H7-H12 changes are only 0.0010 and 0.0075 train standard deviations. Their 95%
+week-block intervals are `[-0.807, 1.111]` for train and `[-0.517, 2.831]` for validation. Both
+cross zero and both fall well below the predeclared 0.05 threshold. The non-overlap late direction
+also changes from positive in train to negative in validation. The primary phenomenon gate therefore
+fails and `paired_benchmark_ready` is false.
+
+There is a limited onset signal: train H1-H6 is -1.810 with interval `[-2.741, -0.968]`, while
+validation is -0.699 with interval `[-2.893, 1.053]`. Per-step trajectories show the clearest drop
+around the excluded latency slots and first four forecast horizons, followed by decay. However, the
+validation interval crosses zero, the magnitude is at most 0.0114 train standard deviations in the
+all-matched population, and road/direction signs are not stable across splits. This can motivate a
+future hypothesis but cannot replace the failed primary endpoint.
+
+Matched coverage remains 3,519/3,604 (97.64%) in train and 820/917 (89.42%) in validation. The
+unmatched population and weak validation SR4-E coverage remain outside this outcome estimand.
+
+Reference fingerprints are:
+
+- `pair_metrics.csv`: `3a451c9c1c7c8acf8e2513c95e957569fd00323904c0d5c37e6eb4d1ac463e19`
+- `trajectory.csv`: `8f62533d126655dde8355a9954de1cefe541995fe467a31dedeb295d3d7bd6d8`
+- `distance_bands.csv`: `b55450f2d5b05755663a12f0f779c0a696598d856aa0cfef911279c609d2ef0a`
+- `road_direction.csv`: `8ddcf13be1f4d63c92f0dcf9057c9bcf5090167fad4c832a73be904fa065d3b2`
+- `summary.json`: `fd53afeb54ba42f4c947ad7754f2b8c50529c77b31a6fce8806114c3d65f90be`
+
+### Decision and next falsification gate
+
+The failed average signed late effect does not prove that incident effects contain no predictable
+heterogeneity; positive and negative event-specific changes can average to zero. It does show that
+the current data do not support a stable population-wide late-flow shift, so the planned paired
+model refactor is not authorized by v4.
+
+The next evidence task is a control-control placebo constructed without Y: assign and materialize a
+second routine window for each eligible positive, then compare incident-control divergence with
+routine-routine divergence under the same horizons, masks, weighting, and overlap-aware uncertainty.
+Only excess divergence beyond that natural routine variability would justify testing whether event
+attributes predict heterogeneous residuals. Lowering the v4 threshold or redefining H7-H12 after
+seeing these results is prohibited.
