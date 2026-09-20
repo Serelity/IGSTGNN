@@ -1003,3 +1003,46 @@ PyTorch-dependent tests received syntax compilation locally and must run in the 
 `--check` mode that verifies every frozen input and the real checkpoint but produces an engineering-
 only status that v6b rejects. No v6a branch-error result was read while these protocols or gates were
 written, and no test split was accessed.
+
+## 2026-09-20: Server verification and frozen-input transfer correction
+
+The server ran all five `test_incident_branch_materialization.py` tests and all eight
+`test_expert_benefit_audit.py` tests successfully in the existing `igstgnn` Conda environment. This
+closes the local PyTorch test gap but does not constitute a v6a scientific result.
+
+A read-only search then established that the server did not contain the earlier v3 primary-control,
+v5b secondary-control, or v5c placebo-audit materializations. Those artifacts existed only in the
+local research workspace. Re-running their selection pipelines was rejected because it would add
+unnecessary recomputation and a new opportunity for cohort drift. The exact frozen local inputs were
+rechecked against the v6a/v6b protocol hashes and bundled without modification as
+`v6_frozen_inputs_20260920.tar.gz` (168 MiB displayed size; SHA-256
+`c634b9860a3ec096cd5fc6ef30a7fbe12870e0ff1c5e2aacf062c9d92ba40bc9`). The bundle contains
+`v3_materialized_01`, `v5b_second_materialized_01`, and `v5c_placebo_audit_01` only. It remains an
+external research artifact and must not be committed to Git. After upload, the archive hash and the
+v6a program's per-file frozen hashes must pass before the bounded engineering check is accepted.
+
+### Engineering-check failure and candidate-mask correction
+
+The first two server engineering checks stopped after successfully materializing the two-sample
+`train_incident_full` output. The saved traceback located the failure in an over-strict v6a input
+assertion: it required the report-location model support (`any(distances != 0)`) to equal the v3/v5b
+frozen affected-node mask. That equality had never been established by the earlier protocols. The
+model support is defined by the actual `report_location_v1` tensor, whereas the control mask is the
+same-freeway/direction geometric set with an inclusive 10-mile radius.
+
+A full read-only comparison of all common triples found exactly one discrepancy: training positive
+sample 1542, station 402510. The incident postmile is 0.249 and the sensor postmile is 10.249, so the
+node lies exactly +10 miles from the report. The inclusive geometric rule retains it, while the
+location feature's floor-subtracted Gaussian similarity is exactly zero there; all three model
+distance channels are consequently zero. The discrepancy affects one node reference in one of
+3,106 training triples. All 618 validation triples agree exactly, and no train or validation model-
+connected node lies outside the frozen geometric mask.
+
+The corrected v6a protocol keeps `distances != 0` as the candidate definition because that is the
+support actually seen by the frozen model. It now requires model-connected candidates to be a subset
+of the frozen geometric mask and freezes the sole geometric-only boundary pair by sample and station
+identity. Any additional frozen-only pair or any model-connected-outside-frozen pair is rejected.
+No oracle/router threshold, cohort, outcome, or model-error result was changed; the failure occurred
+before any matched-cohort model output was produced. The v6a protocol SHA-256 is now
+`a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710`, and v6b was rebound to this
+corrected prospective input identity.

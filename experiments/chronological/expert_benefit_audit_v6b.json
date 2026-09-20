@@ -15,7 +15,7 @@
   },
   "v6a_input": {
     "protocol_id": "contra_v8_incident_branch_materialize_v6a",
-    "protocol_sha256": "5f5026c91b30ba17cf316d1071ce00502cdd321d70c6eab2dce7f681645ac22a",
+    "protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",
     "status": "INCIDENT_BRANCH_MATERIALIZATION_COMPLETE"
   },
   "v5c_stratification_input": {

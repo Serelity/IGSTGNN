@@ -51,6 +51,24 @@ def load_protocol(path):
             pseudo.get('forecast_clock') != 'from each matched control candidate_t0' or
             pseudo.get('report_age_and_distances') != 'from the paired positive incident'):
         raise ValueError('v6a counterfactual construction changed')
+    compatibility = protocol.get('candidate_mask_compatibility', {})
+    expected_pairs = compatibility.get('expected_frozen_only_pairs', {})
+    if (compatibility.get('model_candidate_source') !=
+            'paired_positive_report_location_distances_nonzero' or
+            compatibility.get('frozen_control_mask_source') !=
+            'same_freeway_direction_within_inclusive_10_miles' or
+            compatibility.get('required_relationship') !=
+            'model_connected_is_subset_of_frozen_control_mask' or
+            expected_pairs != {
+                'train': [{
+                    'positive_sample_index': 1542,
+                    'station_id': 402510,
+                    'postmile_delta_miles': 10.0,
+                    'reason': 'positive_10_mile_boundary_has_zero_normalized_similarity',
+                }],
+                'val': [],
+            }):
+        raise ValueError('v6a candidate-mask compatibility changed')
     boundary = protocol.get('information_boundary', {})
     required = (
         'train_and_validation_only', 'test_split_prohibited', 'checkpoint_frozen',
@@ -121,7 +139,8 @@ class MatchedCounterfactualDataset(Dataset):
     """One common-triple cohort with pseudo-event inputs fixed before Y inspection."""
 
     def __init__(self, data_dir, primary_dir, secondary_dir, split, cohort,
-                 expected_count=None, expected_nodes=None, sample_limit=None):
+                 expected_count=None, expected_nodes=None, sample_limit=None,
+                 expected_frozen_only_pairs=None):
         if split not in SPLITS or cohort not in COHORTS:
             raise ValueError('Unknown split or matched cohort')
         self.split, self.cohort = split, cohort
@@ -160,15 +179,16 @@ class MatchedCounterfactualDataset(Dataset):
                 self.primary_masks.dtype != np.bool_ or
                 self.secondary_masks.dtype != np.bool_):
             raise ValueError('Matched-control arrays have inconsistent shapes or dtypes')
-        self._validate_rows()
+        self._validate_rows(expected_frozen_only_pairs or [])
         if sample_limit is not None:
             if not isinstance(sample_limit, int) or not 0 < sample_limit <= len(
                     self.secondary_rows):
                 raise ValueError('Sample limit must retain at least one common triple')
             self.secondary_rows = self.secondary_rows[:sample_limit]
 
-    def _validate_rows(self):
+    def _validate_rows(self, expected_frozen_only_pairs):
         seen = set()
+        frozen_only_pairs = []
         for position, row in enumerate(self.secondary_rows):
             sample = int(row['positive_sample_index'])
             if (int(row['control_index']) != position or sample in seen or
@@ -189,8 +209,27 @@ class MatchedCounterfactualDataset(Dataset):
             context_mask = np.any(
                 self.positive.context['distances'][self.positive_positions[sample]] != 0,
                 axis=-1)
-            if not np.array_equal(context_mask, self.primary_masks[primary_index]):
-                raise ValueError('Positive distances and frozen affected mask differ')
+            frozen_mask = self.primary_masks[primary_index]
+            outside = np.flatnonzero(context_mask & ~frozen_mask)
+            if outside.size:
+                raise ValueError(
+                    'Model-connected candidate lies outside the frozen affected mask')
+            for node_index in np.flatnonzero(frozen_mask & ~context_mask):
+                frozen_only_pairs.append({
+                    'positive_sample_index': sample,
+                    'station_id': int(self.station_ids[node_index]),
+                })
+        expected = [{
+            'positive_sample_index': int(item['positive_sample_index']),
+            'station_id': int(item['station_id']),
+        } for item in expected_frozen_only_pairs]
+        if frozen_only_pairs != expected:
+            raise ValueError('Frozen-only candidate-mask boundary cases changed')
+        self.candidate_mask_compatibility = {
+            'model_connected_outside_frozen_node_references': 0,
+            'frozen_only_node_references': len(frozen_only_pairs),
+            'frozen_only_pairs': frozen_only_pairs,
+        }
 
     def __len__(self):
         return len(self.secondary_rows)
@@ -400,7 +439,7 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, protocol_path,
     if actual_batch_size < 1:
         raise ValueError('Batch size must be positive')
     output.mkdir(parents=True, exist_ok=False)
-    results, output_files = {}, {}
+    results, output_files, mask_compatibility = {}, {}, {}
     for split in SPLITS:
         results[split] = {}
         full_dataset = FullPositiveDataset(
@@ -423,7 +462,13 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, protocol_path,
                 data_dir, primary_dir, secondary_dir, split, cohort,
                 expected_count=protocol['expected_common_triples'][split],
                 expected_nodes=protocol['expected_sensor_count'],
-                sample_limit=sample_limit)
+                sample_limit=sample_limit,
+                expected_frozen_only_pairs=protocol['candidate_mask_compatibility'][
+                    'expected_frozen_only_pairs'][split])
+            if split not in mask_compatibility:
+                mask_compatibility[split] = dataset.candidate_mask_compatibility
+            elif mask_compatibility[split] != dataset.candidate_mask_compatibility:
+                raise ValueError('Candidate-mask compatibility differs across cohorts')
             path = output / f'{split}_{cohort}_branch_errors.npz'
             results[split][cohort] = materialize_cohort(
                 model, dataset, actual_batch_size, device, path)
@@ -456,6 +501,7 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, protocol_path,
             'loaded_strictly': True,
         },
         'counterfactual_modes': protocol['counterfactual_modes'],
+        'candidate_mask_compatibility': mask_compatibility,
         'split_results': results,
         'inputs': {
             'positive_package': input_hashes[0],

@@ -58,6 +58,22 @@
       "candidate_mask": "from the paired positive incident"
     }
   },
+  "candidate_mask_compatibility": {
+    "model_candidate_source": "paired_positive_report_location_distances_nonzero",
+    "frozen_control_mask_source": "same_freeway_direction_within_inclusive_10_miles",
+    "required_relationship": "model_connected_is_subset_of_frozen_control_mask",
+    "expected_frozen_only_pairs": {
+      "train": [
+        {
+          "positive_sample_index": 1542,
+          "station_id": 402510,
+          "postmile_delta_miles": 10.0,
+          "reason": "positive_10_mile_boundary_has_zero_normalized_similarity"
+        }
+      ],
+      "val": []
+    }
+  },
   "window": {
     "steps": 26,
     "X_slice": [0, 12],

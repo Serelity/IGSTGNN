@@ -40,6 +40,14 @@ class ProtocolTests(unittest.TestCase):
         self.assertTrue(protocol['information_boundary']['test_split_prohibited'])
         self.assertTrue(protocol['information_boundary']['gradient_computation_prohibited'])
         self.assertEqual(protocol['output_schema']['cohorts'], list(COHORTS))
+        self.assertEqual(
+            protocol['candidate_mask_compatibility']['expected_frozen_only_pairs']['train'],
+            [{
+                'positive_sample_index': 1542,
+                'station_id': 402510,
+                'postmile_delta_miles': 10.0,
+                'reason': 'positive_10_mile_boundary_has_zero_normalized_similarity',
+            }])
 
     def test_protocol_rejects_control_clock_drift(self):
         protocol = json.loads(PROTOCOL.read_text(encoding='utf-8'))
@@ -53,6 +61,33 @@ class ProtocolTests(unittest.TestCase):
 
 
 class CounterfactualConstructionTests(unittest.TestCase):
+    @staticmethod
+    def validation_fixture(frozen_mask, distances):
+        dataset = MatchedCounterfactualDataset.__new__(MatchedCounterfactualDataset)
+        dataset.split = 'train'
+        dataset.station_ids = np.array([10, 20])
+        positive_row = {
+            'sample_index': '7', 'incident_id': 'incident-7', 'split': 'train',
+            't0': '2023-09-18T13:25:00',
+        }
+        primary_row = {
+            'positive_sample_index': '7', 'control_index': '0',
+            'incident_id': 'incident-7', 'split': 'train',
+            'positive_t0': '2023-09-18T13:25:00',
+        }
+        secondary_row = dict(primary_row)
+        dataset.positive = type('Positive', (), {
+            'rows': [positive_row],
+            'context': {'distances': np.asarray(distances, dtype=np.float32)[None]},
+        })()
+        dataset.positive_positions = {7: 0}
+        dataset.primary_rows = [primary_row]
+        dataset.primary_by_sample = {7: primary_row}
+        dataset.secondary_rows = [secondary_row]
+        dataset.primary_masks = np.asarray([frozen_mask], dtype=bool)
+        dataset.secondary_masks = np.asarray([frozen_mask], dtype=bool)
+        return dataset
+
     def test_forecast_clock_uses_candidate_timestamp(self):
         tod, dow = forecast_clock('2023-09-18T13:25:00')
         self.assertEqual(int(tod), 161)
@@ -103,6 +138,22 @@ class CounterfactualConstructionTests(unittest.TestCase):
         first_time = datetime.fromisoformat(primary_row['x_start'])
         self.assertAlmostEqual(item['x'][0, 0, 1],
                                (first_time.hour * 12 + first_time.minute // 5) / 288)
+
+    def test_known_frozen_only_boundary_is_accepted_but_not_a_model_candidate(self):
+        dataset = self.validation_fixture(
+            [True, True], [[1., 0., 0.], [0., 0., 0.]])
+        dataset._validate_rows([{'positive_sample_index': 7, 'station_id': 20}])
+        self.assertEqual(dataset.candidate_mask_compatibility, {
+            'model_connected_outside_frozen_node_references': 0,
+            'frozen_only_node_references': 1,
+            'frozen_only_pairs': [{'positive_sample_index': 7, 'station_id': 20}],
+        })
+
+    def test_model_candidate_outside_frozen_mask_is_rejected(self):
+        dataset = self.validation_fixture(
+            [True, False], [[1., 0., 0.], [0., 1., 0.]])
+        with self.assertRaisesRegex(ValueError, 'outside the frozen affected mask'):
+            dataset._validate_rows([])
 
 
 if __name__ == '__main__':
