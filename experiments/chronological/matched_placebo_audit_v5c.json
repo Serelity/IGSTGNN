@@ -1,0 +1,100 @@
+{
+  "protocol_id": "contra_v8_matched_placebo_audit_v5c",
+  "scope": "matched_incident_vs_routine_placebo_audit",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "positive_inputs": {
+    "summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "scaler.json": "abc1853df9ca35de9a42bc15ff3db67dff3978c7c028a0daa19eed027eb540ba",
+    "station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+    "train_flow.npy": "a3c961e9a10038f3d8be452868258021bbfa066ba59615ddd0aa913ad689c115",
+    "val_flow.npy": "bec3455d35f818f15ccd741246799fd09175ac52e3351d58f6789e00979a801d",
+    "train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+    "val_manifest.csv": "2dfd7c4462fe14e1232117717ab9f37141a97babf99020f14bcb2f3c142673b9"
+  },
+  "primary_control_inputs": {
+    "protocol_id": "contra_v8_matched_nonincident_materialize_v3",
+    "summary.json": "f7ef45ff7451fd7c80ad260380586cf09001f2260742dcf5bf3d17b018e8e498",
+    "train_control_flow.npy": "b6eafd55f5a605264f81a90f30d7f15d60c7386f2c439d0cf40f1dfa1b79dc09",
+    "train_affected_mask.npy": "d4eaf7f06d6de8ab4aa90b58cd25bf67b1e4055d8f897d5c24602214d1127464",
+    "train_control_manifest.csv": "cb48d8e00db29aa5e6baa3e3c26ea3ebdc2bbfcf1df70eb611b9565c84620d02",
+    "val_control_flow.npy": "7eab02eb3b1ea7efb4ec0899f3b3770ee6b38d1b1c4cfaf70d0d3415a180c15c",
+    "val_affected_mask.npy": "9825aa641974c5dda7e5ceb48a17212850f673831d98b77265727e318c1958f3",
+    "val_control_manifest.csv": "fa1d1f04ee20587c5526251f4d4b7a9f7e70aea3c54eafba326d7159f8832698",
+    "expected_shapes": {
+      "train": [3519, 26, 496],
+      "val": [820, 26, 496]
+    }
+  },
+  "secondary_control_inputs": {
+    "protocol_id": "contra_v8_second_matched_control_materialize_v5b",
+    "summary.json": "5705d9118d1b91d2e111ecebdffe35169990c3b19a15441eb43931603a15fb6f",
+    "train_second_control_flow.npy": "bca9e7a728a9449392b0bd1e000ff1863f0c73e8482feec740a497fface38bdf",
+    "train_second_affected_mask.npy": "4e37b57fc736cdebcea64cf3b4e039ccea37b895813efacebdba78ad6bd81f37",
+    "train_second_control_manifest.csv": "4236dc659e4ea9188c5263f689b45d1bb9fed9f60c1cd35e112550a5a30ef286",
+    "val_second_control_flow.npy": "c9a80fe907938b319578b67321976db228f839123ce8b5aaf50be557ed204585",
+    "val_second_affected_mask.npy": "c6a39971a15ed38c6e4d8ace07181128cbcbe36aaef37a80c71a473b2eb684fc",
+    "val_second_control_manifest.csv": "b1da9fc365dfd90462a0caebddeff00d879cc11f5b8006e97f3bd093b9521ac3",
+    "expected_shapes": {
+      "train": [3106, 26, 496],
+      "val": [618, 26, 496]
+    }
+  },
+  "window": {
+    "steps": 26,
+    "step_minutes": 5,
+    "first_relative_minute": -65,
+    "X_slice": [0, 12],
+    "excluded_latency_slice": [12, 14],
+    "Y_slice": [14, 26],
+    "baseline_slice": [9, 12],
+    "early_Y_slice": [14, 20],
+    "late_Y_slice": [20, 26]
+  },
+  "information_boundary": {
+    "both_control_assignments_frozen_before_outcome_audit": true,
+    "outcomes_may_not_change_matching_or_common_cohort": true,
+    "train_and_validation_only": true,
+    "test_split_prohibited": true,
+    "model_training_prohibited": true,
+    "model_predictions_prohibited": true
+  },
+  "estimand": {
+    "incident_divergence": "0.5*(mean_nodes(abs(I-C1))+mean_nodes(abs(I-C2)))",
+    "routine_divergence": "mean_nodes(abs(C1-C2))",
+    "baseline_adjustment": "subtract_each_divergence_series_own_mean_over_Hminus3_to_Hminus1",
+    "primary_quantity": "baseline_adjusted_incident_divergence_minus_baseline_adjusted_routine_divergence",
+    "event_equal_weighting": true,
+    "causal_effect_claimed": false
+  },
+  "uncertainty": {
+    "method": "positive_incident_iso_week_cluster_bootstrap",
+    "draws": 2000,
+    "confidence_level": 0.95,
+    "seed": 2025
+  },
+  "nonoverlap_sensitivity": {
+    "selection_order": "positive_t0_then_positive_sample_index",
+    "all_incident_primary_secondary_source_slots_share_one_exclusion_set": true,
+    "outcomes_used_for_selection": false,
+    "minimum_selected_triples": {
+      "train": 350,
+      "val": 80
+    }
+  },
+  "descriptive_outputs": {
+    "early_Y_block_interval_reported": true,
+    "road_direction_stratification_reported": true,
+    "descriptive_results_may_not_change_the_primary_gate": true
+  },
+  "placebo_gate": {
+    "primary_horizon": "late_H7_H12",
+    "minimum_late_excess_in_train_std": 0.05,
+    "minimum_nonoverlap_late_excess_in_train_std": 0.025,
+    "require_main_block_ci_lower_above_zero_in_both_splits": true,
+    "require_nonoverlap_positive_in_both_splits": true
+  },
+  "terminology": "Matched observational excess divergence above routine placebo variation; not a causal treatment effect"
+}

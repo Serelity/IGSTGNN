@@ -1,0 +1,51 @@
+{
+  "protocol_id": "contra_v8_second_matched_control_v5a",
+  "scope": "fixed_primary_x_only_secondary_assignment",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "primary_assignment_input": {
+    "protocol_id": "contra_v8_matched_nonincident_x_v2",
+    "summary_sha256": "59fa1532ce6845a8cb6e75085e02b2b1517b1b3bc6a961ade95031aedb7d5875",
+    "assignments_sha256": "de2c1b65e6601c3613239407f45cb0112ee6406ac2fbd41ab398200cf2c0a7bc",
+    "edge_scores_sha256": "17b14bac7db198b51888227b00598cc3f528bf29b99b2d8adde1fcd2f7d76d25",
+    "unmatched_sha256": "d9d548e9a36e748e9b0308c1158863d6bc50e1b393b3bcb13a042684855e45b1",
+    "expected_primary_pairs": {
+      "train": 3519,
+      "val": 820
+    }
+  },
+  "selection_boundary": {
+    "primary_assignment_immutable": true,
+    "secondary_selected_only_from_frozen_v2_edge_scores": true,
+    "all_primary_candidate_centers_excluded": true,
+    "forecast_Y_prohibited": true,
+    "test_split_prohibited": true,
+    "incident_description_prohibited": true,
+    "incident_type_prohibited": true,
+    "outcome_audit_results_prohibited": true
+  },
+  "secondary_assignment": {
+    "eligible_v2_edges_only": true,
+    "candidate_capacity_across_primary_and_secondary": 1,
+    "algorithm": "maximum_cardinality_preference_augmenting_path",
+    "global_cost_optimality_claimed": false,
+    "preference_order": [
+      "x_distance",
+      "missing_pattern_mismatch_fraction",
+      "absolute_day_distance",
+      "candidate_t0"
+    ]
+  },
+  "acceptance": {
+    "minimum_secondary_coverage_of_primary": {
+      "train": 0.85,
+      "val": 0.73
+    },
+    "minimum_road_direction_coverage": 0.60,
+    "maximum_absolute_feature_smd": 0.10,
+    "maximum_candidate_center_reuse_across_both_controls": 1
+  },
+  "terminology": "Second X-matched recorded-incident-free control for a frozen primary pair; not a causal counterfactual"
+}

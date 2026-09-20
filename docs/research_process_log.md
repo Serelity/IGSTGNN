@@ -483,3 +483,189 @@ routine-routine divergence under the same horizons, masks, weighting, and overla
 Only excess divergence beyond that natural routine variability would justify testing whether event
 attributes predict heterogeneous residuals. Lowering the v4 threshold or redefining H7-H12 after
 seeing these results is prohibited.
+
+## 2026-09-20: Frozen second routine-control assignment (v5a)
+
+### Why a second control is needed
+
+The v4 signed late contrast failed, but that failure cannot distinguish weak incident signal from
+ordinary day-to-day traffic variation between two history-matched windows. The next falsification
+gate therefore needs two routine windows for the same positive event. Their difference supplies a
+placebo level against which incident-versus-routine divergence can be compared before any model
+refactor is authorized.
+
+The original v2 primary assignment remains immutable. Protocol
+`experiments/chronological/second_matched_control_v5a.json` selects the second control only from the
+already frozen v2 `edge_scores.csv`. It reads no traffic array, future Y, test split, incident text,
+incident type, or v4 outcome. Every center already used by any primary control is excluded globally,
+and the remaining second-control centers have capacity one. The same maximum-cardinality preference
+augmenting-path algorithm is used; it maximizes assignment count but makes no global cost-optimality
+claim.
+
+Before assignment, the acceptance thresholds were frozen at 85% train coverage, 73% validation
+coverage, 60% minimum road/direction coverage, 0.10 maximum absolute feature SMD, and one maximum
+candidate-center use across both control sets. These thresholds may not be weakened after inspecting
+the assignment.
+
+### Reference assignment and limitations
+
+The reference output is
+`../论文学习/匹配常规窗口审计_20260919/v5a_second_assignment_01`; an independent rerun in
+`v5a_second_assignment_02` is byte-identical for all three files.
+
+| Split | Frozen primary pairs | Second controls | Coverage | No unused candidate | Capacity conflict |
+|---|---:|---:|---:|---:|---:|
+| Train | 3,519 | 3,106 | 88.26% | 361 | 52 |
+| Validation | 820 | 618 | 75.37% | 190 | 12 |
+
+The maximum absolute feature SMD is 0.0275, all primary and secondary centers together have maximum
+reuse one, and the median original v2 preference rank of a second control is two. First and second
+controls are never the same center and are separated by at least seven days.
+
+All frozen gates pass, but coverage is heterogeneous. Validation SR4-E retains only 187/291 primary
+pairs (64.26%) and SR4-W retains 221/309 (71.52%). The future placebo estimand therefore applies to
+the common three-window subset, not all v4 pairs, and must report road/direction strata rather than
+silently generalizing to the unmatched population.
+
+Eight v5a tests cover the information boundary, primary-center exclusion, strict CSV booleans,
+maximum-cardinality reassignment, ineligible-edge exclusion, capacity-conflict reporting, and
+preference-rank semantics. Together with v1-v4, 48/48 targeted tests pass locally. The full Linux
+repository regression remains a server-side gate in the existing `igstgnn` Conda environment.
+
+Reference fingerprints are:
+
+- `secondary_assignments.csv`: `82df0a4d9e43c6fac3220e7d828240db2d9746319a841cce95e6e83c870e7f97`
+- `unmatched_primary_pairs.csv`: `12f8fd33e6ab83aae53504b675f77b96aaf5434953c378659253111752a615b4`
+- `summary.json`: `2bb44e2c1f2a7952eeac0534f3be14f07b1eba33497b639f8a7f51fc884005bb`
+
+### Next gate
+
+v5b must materialize exactly 3,106 train and 618 validation second-control windows only after this
+assignment is frozen. It must reproduce every X score, preserve raw missing values, verify positive
+identity and affected masks, enforce chronological split isolation and source fingerprints, and
+report dependence across the complete incident/C1/C2 triples. Materialized Y may audit the frozen
+assignment but may never rank, replace, or remove a control.
+
+## 2026-09-20: Second routine-control materialization (v5b)
+
+Protocol `experiments/chronological/second_matched_control_materialize_v5b.json` and materializer
+`experiments/chronological/materialize_second_matched_controls.py` freeze the v5a output before
+reading future values. They also fingerprint the v3 primary-control manifests, so every output row
+must complete one unchanged incident/C1/C2 triple. The second-control files have an explicit
+`second_control` prefix and cannot overwrite v3 outputs.
+
+The first reference attempt was rejected before creating its output directory because the new
+three-way identity check compared integer freeway and node-count values constructed in memory with
+their CSV string representations. This was a representation error, not a data mismatch. The check
+now performs typed integer comparison, and a regression test covers mixed in-memory/CSV types; no
+identity field, assignment, or acceptance threshold was weakened.
+
+The final reference is
+`../论文学习/匹配常规窗口审计_20260919/v5b_second_materialized_01`. An independent `_02`
+rerun is byte-identical for all seven artifacts. Both runs verified all 4,960 cached source rows and
+all ten monthly fingerprints.
+
+| Split | Shape | Affected values valid | X-score max error | Strict three-window subset |
+|---|---|---:|---:|---:|
+| Train | 3106 x 26 x 496 | 100% | 0 | 389 (12.52%) |
+| Validation | 618 x 26 x 496 | 100% | 0 | 90 (14.56%) |
+
+No triple has internal source-slot overlap, no primary and secondary control use the same center,
+and no train source slot appears in validation. Across different triples, however, dependence is
+substantial: 3,105/3,106 train triples and 618/618 validation triples share at least one source slot
+with another triple. Maximum combined source-slot reuse is 19 in train and 13 in validation. The
+v5c main analysis must therefore retain positive-incident ISO-week block bootstrap uncertainty; the
+389/90 strictly non-overlapping triples are a smaller direction-and-magnitude sensitivity analysis.
+
+Eight v5b tests cover the frozen information boundary, rank normalization, triple identity,
+numeric CSV/in-memory identity equivalence, duplicate-center rejection, combined overlap, and
+strict-subset semantics. All 56 v1-v5b targeted tests pass in the actual local Conda base Python.
+An earlier shell probe had resolved `conda` to an empty Windows system placeholder and returned no
+test output despite status zero; this was not counted as evidence. The recorded 56-test pass used
+`D:\\anaconda\\set\\python.exe`. Server regression must still use the existing `igstgnn` Conda
+environment.
+
+Reference fingerprints are:
+
+- `train_second_control_flow.npy`: `bca9e7a728a9449392b0bd1e000ff1863f0c73e8482feec740a497fface38bdf`
+- `train_second_affected_mask.npy`: `4e37b57fc736cdebcea64cf3b4e039ccea37b895813efacebdba78ad6bd81f37`
+- `train_second_control_manifest.csv`: `4236dc659e4ea9188c5263f689b45d1bb9fed9f60c1cd35e112550a5a30ef286`
+- `val_second_control_flow.npy`: `c9a80fe907938b319578b67321976db228f839123ce8b5aaf50be557ed204585`
+- `val_second_affected_mask.npy`: `c6a39971a15ed38c6e4d8ace07181128cbcbe36aaef37a80c71a473b2eb684fc`
+- `val_second_control_manifest.csv`: `b1da9fc365dfd90462a0caebddeff00d879cc11f5b8006e97f3bd093b9521ac3`
+- `summary.json`: `5705d9118d1b91d2e111ecebdffe35169990c3b19a15441eb43931603a15fb6f`
+
+### Frozen v5c decision before outcome inspection
+
+For each event and step, v5c will compare symmetric incident divergence
+`0.5 * (mean_nodes(|I-C1|) + mean_nodes(|I-C2|))` with routine placebo divergence
+`mean_nodes(|C1-C2|)`. Each series first subtracts its own H-3:H-1 baseline mean. The primary
+quantity is their event-level difference, with events weighted equally.
+
+The late H7-H12 endpoint remains primary to avoid switching to the v4 onset pattern after seeing
+it. Both train and validation must have late excess divergence of at least 0.05 train standard
+deviations and positive-week block-bootstrap lower bounds above zero. Their strict three-window
+non-overlap subsets must contain at least 350 and 80 events respectively and show positive late
+excess of at least 0.025 train standard deviations. Early H1-H6 and road/direction estimates are
+required descriptive outputs but cannot change this gate. No threshold may change after v5c reads Y.
+
+## 2026-09-20: Incident-versus-routine placebo audit (v5c)
+
+### Implementation and pre-outcome corrections
+
+Protocol `experiments/chronological/matched_placebo_audit_v5c.json` and auditor
+`experiments/chronological/audit_matched_placebo.py` implement the frozen common-triple estimand.
+They verify every positive, primary-control, and secondary-control array, mask, manifest, summary,
+and protocol fingerprint before extraction. Test access and model training remain prohibited.
+
+Before the first outcome audit, one synthetic unit-test expectation was corrected from 7 to 6: in
+that fixture, symmetric incident divergence rises from 2 to 8, so its baseline-adjusted value is 6.
+The implementation formula did not change. The subsequent input-only preflight also caught a
+manually transcribed primary validation-flow SHA256 missing one zero. It was corrected to the
+already recorded v3 fingerprint before any v5c outcome was read. These corrections changed neither
+the estimand nor a gate.
+
+Eleven v5c tests cover the information boundary, immutable late primary horizon, outcome-blind
+strict subset, symmetric divergence formula, separate baseline adjustments, invalid-value
+rejection, shared three-side exclusion set, and positive/negative gate cases. All 67 v1-v5c
+targeted tests pass in the actual local Conda base Python.
+
+### Reference result and failed gate
+
+The final reference is
+`../论文学习/匹配常规窗口审计_20260919/v5c_placebo_audit_01`; independent `_02` output is
+byte-identical for all four artifacts.
+
+| Split/population | Triples | Early incident change | Early routine change | Early excess | Late incident change | Late routine change | Late excess |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Train/all common | 3,106 | 3.629 | 1.239 | 2.390 | 2.080 | 1.754 | 0.327 |
+| Train/strict | 389 | 4.471 | 1.995 | 2.476 | 3.124 | 2.244 | 0.880 |
+| Validation/all common | 618 | 2.632 | 1.149 | 1.484 | 1.536 | 1.697 | -0.161 |
+| Validation/strict | 90 | 3.231 | 0.646 | 2.585 | 3.273 | 2.218 | 1.055 |
+
+The all-common late excess is only 0.0021 train standard deviations in train and -0.0010 in
+validation. Its week-block intervals are `[-0.209, 0.864]` and `[-1.545, 1.249]`; both cross zero.
+The strict subsets are positive but only 0.0056 and 0.0067 train standard deviations, far below the
+frozen 0.025 sensitivity threshold, and their intervals also cross zero. Thus the magnitude and
+main interval checks fail in both splits, and `heterogeneity_screening_ready=false`.
+
+The descriptive early excess is more coherent: 2.390 in train (95% interval `[1.846, 3.000]`) and
+1.484 in validation (`[0.061, 3.112]`), equal to 0.0151 and 0.0094 train standard deviations. All
+12 road/direction early point estimates are positive. This is evidence of a weak immediate-onset
+divergence, not evidence for the frozen late endpoint: all 12 road/direction late intervals cross
+zero and late signs vary. The early result must not be used to relabel the failed v5c gate as a pass.
+
+Reference fingerprints are:
+
+- `triple_metrics.csv`: `192b44e82223a9f943f3b47a5141ea1d19819b7cd0d0c75b0c234d372dcb5bc5`
+- `trajectory.csv`: `8478a4b471233d378f63075c1bd8a646c4397d675787c91594723000eec2d4bc`
+- `road_direction.csv`: `665511d8c23d0c1b9cac9ddf5e327988730228af65dc0a7fcb4fe883a642314d`
+- `summary.json`: `c443581334f1f0aebece82c910a38c78b1dc29a22565d081f6a583298875571a`
+
+### Decision after v5c
+
+The current matched evidence does not authorize the proposed sustained incident-residual or
+event-attribute heterogeneity model. Rebuilding that module now would optimize against a phenomenon
+that is not distinguishable from routine variability at H7-H12. The defensible next decision is
+between an explicitly new, prospectively evaluated short-onset objective and a data/label-quality
+study; it is not to weaken the v5c gate, inspect test, or silently return to the rejected late model.
