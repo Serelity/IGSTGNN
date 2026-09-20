@@ -280,3 +280,95 @@ future observations as supervised targets, but it may not rerank or replace cont
 future values. It must verify source fingerprints, split confinement, byte-stable reconstruction,
 window overlap diagnostics, and exact preservation of the frozen assignment before any
 incident-versus-routine model objective is designed.
+
+## 2026-09-20: Post-assignment full-window control materialization
+
+### Question and information boundary
+
+The v2 assignment fixed which routine timestamp belongs to each positive using history X only. Model
+development still requires the selected controls' complete raw windows, including future
+observations that can serve as supervised targets. Reading those future values before freezing the
+assignment would leak outcome information into control selection. The v3 gate therefore materializes
+Y only from the immutable v2 assignment and forbids Y from ranking, replacing, or removing controls.
+
+Protocol: `experiments/chronological/matched_nonincident_materialize_v3.json`.
+
+Materializer: `experiments/chronological/materialize_matched_controls.py`.
+
+Each output row contains the same 26 five-minute slots and 496-station axis as the positive package:
+X at indices 0:12, the excluded latency slots at 12:14, and Y at 14:26. Values remain raw float32;
+there is no filling, clipping, or normalization. Each row also has a 496-element affected-node mask
+derived from the positive incident's freeway, direction, postmile, and frozen 10-postmile radius.
+The full graph is retained as model context, but the recorded-incident-free guarantee applies only
+to the affected-node mask. Remote recorded incidents and unreported incidents may remain elsewhere
+in the graph, so these windows are not graph-wide negatives or causal counterfactuals.
+
+### Implementation corrections and tests
+
+The first implementation review found that a non-finite score disagreement could place `Infinity`
+in a rejection diagnostic and prevent strict JSON output. Non-finite disagreements are now counted
+separately, leaving every pass and rejection summary valid under `allow_nan=False`.
+
+Ten v3 tests cover immutable assignment-before-Y semantics, chronological boundary rejection,
+26-slot X/gap/Y alignment, cross-month extraction plans, positive identity and affected-mask
+construction, duplicate candidate rejection, within-split overlap reporting, exact X-score
+reproduction, and raw negative/non-finite diagnostics. Together with the v1 and v2 tests, 29/29
+targeted tests pass in the existing local Conda environment. No dependency or environment was
+changed.
+
+### Reference execution
+
+The reference output is
+`../论文学习/匹配常规窗口审计_20260919/v3_materialized_01`. An independent rerun in
+`v3_materialized_02` produced byte-identical arrays, masks, manifests, and summary. Both runs read
+and verified all 4,960 cached source rows (521,109,504 bytes) and all ten monthly manifest
+fingerprints.
+
+| Split | Control windows | Array shape | Affected values valid | Assignment-score max error |
+|---|---:|---|---:|---:|
+| train | 3,519 | 3519 x 26 x 496 | 100% | 0 |
+| validation | 820 | 820 x 26 x 496 | 100% | 0 |
+
+All full-graph X, latency, and Y values are finite and nonnegative. Recomputing the v2 distance,
+overlap, missing-pattern, and six history-feature values from the materialized arrays reproduces all
+4,339 frozen assignment rows exactly. Candidate timestamp reuse remains one, and train/validation
+source-slot overlap is zero.
+
+Reference output fingerprints are:
+
+- `train_control_flow.npy`: `b6eafd55f5a605264f81a90f30d7f15d60c7386f2c439d0cf40f1dfa1b79dc09`
+- `train_affected_mask.npy`: `d4eaf7f06d6de8ab4aa90b58cd25bf67b1e4055d8f897d5c24602214d1127464`
+- `train_control_manifest.csv`: `cb48d8e00db29aa5e6baa3e3c26ea3ebdc2bbfcf1df70eb611b9565c84620d02`
+- `val_control_flow.npy`: `7eab02eb3b1ea7efb4ec0899f3b3770ee6b38d1b1c4cfaf70d0d3415a180c15c`
+- `val_affected_mask.npy`: `9825aa641974c5dda7e5ceb48a17212850f673831d98b77265727e318c1958f3`
+- `val_control_manifest.csv`: `fa1d1f04ee20587c5526251f4d4b7a9f7e70aea3c54eafba326d7159f8832698`
+- `summary.json`: `f7ef45ff7451fd7c80ad260380586cf09001f2260742dcf5bf3d17b018e8e498`
+
+The server-transfer artifact contains only the final `_01` directory:
+`Contra_Costa_v8_matched_controls_v3_20260920.tar.gz`, 94,594,834 bytes, SHA256
+`7247e80b2332487dc2f767f870172edade0f8846ed8621df2e21780af213bee8`.
+
+### New overlap evidence and correction to the analysis plan
+
+Unique candidate centers do not imply independent 130-minute windows. In train, 3,258/3,519
+controls (92.58%) share at least one five-minute source timestamp with another control; 21,899 of
+38,075 unique source timestamps are reused and the maximum timestamp reuse is 15. In validation,
+746/820 controls (90.98%) share a timestamp; 4,932 of 9,377 timestamps are reused and the maximum
+reuse is 12.
+
+This is not train-validation leakage because their source-slot intersection is empty, and it does
+not invalidate the materialization. It does invalidate treating all matched windows as independent
+replicates when estimating uncertainty. The earlier plan to proceed directly from unique centers to
+ordinary sample-level confidence intervals is therefore corrected. Main results must use
+time-blocked or overlap-cluster-aware uncertainty, and a non-overlapping control subset must be a
+sensitivity analysis. Training may use all matched controls, but overlapping windows require an
+explicit weighting or sampling decision rather than being silently counted as independent evidence.
+
+### Decision and next gate
+
+The v3 materialization gate passes. The next gate is no longer data discovery; it is a frozen model
+and evaluation protocol for incident-versus-routine separation. Before implementing a new module,
+that protocol must specify the prediction target on affected nodes, how the incident-present and
+routine branches share parameters, how overlapping controls are sampled or weighted, paired and
+unmatched evaluation populations, and road/direction reporting for the weak SR4-E validation
+stratum. Test access remains prohibited.
