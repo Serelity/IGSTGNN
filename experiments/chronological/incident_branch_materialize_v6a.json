@@ -1,0 +1,93 @@
+{
+  "protocol_id": "contra_v8_incident_branch_materialize_v6a",
+  "scope": "frozen_A_incident_branch_counterfactual_materialization",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_triples": {
+    "train": 3106,
+    "val": 618
+  },
+  "expected_positive_samples": {
+    "train": 3604,
+    "val": 917
+  },
+  "positive_package": {
+    "summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "context_manifest_sha256": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f"
+  },
+  "primary_control_inputs": {
+    "protocol_id": "contra_v8_matched_nonincident_materialize_v3",
+    "summary.json": "f7ef45ff7451fd7c80ad260380586cf09001f2260742dcf5bf3d17b018e8e498",
+    "train_control_flow.npy": "b6eafd55f5a605264f81a90f30d7f15d60c7386f2c439d0cf40f1dfa1b79dc09",
+    "train_affected_mask.npy": "d4eaf7f06d6de8ab4aa90b58cd25bf67b1e4055d8f897d5c24602214d1127464",
+    "train_control_manifest.csv": "cb48d8e00db29aa5e6baa3e3c26ea3ebdc2bbfcf1df70eb611b9565c84620d02",
+    "val_control_flow.npy": "7eab02eb3b1ea7efb4ec0899f3b3770ee6b38d1b1c4cfaf70d0d3415a180c15c",
+    "val_affected_mask.npy": "9825aa641974c5dda7e5ceb48a17212850f673831d98b77265727e318c1958f3",
+    "val_control_manifest.csv": "fa1d1f04ee20587c5526251f4d4b7a9f7e70aea3c54eafba326d7159f8832698"
+  },
+  "secondary_control_inputs": {
+    "protocol_id": "contra_v8_second_matched_control_materialize_v5b",
+    "summary.json": "5705d9118d1b91d2e111ecebdffe35169990c3b19a15441eb43931603a15fb6f",
+    "train_second_control_flow.npy": "bca9e7a728a9449392b0bd1e000ff1863f0c73e8482feec740a497fface38bdf",
+    "train_second_affected_mask.npy": "4e37b57fc736cdebcea64cf3b4e039ccea37b895813efacebdba78ad6bd81f37",
+    "train_second_control_manifest.csv": "4236dc659e4ea9188c5263f689b45d1bb9fed9f60c1cd35e112550a5a30ef286",
+    "val_second_control_flow.npy": "c9a80fe907938b319578b67321976db228f839123ce8b5aaf50be557ed204585",
+    "val_second_affected_mask.npy": "c6a39971a15ed38c6e4d8ace07181128cbcbe36aaef37a80c71a473b2eb684fc",
+    "val_second_control_manifest.csv": "b1da9fc365dfd90462a0caebddeff00d879cc11f5b8006e97f3bd093b9521ac3"
+  },
+  "checkpoint": {
+    "variant": "fixed",
+    "seed": 2025,
+    "best_epoch": 99,
+    "best_validation_mae": 22.686666155323852,
+    "reproduction_absolute_tolerance": 0.00001,
+    "parameters": 443645,
+    "best_model_sha256": "b0c712ad9c00007417ccc6ea6268f373852d04063efba2d15d3f49f5497b8e13",
+    "state_format": "plain_state_dict"
+  },
+  "counterfactual_modes": {
+    "incident_on": "frozen fixed-A checkpoint with report_location_v1 incident input",
+    "incident_off": "same checkpoint and traffic X with incident_data=None",
+    "published_A_anchor": "incident_on for positive incident windows",
+    "control_pseudo_event": {
+      "traffic_X_and_Y": "from each matched control window",
+      "forecast_clock": "from each matched control candidate_t0",
+      "report_age_and_distances": "from the paired positive incident",
+      "candidate_mask": "from the paired positive incident"
+    }
+  },
+  "window": {
+    "steps": 26,
+    "X_slice": [0, 12],
+    "Y_slice": [14, 26],
+    "early_horizons": [0, 6],
+    "late_horizons": [6, 12]
+  },
+  "batch_size": 48,
+  "information_boundary": {
+    "train_and_validation_only": true,
+    "test_split_prohibited": true,
+    "checkpoint_frozen": true,
+    "gradient_computation_prohibited": true,
+    "optimizer_step_prohibited": true,
+    "common_triples_may_not_change": true,
+    "future_Y_may_not_change_inputs_or_cohort": true
+  },
+  "output_schema": {
+    "cohorts": ["incident", "primary_control", "secondary_control"],
+    "full_positive_cohort": "incident_full",
+    "stored_arrays": [
+      "absolute_error_on",
+      "absolute_error_off",
+      "valid",
+      "candidate_mask",
+      "positive_sample_index"
+    ],
+    "error_dtype": "float32",
+    "valid_dtype": "bool",
+    "candidate_mask_dtype": "bool"
+  },
+  "interpretation": "A same-weight branch intervention audit; not a trained expert comparison and not model-performance evidence"
+}

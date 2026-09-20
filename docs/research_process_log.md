@@ -669,3 +669,337 @@ event-attribute heterogeneity model. Rebuilding that module now would optimize a
 that is not distinguishable from routine variability at H7-H12. The defensible next decision is
 between an explicitly new, prospectively evaluated short-onset objective and a data/label-quality
 study; it is not to weaken the v5c gate, inspect test, or silently return to the rejected late model.
+
+## 2026-09-20: Short-onset module benefit review before implementation
+
+### Question and correction to the working interpretation
+
+The v5c descriptive result raises a narrower question: whether the positive H1-H6 excess divergence
+justifies a dedicated short-onset incident module. It does not by itself. The 2.390 train and 1.484
+validation values measure an observed incident-versus-routine flow divergence, not an error made by
+fixed A and not a residual predictable from report-time-safe incident fields. Treating those values
+as attainable MAE reductions would conflate phenomenon detection, predictability, and metric gain.
+
+### Project-specific benefit scale
+
+Fixed A has validation all-node MAE 22.6867. Its associated-node H1-H6 MAE is 22.2654. Associated
+nodes account for 36,343/454,832 = 7.9904% of valid cells at each horizon, so an onset-only module
+restricted to associated nodes and H1-H6 can directly alter only 3.9952% of the all-node evaluation
+cells. Under the optimistic assumption that every other prediction is unchanged:
+
+| Relative reduction inside associated-node H1-H6 | All-node MAE reduction | Relative all-node reduction |
+|---:|---:|---:|
+| 5% | 0.0445 | 0.196% |
+| 10% | 0.0890 | 0.392% |
+| 20% | 0.1779 | 0.784% |
+| 100% (unattainable zero-error support ceiling) | 0.8896 | 3.921% |
+
+This is metric-support arithmetic, not an oracle estimate of learnable incident signal. It shows why
+a useful accident-subset improvement can produce only a small all-node change. It is already the
+favorable setting in which every released example is incident-centered; an operational benchmark
+containing mostly routine windows would dilute the aggregate gain further.
+
+The existing single-seed negative controls reinforce the need for a predictive-information audit.
+Fixed A is slightly better on all nodes than `traffic_only` (22.6867 versus 22.7363, 0.218% relative)
+and `shuffled_incident` (22.6867 versus 22.7301, 0.191% relative). However, on the exact target subset,
+associated-node H1-H6, A is worse than `traffic_only` (22.2654 versus 22.2030) and only slightly better
+than shuffled incidents (22.2654 versus 22.2920). These are selection-time point estimates from three
+separately trained models, without multiple-seed or paired-cluster uncertainty, and therefore do not
+establish either benefit or harm. They do show that a larger response head is not yet justified.
+
+### External evidence checked on 2026-09-20
+
+- Xie et al., *Deep Graph Convolutional Networks for Incident-Driven Traffic Speed Prediction*,
+  CIKM 2020, DOI `10.1145/3340531.3411873`, reports that its incident component changes MAPE from
+  12.22% to 11.02% in SFO and 18.63% to 17.21% in NYC. The model first separates critical from
+  non-critical incidents and evaluates 5, 10, and 15 minute prediction steps on about four weeks of
+  data. This supports short-horizon, high-impact selection, not an unrestricted all-incident module.
+- Xu et al., *Urban short-term traffic speed prediction with complicated information fusion on
+  accidents*, Expert Systems with Applications 2023, DOI `10.1016/j.eswa.2023.119887`, reports only
+  about 0.2% overall accuracy improvement and attributes the small gain to few accidents and weak
+  accident impacts. This is the closest published magnitude warning for the present question.
+- Yu et al., *Deep Learning: A Generic Approach for Extreme Condition Traffic Forecasting*, SDM
+  2017, DOI `10.1137/1.9781611974973.87`, reports much larger gains for a mixture model specialized to
+  extreme-condition prediction. Those conditional-task gains cannot be interpreted as gains on an
+  all-window, all-node metric.
+- Fukuda et al., *Short-term prediction of traffic flow under incident conditions using graph
+  convolutional recurrent neural network and traffic simulation*, IET ITS 2020, DOI
+  `10.1049/iet-its.2019.0778`, uses simulation to address the shortage of real incident examples.
+  This identifies sample scarcity, rather than response-head capacity alone, as a central bottleneck.
+- Yu et al., *FUSE-Traffic: Fusion of Unstructured and Structured Data for Event-aware Traffic
+  Forecasting*, SIGSPATIAL 2025, DOI `10.1145/3748636.3762776`, arXiv `2510.16053`, reports roughly
+  2%-6% average MAE improvement over its D2STGNN traffic backbone across three datasets. It combines
+  accidents, weather, crime, and public-event semantics retrieved by an LLM, so it is an upper-scope
+  comparator rather than evidence that the current accident fields warrant an LLM module.
+- Sun et al., *Dual-level Graph Transformer for Spatiotemporal Incident Impact Prediction*, arXiv
+  `2303.12238`, reports that simple incident classification, position encoding, and incident-metadata
+  embedding attempts did not work. Its successful task predicts incident duration and spatial extent,
+  emphasizing affected-sensor identification rather than generic metadata fusion.
+
+This was a focused AI-assisted literature and full-text check, not a systematic review or
+meta-analysis. Citation counts were used only for discovery; claims above were checked against the
+paper text where lawful full text was available. The Fukuda claim is limited to its indexed abstract.
+
+### Decision and prospective gate
+
+The short-onset direction is worth one inexpensive benefit audit, but not immediate development of a
+large module. The next artifact must use the saved A predictions and the common incident/C1/C2
+triples, remain train/validation-only, and report all-node, associated-node H1-H6, associated-node
+H7-H12, high-impact-event, and routine-control errors. A post-hoc constrained oracle may modify only
+associated nodes at H1-H6; it is an upper-bound diagnostic and must never be reported as model
+performance. A report-time-safe shallow probe must then test whether incident fields predict the
+direction and magnitude of A's onset residual, with grouped validation by event/day and no target
+information in its inputs.
+
+Before outcome inspection, the implementation protocol should freeze these development rules:
+
+- constrained-oracle all-node improvement below 0.3%: do not build an onset module;
+- oracle improvement from 0.3% to 1.0%: permit only a small gated residual expert;
+- oracle improvement above 1.0% with a stable validation interval: permit a formal module study;
+- regardless of the oracle, the shallow report-time-safe probe must improve associated-node H1-H6,
+  must not materially harm routine C1/C2 windows or H7-H12, and must survive multiple seeds and
+  event/day-clustered uncertainty before architecture expansion.
+
+If authorized, the defensible architecture is a high-impact event gate, an affected-node gate, a
+fixed H1-H6 onset support that decays to zero for H7-H12, and a small residual head regularized back
+to the traffic baseline for low-impact events. The research contribution would be selective onset
+adaptation with matched routine-placebo evidence, not simply adding another attention block. Test
+access remains prohibited throughout this development decision.
+
+## 2026-09-20: Literature position for a baseline-anchored selective incident expert
+
+### Proposed claim and necessary terminology correction
+
+The proposed intuition is valid: preserve fixed A as the general predictor and invoke an incident
+specialist only where it is expected to help. A conventional mixture of experts does not, however,
+guarantee that global performance will not deteriorate. Jointly trained experts and a soft router can
+change every prediction, route normal samples incorrectly, and reduce an average loss while harming
+important strata. The intended design is therefore more precisely a **baseline-anchored selective
+incident expert**, related to residual MoE and learning-to-defer, rather than a symmetric MoE.
+
+The frozen fixed-A checkpoint should be the baseline expert. A new expert predicts only a residual:
+
+`prediction = prediction_A + event_gate * node_gate * onset_mask * residual`.
+
+`onset_mask` is exactly zero at H7-H12 and the spatial gate is exactly zero outside the report-time
+candidate exposure set. The event and node gates must fall back to zero when confidence is
+insufficient. This construction can guarantee exact equality with A where the hard masks or fallback
+gate are zero, and exact equality at initialization. It cannot mathematically guarantee lower error
+on unseen samples wherever the expert is active. That broader statement requires prospective
+non-inferiority evidence, not architecture wording.
+
+### Focused literature search and findings
+
+Searches on 2026-09-20 used OpenAlex, Crossref, arXiv, and a bounded Semantic Scholar request for
+combinations of traffic forecasting/prediction, incident/extreme/event, mixture of experts, gating,
+fallback, learning to defer, and negative transfer. Citation counts below are OpenAlex counts on that
+date. Accessible arXiv full text was checked for CP-MoE and TFMoE. ACM PDF candidates returned
+Cloudflare HTML rather than PDF, and the new Elsevier DE-GAM full text was not accessible; no access
+control was bypassed.
+
+- Coric, Wang, and Vucetic, *Traffic speed forecasting by mixture of experts*, IEEE ITSC 2011,
+  DOI `10.1109/ITSC.2011.6083118` (1 citation), already separates free-flow and congested regimes
+  with two linear experts and a decision-tree gate. Regime-specialized traffic experts are therefore
+  longstanding rather than novel.
+- Yu et al., *Deep Learning: A Generic Approach for Extreme Condition Traffic Forecasting*, SDM
+  2017, DOI `10.1137/1.9781611974973.87` (423 citations), uses a Mixture Deep LSTM to jointly model
+  normal traffic and post-accident patterns. A normal/accident expert split is direct prior art.
+- Li et al., *ST-MoE: Spatio-Temporal Mixture-of-Experts for Debiasing in Traffic Prediction*, CIKM
+  2023, DOI `10.1145/3583780.3615068` (18 citations), is a plug-in that routes road-segment patterns
+  to specialized subnetworks to reduce uneven spatial error and improve overall accuracy. It does
+  not preserve a frozen baseline or establish incident-versus-routine effects.
+- Li, Magli, and Francini, *To be Conservative or to be Aggressive? A Risk-Adaptive Mixture of
+  Experts for Mobile Traffic Forecasting*, ICC 2023, DOI `10.1109/ICC45041.2023.10279534`, routes
+  between conservative and aggressive experts when a peak trend is detected. Although its domain is
+  cellular traffic, it is prior art for a risk-adaptive rare-peak router.
+- Jiang et al., *Interpretable Cascading Mixture-of-Experts for Urban Traffic Congestion Prediction*,
+  KDD 2024, DOI `10.1145/3637528.3671507` (21 citations), combines sparse graph experts with trend
+  and periodic experts using learned confidence weights. It empirically improves congested and
+  non-congested cases, but all components are jointly optimized and its reported robustness is not a
+  frozen-baseline non-degradation guarantee.
+- Lee and Park, *Continual Traffic Forecasting via Mixture of Experts*, arXiv `2406.03140` (1
+  citation), protects earlier traffic knowledge under an evolving sensor network through clustered
+  experts, consolidation, and replay. It addresses catastrophic forgetting rather than incident
+  onset, but demonstrates that preserving a base capability requires explicit training constraints,
+  not merely adding experts.
+- Iqra et al., *DE-GAM: A dual-encoder graph-attention mixture-of-experts framework for post-crash
+  traffic speed forecasting during freeway all-lane-closure incidents*, Transportation Research Part
+  C 2026, DOI `10.1016/j.trc.2026.105784` (0 citations), is a direct title-level collision with an
+  accident-specific graph MoE. Its inaccessible full text prevents claims about its router or
+  controls, but the existence and scope are verified from Crossref, OpenAlex, and Semantic Scholar.
+- Cui et al., *TransMoE: Multimodal traffic prediction with large language model and mixture of
+  experts*, Transportation Research Part C 2026, DOI `10.1016/j.trc.2026.106018` (0 citations),
+  combines heterogeneous urban context with MoE. It further removes novelty from generic
+  multimodal-MoE fusion, although its grid-wise task and data differ from the current study.
+- Madras, Pitassi, and Zemel, *Predict Responsibly: Improving Fairness and Accuracy by Learning to
+  Defer*, arXiv `1711.06664`, and Mozannar and Sontag, *Consistent Estimators for Learning to Defer
+  to an Expert*, arXiv `2006.01862`, establish the broader idea of learning when one predictor should
+  pass to another. Fallback routing is not a new general ML concept.
+
+### Novelty assessment
+
+“Use MoE for accidents” is not sufficiently novel for AAAI, KDD, or Transportation Research Part C:
+the normal/accident split dates to 2017 and DE-GAM now directly combines crash forecasting, graph
+attention, and MoE. “Freeze a baseline and add a gate” is also insufficient by itself because
+learning-to-defer and safe/negative-transfer research already cover that general principle.
+
+A potentially defensible contribution remains in the combination of four properties not found
+together in the checked traffic papers:
+
+1. **Placebo-identified routing target:** matched incident/C1/C2 windows define whether an event has
+   excess short-onset impact beyond routine traffic, rather than routing on congestion appearance.
+2. **Three-axis selective support:** event impact, genuinely responsive node, and H1-H6 onset gates
+   jointly determine where the specialist may intervene.
+3. **Baseline-anchored non-inferiority:** fixed A is preserved exactly outside the intervention support,
+   and training/calibration explicitly constrain all-node, routine-control, non-candidate-node, and
+   H7-H12 regret relative to A.
+4. **Falsifiable evaluation:** gains must appear on high-impact incidents and responsive nodes while
+   paired day-cluster intervals demonstrate no material harm on the protected populations.
+
+For a Transportation Research venue, this may be a meaningful incident-forecasting contribution if
+DE-GAM is compared directly and the matched-control/affected-node evidence is strong. For AAAI or
+KDD, it likely needs a general rare-event selective-forecasting formulation, multiple cities or event
+types, and evidence that the routing principle transfers beyond one incident dataset.
+
+### Meaning of “protect global performance”
+
+Three levels must not be conflated:
+
+- **Structural preservation:** frozen A and exact zero gates make predictions identical to A outside
+  the allowed support. This is a true implementation guarantee.
+- **Development non-inferiority:** on untouched validation, the paired upper confidence bound of
+  `MAE_new - MAE_A` must be at or below a prospectively frozen margin for all nodes and each protected
+  stratum. This is statistical evidence, not a universal guarantee.
+- **Unseen-test generalization:** no router can guarantee lower error for every future accident from
+  finite observational data. The honest claim is calibrated selective improvement with measured
+  fallback risk.
+
+The next pre-model gate should therefore estimate oracle expert advantage and train a shallow
+report-time-safe advantage router. It should predict whether the specialist will beat A, not merely
+whether an incident exists. Only if that router separates positive from negative regret on validation
+should a neural residual expert be implemented. C1/C2 outcomes and post-event labels remain offline
+training/evaluation evidence and are prohibited at inference; test access remains prohibited.
+
+## 2026-09-20: Frozen v6a/v6b branch-benefit protocol before outcome inspection
+
+### Correction: what the available counterfactual can and cannot establish
+
+The planned same-checkpoint comparison required a terminology correction before implementation.
+Fixed A is not a traffic-only backbone waiting for an incident expert: its published inference path
+already enables ICSF/TIID when `incident_data` is supplied. Consequently, comparing the same fixed-A
+checkpoint with and without `incident_data` does **not** estimate the benefit of a new expert over A.
+It estimates the value of the existing incident branch and whether selectively suppressing that
+branch can reduce A's errors. The two modes are now named `incident_on` and `incident_off`; positive
+`absolute_error_off - absolute_error_on` means activation helps. Published fixed A remains the
+`incident_on` anchor on positive incident windows.
+
+This distinction also changes the interpretation of matched controls. C1/C2 are routine outcome
+placebos to which the positive report's age and spatial exposure are applied synthetically. Their
+traffic X/Y and forecast clock come from the control window. They test whether branch activation
+would help or harm a routine-looking outcome under the paired report context. They are not actual
+no-report production inputs and are not causal counterfactual outcomes.
+
+### v6a: same-weight branch-error materialization
+
+`incident_branch_materialize_v6a.json` freezes the following before any new model-error outcome is
+read:
+
+- fixed A, seed 2025, best epoch 99, plain state-dict SHA-256
+  `b0c712ad9c00007417ccc6ea6268f373852d04063efba2d15d3f49f5497b8e13`;
+- the v5c common-triple cohort of 3,106 train and 618 validation incidents;
+- the complete positive incident cohort of 3,604 train and 917 validation samples, retained as a
+  separate population for the global validation gate;
+- three modes per split: positive incident, primary control C1, and secondary control C2;
+- for each control, its own X/Y and candidate-t0 clock, but the paired positive incident's report age,
+  distances, and candidate-node mask;
+- one strictly loaded checkpoint for both `incident_on` and `incident_off`, no gradients, no
+  optimizer, train/validation only, and no test access.
+
+The materializer stores float32 per-cell absolute errors for both modes, the target-valid mask, the
+candidate mask, and the positive sample identity for the three matched cohorts and the separate full
+positive cohort. It also reports branch prediction differences on all nodes, candidate H1-H6,
+candidate H7-H12, and noncandidate nodes. The latter is important because the current ICSF modifies
+history before dynamic-graph construction, so the existing incident path must not be assumed to be
+spatially local merely because TIID masks its context projection.
+
+The materialized errors are sufficient for every declared v6b estimand while avoiding a larger and
+unnecessary duplicate of predictions and targets. They do not authorize training and are not a model
+comparison result.
+
+### v6b: oracle ceilings and report-time-safe routing
+
+`expert_benefit_audit_v6b.json` freezes three post-hoc oracle levels over candidate nodes and H1-H6:
+
+1. event oracle: one on/off decision for all candidate onset cells in an event;
+2. event-node oracle: one decision per event and candidate node, shared across H1-H6;
+3. cell oracle: one decision per event/node/horizon cell.
+
+All hybrid outputs remain exactly fixed-A `incident_on` outside candidate-node H1-H6. The cell oracle
+is the loosest unattainable ceiling. Event-node is the primary development-tier oracle because it is
+the closest of the three to the proposed event/node/horizon support. None may be reported as model
+performance.
+
+Two fixed weighted-ridge routers are fit on train and evaluated on validation: event and event-node.
+The primary router is event-node. Train rows combine the incident, C1, and C2 cohorts with equal total
+weight per event/cohort. Alpha is 10 and the activation threshold is exactly zero; validation cannot
+tune either. Inputs are report age, cyclical forecast clock, candidate count, distance summaries,
+pre-t0 history mean/last/trend/dispersion/valid fraction, and train-fitted freeway/direction one-hot
+encodings. The event-node router additionally receives that node's distances and history state.
+Forecast Y, C1/C2 outcome at inference, v5c early-excess labels, test, final duration, and post-event
+fields are prohibited.
+
+High-impact evaluation uses `early_excess_divergence >= train q75` from the already frozen v5c
+triple table. The threshold is computed from train only and transferred unchanged to validation. The
+label is used only to report a stratum and is never part of router features. Uncertainty is a 2,000-
+draw positive-incident ISO-week cluster bootstrap at 95% confidence.
+
+### Prospective decision rules
+
+The previously recorded oracle tiers remain unchanged and now refer to the **complete 917-sample
+validation incident cohort's** event-node oracle all-node improvement relative to fixed A. The first
+implementation draft would have applied this gate only to the 618 common triples; that was corrected
+before execution because a matched-subset result cannot establish full-validation non-inferiority:
+
+- below 0.3%: stop this frozen branch-routing direction;
+- 0.3% to below 1.0%: at most a small baseline-anchored branch-router study may proceed;
+- at least 1.0%: a formal selective branch-routing study may proceed only if the router gate also
+  passes.
+
+Here "stop" applies only to routing between the frozen `incident_on` and `incident_off` candidates.
+This oracle is not an upper bound on an arbitrary future learned residual. A distinct residual expert
+would require a separately frozen signed-residual probe protocol; it cannot be authorized or rejected
+by relabeling the present branch-toggle results.
+
+The primary event-node router's global and onset conditions use all 917 validation incidents. Its
+high-impact condition and C1/C2 placebo conditions necessarily use the 618 common matched incidents.
+It must satisfy every condition below:
+
+- the lower confidence bound of all-node improvement is no worse than a 0.1% fixed-A MAE margin;
+- the lower confidence bound of candidate-node H1-H6 improvement is above zero;
+- high-impact validation incidents have positive point improvement in candidate-node H1-H6;
+- its switch-off fraction is between 5% and 95%, excluding trivial always-on/off behavior;
+- candidate H7-H12 and all noncandidate predictions are exactly fixed A by construction;
+- for each of C1 and C2, the upper confidence bound of candidate H1-H6 harm relative to
+  `incident_off` is at most 0.5% of that control's off-mode MAE.
+
+Failure of the router gate prohibits development of this branch-routing design even if an oracle is
+large. Passing it authorizes only another train/validation branch-router stage; it does not authorize
+test access, establish a learned residual expert, or support an unseen-incident no-degradation
+guarantee.
+
+### Implemented artifacts and engineering status
+
+The implementation adds:
+
+- `experiments/chronological/incident_branch_materialize_v6a.json`;
+- `experiments/chronological/materialize_incident_branch.py`;
+- `experiments/chronological/expert_benefit_audit_v6b.json`;
+- `experiments/chronological/audit_expert_benefit.py`;
+- focused protocol, counterfactual-construction, oracle, hard-support, and weighted-ridge tests.
+
+The v6b pure-NumPy tests passed locally. The local WSL Python does not contain PyTorch, so v6a's
+PyTorch-dependent tests received syntax compilation locally and must run in the existing server
+`igstgnn` Conda environment before scientific materialization. The v6a CLI includes a two-triple
+`--check` mode that verifies every frozen input and the real checkpoint but produces an engineering-
+only status that v6b rejects. No v6a branch-error result was read while these protocols or gates were
+written, and no test split was accessed.

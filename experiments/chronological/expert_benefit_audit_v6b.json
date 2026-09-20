@@ -1,0 +1,108 @@
+{
+  "protocol_id": "contra_v8_expert_benefit_audit_v6b",
+  "scope": "baseline_anchored_incident_branch_oracle_and_router_audit",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_triples": {
+    "train": 3106,
+    "val": 618
+  },
+  "expected_positive_samples": {
+    "train": 3604,
+    "val": 917
+  },
+  "v6a_input": {
+    "protocol_id": "contra_v8_incident_branch_materialize_v6a",
+    "protocol_sha256": "5f5026c91b30ba17cf316d1071ce00502cdd321d70c6eab2dce7f681645ac22a",
+    "status": "INCIDENT_BRANCH_MATERIALIZATION_COMPLETE"
+  },
+  "v5c_stratification_input": {
+    "protocol_id": "contra_v8_matched_placebo_audit_v5c",
+    "summary_sha256": "c443581334f1f0aebece82c910a38c78b1dc29a22565d081f6a583298875571a",
+    "triple_metrics_sha256": "192b44e82223a9f943f3b47a5141ea1d19819b7cd0d0c75b0c234d372dcb5bc5",
+    "high_impact_definition": "early_excess_divergence_at_or_above_train_q75",
+    "high_impact_label_is_router_input": false
+  },
+  "estimand": {
+    "activation_advantage": "absolute_error_off_minus_absolute_error_on",
+    "positive_value_means": "incident_on_has_lower_absolute_error",
+    "published_A_anchor": "incident_on",
+    "selective_action": "choose_incident_off_only_within_candidate_nodes_H1_H6_when_predicted_activation_advantage_is_negative",
+    "protected_prediction": "incident_on",
+    "causal_effect_claimed": false
+  },
+  "support": {
+    "candidate_source": "paired_positive_report_location_distances_nonzero",
+    "active_horizons_zero_based_half_open": [0, 6],
+    "protected_horizons_zero_based_half_open": [6, 12],
+    "protected_noncandidate_nodes": true
+  },
+  "oracle": {
+    "levels": ["event", "event_node", "cell"],
+    "primary_level_for_development_tier": "event_node",
+    "primary_population_for_development_tier": "full_positive_validation",
+    "all_node_relative_improvement_percent": {
+      "stop_below": 0.3,
+      "small_router_below": 1.0,
+      "formal_study_at_or_above": 1.0
+    },
+    "reported_as_model_performance": false
+  },
+  "router": {
+    "family": "weighted_ridge_regression",
+    "levels": ["event", "event_node"],
+    "primary_level": "event_node",
+    "ridge_alpha": 10.0,
+    "activation_threshold": 0.0,
+    "training_cohorts": ["incident", "primary_control", "secondary_control"],
+    "row_weighting": "equal_event_cohort_weight",
+    "continuous_features": [
+      "report_age_minutes",
+      "forecast_tod_sin_cos",
+      "forecast_dow_sin_cos",
+      "candidate_count",
+      "distance_summaries",
+      "pre_t0_history_mean_last_trend_dispersion_valid_fraction"
+    ],
+    "categorical_features": ["freeway", "direction"],
+    "event_node_additions": ["node_distances", "node_history_state"],
+    "forbidden_inputs": [
+      "forecast_Y",
+      "v5c_early_excess_label",
+      "C1_or_C2_outcome_at_inference",
+      "test_split",
+      "final_incident_duration",
+      "post_event_fields"
+    ]
+  },
+  "uncertainty": {
+    "method": "positive_incident_iso_week_cluster_bootstrap",
+    "draws": 2000,
+    "confidence_level": 0.95,
+    "seed": 2025
+  },
+  "development_gate": {
+    "primary_router": "event_node",
+    "global_population": "full_positive_validation",
+    "high_impact_population": "common_matched_validation",
+    "maximum_global_harm_fraction_of_A_mae": 0.001,
+    "require_candidate_H1_H6_improvement_ci_lower_above_zero": true,
+    "require_high_impact_candidate_H1_H6_point_improvement": true,
+    "maximum_each_control_H1_H6_harm_fraction_of_off_mae": 0.005,
+    "minimum_switch_off_fraction": 0.05,
+    "maximum_switch_off_fraction": 0.95,
+    "require_exact_A_equality_outside_support": true
+  },
+  "information_boundary": {
+    "train_and_validation_only": true,
+    "test_split_prohibited": true,
+    "frozen_A_not_updated": true,
+    "neural_expert_training_prohibited": true,
+    "v6a_cohort_may_not_change": true,
+    "validation_may_not_tune_features_alpha_or_threshold": true,
+    "v5c_label_used_only_for_evaluation_stratification": true
+  },
+  "interpretation": "Post-hoc oracle ceilings and a train-to-validation shallow branch router; not a new residual expert and not test evidence"
+}
