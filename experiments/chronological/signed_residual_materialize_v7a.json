@@ -1,0 +1,72 @@
+{
+  "protocol_id": "contra_v8_signed_residual_materialize_v7a",
+  "scope": "frozen_A_incident_on_signed_residual_materialization",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_triples": {
+    "train": 3106,
+    "val": 618
+  },
+  "expected_positive_samples": {
+    "train": 3604,
+    "val": 917
+  },
+  "base_input_contract": {
+    "protocol_id": "contra_v8_incident_branch_materialize_v6a",
+    "protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710"
+  },
+  "checkpoint": {
+    "variant": "fixed",
+    "seed": 2025,
+    "best_epoch": 99,
+    "best_validation_mae": 22.686666155323852,
+    "reproduction_absolute_tolerance": 0.00001,
+    "parameters": 443645,
+    "best_model_sha256": "b0c712ad9c00007417ccc6ea6268f373852d04063efba2d15d3f49f5497b8e13",
+    "state_format": "plain_state_dict"
+  },
+  "inference": {
+    "mode": "incident_on",
+    "signed_residual_definition": "target_minus_frozen_A_prediction",
+    "baseline_prediction_available_at_inference": true,
+    "gradient_computation_prohibited": true,
+    "optimizer_step_prohibited": true
+  },
+  "support": {
+    "candidate_source": "paired_positive_report_location_distances_nonzero",
+    "stored_horizons_zero_based_half_open": [0, 6],
+    "downstream_correction_support": "candidate_nodes_H1_H6_only",
+    "protected_horizons_zero_based_half_open": [6, 12],
+    "protected_noncandidate_nodes": true
+  },
+  "output_schema": {
+    "cohorts": ["incident", "primary_control", "secondary_control"],
+    "full_positive_cohort": "incident_full",
+    "stored_arrays": [
+      "signed_residual",
+      "baseline_prediction",
+      "valid",
+      "candidate_mask",
+      "positive_sample_index",
+      "baseline_all_absolute_sum",
+      "baseline_all_valid_count"
+    ],
+    "early_array_shape": "samples_by_6_by_496_by_1",
+    "float_dtype": "float32",
+    "sum_dtype": "float64",
+    "count_dtype": "int64"
+  },
+  "batch_size": 48,
+  "information_boundary": {
+    "train_and_validation_only": true,
+    "test_split_prohibited": true,
+    "checkpoint_frozen": true,
+    "model_training_prohibited": true,
+    "common_triples_may_not_change": true,
+    "future_Y_may_not_change_inputs_or_cohort": true,
+    "future_Y_used_only_to_form_signed_residual": true
+  },
+  "interpretation": "Signed residual evidence for a separately constrained additive expert; not trained expert performance and not authorization to access test"
+}

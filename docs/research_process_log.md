@@ -1094,3 +1094,109 @@ unique-category derivation and mixed-support rejection. This correction changes 
 declared report-time feature is recovered from its authoritative inputs; no router feature, target,
 threshold, validation outcome, or v6b result was inspected or changed. The corrected v6b protocol
 SHA-256 is `dcee4932cb8adde46f3a27737f130c705514153f5a18b01a2706e677c10ef55d`.
+
+### Complete v6b result: stop frozen branch routing
+
+The server completed v6b with status `EXPERT_BENEFIT_AUDIT_COMPLETE`. The primary full-validation
+event-node oracle reduced all-node MAE from `22.686666155368588` to `22.651013880744088`, an absolute
+gain of `0.035652274624499825` or `0.1571507879577231%`. This is below the prospectively frozen
+`0.3%` stop threshold, so the declared decision is
+`STOP_BRANCH_ROUTER_ORACLE_BELOW_0_3_PERCENT`. The threshold must not be weakened after observing the
+result.
+
+The oracle hierarchy explains where the apparent opportunity resides:
+
+| Oracle | Full-validation all-node gain | Candidate H1-H6 gain |
+| --- | ---: | ---: |
+| Event | 0.0663% | 1.6913% |
+| Event-node | 0.1572% | 4.0079% |
+| Cell | 0.3109% | 7.9295% |
+
+The unattainable cell oracle only barely exceeds 0.3% globally and uses future outcome error for each
+node/horizon cell. It does not authorize development. The much smaller event and event-node ceilings
+show that branch-toggle advantage is not stable enough at deployable decision granularity and is
+strongly diluted because the protected candidate H1-H6 support is only a small part of the all-node
+forecast.
+
+The train-fitted event-node ridge router switched the branch off for 11.66% of full-validation
+candidate nodes, satisfying the nontrivial-switch requirement, but its prediction/target correlation
+was only `0.0391`. It changed all-node MAE from `22.686666155368588` to `22.687755684519857` and
+candidate H1-H6 MAE from `22.265446060962013` to `22.292716936945336`. The corresponding paired
+bootstrap improvement intervals were entirely negative: `[-0.0022703, -0.0000942]` globally and
+`[-0.0485227, -0.0056633]` on candidate H1-H6. On the 138 validation high-impact events, candidate
+H1-H6 MAE also worsened by `0.0133035`.
+
+The frozen router checks passed global non-inferiority, switch fraction, exact preservation of H7-H12
+and noncandidate outputs, and the C2 routine bound. They failed all three checks that matter for a
+positive selective-routing claim: candidate H1-H6 improvement, high-impact point improvement, and
+the C1 routine harm bound. For C1, the candidate H1-H6 harm-versus-off upper confidence bound was
+`0.1292631`, exceeding the frozen allowance of `0.0867965` (0.5% of off-mode MAE). The router gate is
+therefore false independently of the oracle-tier stop.
+
+This result rejects selective suppression of the existing frozen A incident branch under the v6b
+support and report-time feature set. It does not reject a separately learned baseline-anchored signed
+residual expert: the on/off pair spans only two already-fixed predictions, so its oracle cannot bound
+a new residual function. Any residual direction must start with a separately frozen train/validation
+signed-residual probe, retain exact zero correction outside candidate H1-H6, and establish an
+event/node-granularity validation ceiling before neural expert development. No test data may be read.
+
+## 2026-09-20: Prospective v7 signed-residual feasibility protocol
+
+### Why v7 is a distinct question
+
+v6b showed that selecting between the two existing fixed-A inference branches has too little global
+ceiling and no validated report-time router. The next experiment therefore does not weaken the v6b
+gate or rename branch routing. It asks a different, narrower question: after freezing A's
+`incident_on` prediction, is there a learnable signed correction on the small, physically supported
+accident-onset region? The signed target is `observed flow - frozen-A prediction`; the corrected
+forecast is `frozen-A prediction + correction`.
+
+This design protects the user's primary requirement, no global regression, structurally rather than
+through a soft loss alone. The correction is exactly zero for all noncandidate nodes and for H7-H12.
+Only report-location candidate nodes at H1-H6 may change. The complete 917-event validation cohort is
+the primary global population; the 618 matched events are used for high-impact and C1/C2 routine
+checks. Test remains prohibited.
+
+### Frozen v7a materialization
+
+v7a strictly reloads the fixed-A checkpoint and the unchanged v6a cohorts and hashes. It performs
+incident-on inference only, with no gradients or optimizer steps. For train and validation it stores
+H1-H6 signed residuals, A predictions, valid masks, candidate masks, positive-sample identities, and
+per-event full-horizon A absolute-error totals. The latter allow v7b to reconstruct exact global MAE
+while changing only local support. A two-sample `--check` is engineering-only and cannot be accepted
+by v7b as scientific input.
+
+### Frozen v7b oracle and shallow probe
+
+Three prospectively declared correction granularities are evaluated: one median correction per
+event, per event-node, and per event-node in two fixed phases (H1-H3 and H4-H6). Medians are the MAE-
+optimal constants for these families but use future outcomes, so they are opportunity diagnostics,
+not model performance and not upper bounds for arbitrary neural experts. The event-node-phase family
+is primary. Its all-node full-validation oracle tier is frozen before results: below 0.3% stops this
+constrained residual direction; 0.3% to below 1.0% permits at most a small baseline-anchored study;
+at least 1.0% may permit neural residual-expert development only if the shallow probe gate also
+passes.
+
+The report-time shallow probe is weighted ridge with alpha 10. Incident training targets are the
+train-event median signed residuals at the declared granularity. C1 and C2 training targets are fixed
+at exactly zero. Their training-row support is derived only from candidate nodes and the two declared
+phases; neither control residuals nor future-validity masks may affect fitting. Rows sum to equal
+weight per event and, because cohort counts are equal, per cohort. Prediction clipping is the
+train-incident absolute-target q99 and may not be tuned on validation. Frozen-A early predictions are
+allowed features because they are available at inference. Validation predictions cover every
+candidate node and predeclared phase independently of future target validity; missing future values
+may affect only which cells enter evaluation metrics, never whether the probe emits a correction.
+
+The primary event-node-phase probe must pass every prospective condition: positive global point
+improvement; global 95% cluster-bootstrap lower bound no worse than 0.1% of A MAE; positive
+candidate-H1-H6 lower bound; positive high-impact point improvement; no more than 0.5% A-relative
+candidate-H1-H6 harm on each of C1 and C2; at least 5% nonzero correction on valid support; and exact
+A equality outside support. Passing authorizes only subsequent train/validation development. It does
+not authorize test access or establish a neural MoE result.
+
+Before any v7 result was inspected, code review corrected two potential information-boundary bugs:
+NumPy advanced indexing could reorder event/node axes, and the first draft used control/validation
+future-validity masks to decide whether a prediction row existed. Shape-safe indexing and fixed
+candidate/phase prediction coverage now have focused regression tests. The frozen v7a protocol
+SHA-256 is `c3d547679b9c6c97ad29720578ddc46a2460d7e9ba336114c59aba429ac03541`; the frozen v7b
+protocol SHA-256 is `3413cf4a8360f9376e93ef72a51bb32b0be79b52cce74555ce5ce85a5d17d1de`.
