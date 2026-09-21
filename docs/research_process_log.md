@@ -1200,3 +1200,77 @@ future-validity masks to decide whether a prediction row existed. Shape-safe ind
 candidate/phase prediction coverage now have focused regression tests. The frozen v7a protocol
 SHA-256 is `c3d547679b9c6c97ad29720578ddc46a2460d7e9ba336114c59aba429ac03541`; the frozen v7b
 protocol SHA-256 is `3413cf4a8360f9376e93ef72a51bb32b0be79b52cce74555ce5ce85a5d17d1de`.
+
+### Complete v7a materialization and v7b result
+
+The complete server v7a run finished at Git commit `31d4e8a` with status
+`SIGNED_RESIDUAL_MATERIALIZATION_COMPLETE`. It strictly reproduced the full fixed-A validation MAE
+as `22.686666155368588`, differing from the frozen `22.686666155323852` only at floating-point
+precision. It materialized all 3,604/917 full-positive train/validation events and all 3,106/618
+common matched events, performed no model training or gradient computation, and did not read test.
+
+v7b then completed with status `SIGNED_RESIDUAL_PROBE_COMPLETE`. The prospectively primary
+event-node-phase oracle found a large outcome-conditioned opportunity: full-validation all-node MAE
+fell from `22.686666155368588` to `22.257157808813364`, a `1.893219%` relative improvement, while
+candidate H1-H6 MAE fell from `22.265446060962013` to `11.514867392145149`, a `48.283689%`
+improvement. The oracle hierarchy was highly similar between train and validation:
+
+| Oracle family | Train global | Validation global | Validation candidate H1-H6 |
+| --- | ---: | ---: | ---: |
+| Event | 0.290752% | 0.281956% | 7.190853% |
+| Event-node | 1.195276% | 1.237587% | 31.562782% |
+| Event-node-phase | 1.840761% | 1.893219% | 48.283689% |
+
+This hierarchy does not establish deployable performance: each oracle uses the same event's future
+outcomes. It does show that nearly all opportunity appears only after allowing node identity and then
+onset phase to differ; one correction per event remains below the frozen 0.3% global threshold.
+
+The train-fitted shallow probes did not recover this opportunity. Full-validation global relative
+changes were approximately `+0.000020%`, `-0.000890%`, and `-0.000166%` for event, event-node, and
+event-node-phase, respectively. The primary probe changed candidate H1-H6 MAE from
+`22.265446060962013` to `22.266386518291217`; its event-weighted candidate-improvement 95% interval
+was `[-0.0284774, 0.0620032]`, and prediction/target correlation was only `0.0890`. The global point
+improvement and candidate lower-bound checks failed, so the frozen recommendation is
+`SIGNED_RESIDUAL_PROBE_NOT_VALIDATED` and must not be relabeled as permission to train a neural MoE.
+
+There are two bounded positive observations. Exact hard support preserved all H7-H12 and
+noncandidate predictions, and C1/C2 routine-harm bounds passed. On the 138 outcome-defined
+high-impact validation events, the primary probe improved candidate H1-H6 MAE by `0.153923`, but
+that label is unavailable at inference and the condition was point-only. It motivates a later
+high-impact-identifiability study; it does not rescue the failed v7b gate.
+
+### Prospective v7c node-phase repeatability audit
+
+The v7b hierarchy exposed a specific representation gap: the ridge features contained local traffic,
+distance, clock, road/direction, and fixed-A predictions but no sensor identity or node embedding.
+Before implementing a neural node expert, v7c tests whether node and phase corrections repeat across
+time at all. This is a train-only diagnostic and does not reread validation residual arrays.
+
+The 35 frozen training ISO weeks are split prospectively into 18 initial fit weeks and three rolling
+audit blocks of 6, 6, and 5 weeks. Each fold fits on every strictly earlier week and audits only its
+next block. The full-positive audit blocks contain 602, 731, and 514 events; their common matched
+subsets contain 536, 618, and 338. Thus all final 17 weeks are audited exactly once, and no audit or
+future week can enter its own lookup fit.
+
+Two fixed lookup families are reported at node and node-phase levels. `incident_median` learns a
+weighted historical incident median and is only a diagnostic of repeatability. The primary
+`zero_anchored_mean` gives every incident and each of C1/C2 equal event/cohort weight, with control
+targets fixed to zero without reading their future Y. Both use a fold-specific train-incident target
+absolute q99 clip. Corrections remain exactly zero outside candidate H1-H6; unseen keys default to
+zero.
+
+The primary node-phase lookup must improve the rolling full-positive global point estimate, keep the
+global bootstrap lower bound within 0.1% of A MAE, place the candidate-H1-H6 lower bound above zero,
+improve common incidents, keep each control's candidate-harm upper bound within 0.5% of its A MAE,
+produce at least 5% nonzero corrections, and preserve exact hard support. Only passing every check
+authorizes development of a node-embedded expert. If only the incident-median lookup repeats, the
+result means the routine zero anchor is unresolved; if neither repeats, the node-phase residual line
+stops. The frozen v7c protocol SHA-256 is
+`5a458a6688eac9374b925ab787127e44fa46ab0225df74db57bdcbfa45a6c2a8`.
+
+The implementation fits all 12 fold/family/level lookup tables before loading any C1/C2 future
+residual array. During fitting, controls expose only paired sample identity and candidate geometry;
+their target is constructed as an exact zero. Focused regression tests cover the frozen protocol,
+past-only fold separation, event/cohort weighting, both node and node-phase tensor writeback, and all
+three prospective recommendations. The server result must be interpreted from the frozen gate and
+must not be used to revise folds, lookup families, clipping, or thresholds.
