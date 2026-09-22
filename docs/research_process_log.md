@@ -1363,3 +1363,13 @@ W01--W30 fit to W31--W35 audit, with common audit counts `[536, 618, 338]` and f
 lift lower bound above `1.2`, at least 5% incident routing, at most 35% routing on either control,
 and exact audit-week coverage. Validation residual arrays, test data, future outcome features,
 post-result threshold changes, and all expert training remain prohibited.
+
+### v8b first server-attempt correction
+
+The first v8b server attempt at commit `f775ff8` stopped before producing a result. The fold summary
+created the `incident` cohort entry through its metric calculation, but then attempted to update
+`primary_control` and `secondary_control` entries before initializing them, raising
+`KeyError: 'primary_control'`. This was reporting-state initialization only: no fold result or gate
+decision was produced, and the frozen protocol, labels, features, folds, thresholds, and information
+boundary were unchanged. The correction initializes each cohort summary through one shared helper
+and adds a regression test covering all three cohorts while preserving incident-only metrics.

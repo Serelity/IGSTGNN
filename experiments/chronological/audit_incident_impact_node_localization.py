@@ -213,6 +213,19 @@ def metric_summary(labels, scores, clusters, protocol, seed):
     }
 
 
+def add_route_summary(cohort_summaries, cohort, scores, routes):
+    scores = np.asarray(scores, dtype=np.float64)
+    routes = np.asarray(routes, dtype=bool)
+    if scores.ndim != 1 or routes.shape != scores.shape or not len(scores):
+        raise ValueError('Invalid cohort route summary arrays')
+    summary = cohort_summaries.setdefault(cohort, {})
+    summary.update({
+        'nodes': int(len(scores)),
+        'route_fraction': float(routes.mean()),
+        'mean_score': float(scores.mean()),
+    })
+
+
 def fit_node_model(features, labels, event_indices, fit_events, alpha):
     training_features, training_targets, training_weights = [], [], []
     for cohort in COHORTS:
@@ -318,9 +331,7 @@ def audit(data_dir, primary_dir, secondary_dir, placebo_dir, sensors_path,
             routes = scores >= route_threshold
             all_scores[cohort].append(scores)
             all_routes[cohort].append(routes)
-            fold_summary['cohorts'][cohort]['nodes'] = int(len(scores))
-            fold_summary['cohorts'][cohort]['route_fraction'] = float(routes.mean())
-            fold_summary['cohorts'][cohort]['mean_score'] = float(scores.mean())
+            add_route_summary(fold_summary['cohorts'], cohort, scores, routes)
             for position, row in enumerate(audit_rows):
                 event_rows.append({
                     'fold': fold['fold'], 'cohort': cohort,

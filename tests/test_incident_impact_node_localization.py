@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 from experiments.chronological.audit_incident_impact_node_localization import (
-    load_protocol, node_excess,
+    add_route_summary, load_protocol, node_excess,
 )
 
 
@@ -54,6 +54,19 @@ class TargetTests(unittest.TestCase):
         zeros = np.zeros((26, 2), dtype=np.float64)
         with self.assertRaisesRegex(ValueError, 'support is empty'):
             node_excess(zeros, zeros, zeros, np.array([False, False]), 1.)
+
+
+class SummaryTests(unittest.TestCase):
+    def test_route_summary_initializes_every_cohort(self):
+        summaries = {'incident': {'roc_auc': .7}}
+        for cohort in ('incident', 'primary_control', 'secondary_control'):
+            add_route_summary(
+                summaries, cohort, np.array([.2, .8]), np.array([False, True]))
+        self.assertEqual(set(summaries), {
+            'incident', 'primary_control', 'secondary_control'})
+        self.assertEqual(summaries['incident']['roc_auc'], .7)
+        self.assertEqual(summaries['primary_control']['nodes'], 2)
+        self.assertEqual(summaries['secondary_control']['route_fraction'], .5)
 
 
 if __name__ == '__main__':
