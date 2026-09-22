@@ -345,7 +345,8 @@ def audit(data_dir, primary_dir, secondary_dir, placebo_dir, sensors_path,
                         'fit_events': int(len(fit_indices)),
                         'audit_events': int(len(audit_indices)),
                         'fit_label_threshold': threshold,
-                        'fit_route_threshold': route_threshold, 'cohorts': {}}
+                        'fit_route_threshold': route_threshold,
+                        'cohorts': {cohort: {} for cohort in COHORTS}}
         incident_scores = np.clip(model.predict(features['incident'][audit_indices]), 0., 1.)
         incident_labels = labels[audit_indices]
         fold_metrics['cohorts']['incident'] = score_metrics(
