@@ -1,0 +1,75 @@
+{
+  "protocol_id": "contra_v8_hierarchical_impact_router_materialization_v8c",
+  "scope": "full_train_fit_report_time_safe_hierarchical_router_materialization",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_samples": {"train": 3106, "val": 618},
+  "expected_positive_samples": {"train": 3604, "val": 917},
+  "authorization": {
+    "event": {
+      "protocol_id": "contra_v8_observable_incident_impact_identification_v8a",
+      "protocol_sha256": "1462d7b2a4d51f947ede97f772d2ae002f008698f1f3d4325f7cadeea16576e6",
+      "status": "OBSERVABLE_IMPACT_IDENTIFICATION_AUDIT_COMPLETE",
+      "recommendation": "OBSERVABLE_IMPACT_GATE_DEVELOPMENT_ALLOWED"
+    },
+    "node": {
+      "protocol_id": "contra_v8_observable_incident_impact_node_localization_v8b",
+      "protocol_sha256": "318a4701c2dc3754656d5653af9f37a841c5969899e2df4f2bee93d11de08c0c",
+      "status": "OBSERVABLE_IMPACT_NODE_LOCALIZATION_AUDIT_COMPLETE",
+      "recommendation": "PROTECTED_NODE_EXPERT_DEVELOPMENT_ALLOWED"
+    }
+  },
+  "v5c_context": {
+    "protocol_id": "contra_v8_matched_placebo_audit_v5c",
+    "summary_sha256": "c443581334f1f0aebece82c910a38c78b1dc29a22565d081f6a583298875571a",
+    "triple_metrics_sha256": "192b44e82223a9f943f3b47a5141ea1d19819b7cd0d0c75b0c234d372dcb5bc5"
+  },
+  "sensor_metadata_sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+  "fit": {
+    "population": "all_common_train_triples",
+    "cohorts": ["incident", "primary_control", "secondary_control"],
+    "event_router": {
+      "features": "v8a_report_time_safe_event_features",
+      "label": "fit_incident_early_excess_q75",
+      "control_target": "exact_zero",
+      "ridge_alpha": 10.0,
+      "route_threshold": "full_fit_incident_score_q75"
+    },
+    "node_router": {
+      "features": "v8b_report_time_safe_event_node_features",
+      "label": "fit_incident_candidate_node_early_excess_q75",
+      "control_target": "exact_zero",
+      "ridge_alpha": 10.0,
+      "route_threshold": "full_fit_incident_candidate_node_score_q75"
+    }
+  },
+  "routing": {
+    "event_route": "event_score_at_or_above_frozen_threshold",
+    "node_route": "candidate_node_score_at_or_above_frozen_threshold",
+    "hierarchical_route": "event_route_and_node_route_and_candidate_mask",
+    "active_horizons_zero_based_half_open": [0, 6],
+    "protected_horizons_zero_based_half_open": [6, 12],
+    "noncandidate_nodes_protected": true
+  },
+  "materialization": {
+    "splits": ["train", "val"],
+    "cohorts": ["incident_full", "incident", "primary_control", "secondary_control"],
+    "validation_history_slice": [0, 12],
+    "validation_future_targets_read": false,
+    "atomic_output_publication": true
+  },
+  "information_boundary": {
+    "router_fit_on_common_train_only": true,
+    "validation_features_are_pre_t0_only": true,
+    "validation_labels_prohibited": true,
+    "validation_residual_arrays_prohibited": true,
+    "test_split_prohibited": true,
+    "future_outcome_features_prohibited": true,
+    "frozen_A_predictions_prohibited": true,
+    "expert_training_prohibited": true,
+    "thresholds_frozen_before_validation_materialization": true
+  },
+  "interpretation": "Frozen report-time-safe event and node router artifacts for protected expert development; not expert training, forecasting performance, causal evidence, or test evidence"
+}

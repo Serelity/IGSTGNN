@@ -1373,3 +1373,52 @@ created the `incident` cohort entry through its metric calculation, but then att
 decision was produced, and the frozen protocol, labels, features, folds, thresholds, and information
 boundary were unchanged. The correction initializes each cohort summary through one shared helper
 and adds a regression test covering all three cohorts while preserving incident-only metrics.
+
+### Complete v8b result: observable affected-node localization passes
+
+The corrected v8b run completed at commit `b504664` with protocol SHA-256
+`318a4701c2dc3754656d5653af9f37a841c5969899e2df4f2bee93d11de08c0c`. The valid `_02`
+output had already completed when a duplicate invocation encountered the intentional output-directory
+guard; the duplicate `FileExistsError` was not an audit failure. No process remained afterward.
+
+Across 55,860 prospectively audited candidate-node rows, incident node ROC-AUC was `0.657989`
+with a 95% week-cluster interval of `[0.641548, 0.672791]`. Top-quartile lift was `1.500857`
+with interval `[1.407454, 1.584679]`. The incident node route fraction was `0.243251`, versus
+`0.205639` for the primary control and `0.216416` for the secondary control. All six frozen checks
+passed, producing `PROTECTED_NODE_EXPERT_DEVELOPMENT_ALLOWED`. Fold AUC values of `0.653810`,
+`0.651197`, and `0.677981` indicate that the ranking signal persisted across all three audit blocks.
+
+This is a moderate localization signal, not forecasting improvement. In particular, the incident
+route fraction exceeds the controls by only about 2.7--3.8 percentage points. Any expert must
+therefore remain hard-protected by event, candidate-node, and early-horizon support; the result does
+not justify a free all-node MoE or any test access.
+
+### Prospective v8c plan: freeze and materialize the hierarchical router
+
+v8c converts the successful v8a/v8b feasibility audits into immutable inputs for protected expert
+development. It fits the event and node weighted-ridge routers once on all 3,106 common training
+triples, retaining the respective training-incident q75 label and score thresholds. It then applies
+the frozen models to train and validation report-time features for four cohorts: all positive
+incidents, common incidents, primary controls, and secondary controls.
+
+The published route is the hard intersection of the event route, node route, and positive incident
+candidate mask. Future protected-expert support is H1--H6 only; H7--H12 and every noncandidate node
+remain protected. Eight route artifacts cover train/validation by four cohorts, and a ninth artifact
+stores both ridge models, feature schemas, label thresholds, and route thresholds. Each route file
+contains sample identity, candidate mask, event/node scores, and event/node/hierarchical flags, but
+no impact label, target, residual, or frozen-A prediction.
+
+Validation materialization reads only the first 12 traffic-history steps required by the already
+frozen feature functions. It does not read validation impact labels, residual arrays, or future
+targets, and it never accesses test. v8a/v8b passing summaries are authorization inputs and their
+artifact hashes are verified, but their audit scores are not used to fit v8c. Output is first written
+to a `.partial` directory and renamed only after every artifact and summary succeeds. The frozen
+v8c protocol SHA-256 is `6817e3636ac0886c1dcbab323a22ef9137ff856354716ec723a0d31007a1f114`.
+
+A full local engineering run against the archived source-v8 package reproduced the authorized v8a
+and v8b gates before completing v8c. It emitted exactly eight route files and one model file; all
+hashes and hard-support identities were rechecked after publication, and no `.partial` directory
+remained. On the 917 full-positive validation events, the frozen full-training router activated the
+event gate for `20.8288%` of events, the node gate for `27.3505%` of candidate nodes, and their hard
+intersection for `13.4551%` of candidate nodes (4,890 node instances). These are route-coverage
+diagnostics based only on report-time inputs, not outcome metrics or forecasting improvements.
