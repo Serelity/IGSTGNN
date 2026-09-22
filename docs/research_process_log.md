@@ -1274,3 +1274,55 @@ their target is constructed as an exact zero. Focused regression tests cover the
 past-only fold separation, event/cohort weighting, both node and node-phase tensor writeback, and all
 three prospective recommendations. The server result must be interpreted from the frozen gate and
 must not be used to revise folds, lookup families, clipping, or thresholds.
+
+### Complete v7c result: stop fixed node-phase residual lookup
+
+The complete server run finished at commit `f9b49f2` with status
+`NODE_PHASE_REPEATABILITY_AUDIT_COMPLETE`, exit code `0`, and no validation or test residual arrays
+read. The three rolling folds were exactly the frozen past-only split: W01–W18 fit W19–W24,
+W01–W24 fit W25–W30, and W01–W30 fit W31–W35. No audit week entered its own lookup fit.
+
+The primary `zero_anchored_mean` node-phase lookup produced only `0.000212` raw-MAE improvement on
+the full-positive audit population, with a 95% week-cluster interval of
+`[-0.000121, 0.000491]`. Its candidate H1–H6 improvement was `0.006789` raw MAE, but the interval
+was `[-0.009201, 0.020463]`, so the candidate improvement lower bound was not positive. The common
+incident candidate point estimate was positive (`0.004896`) but its interval
+`[-0.014888, 0.022797]` also crossed zero. The primary control candidate interval was entirely
+negative (`[-0.035169, -0.000177]`), while the secondary-control interval crossed zero; both
+predeclared routine-harm bounds nevertheless remained within the small allowed limit.
+
+The diagnostic `incident_median` lookup did not establish repeatability either: full-positive global
+mean improvement was `-0.000596` with interval `[-0.001330, 0.000054]`, and candidate mean
+improvement was `-0.012060` with interval `[-0.029858, 0.002917]`. Thus the diagnostic family did
+not repeat independently of the routine zero anchor. Hard support remained exact, and all active
+support cells received a nonzero lookup, but neither property compensates for the absent prospective
+candidate benefit.
+
+The frozen recommendation is therefore `STOP_NODE_PHASE_REPEATABILITY_NOT_ESTABLISHED`. This result
+rejects development of a fixed node-identity/node-phase residual lookup or neural expert under the
+current information boundary; it does not claim that all incident-aware forecasting is impossible.
+The next research line must use observable incident state or impact localization to decide whether a
+protected expert should activate, with global non-inferiority and routine-control safeguards frozen
+before any model training.
+
+### Prospective v8a plan: observable incident-impact identification
+
+Because v7c found no stable node-phase residual direction, the next stage does not memorize historical
+corrections and does not train an expert. v8a asks the earlier decision question: using only features
+available at incident report time, can a future incident be identified as high-impact early enough to
+justify activating a protected expert? The target is the existing v5c early excess-divergence label,
+defined only on training outcomes and never supplied as an input feature.
+
+The frozen v8a estimator is an event-level weighted ridge score using report age, forecast clock,
+candidate count, distance summaries, pre-report traffic history summaries, freeway, and direction.
+Frozen-A predictions and all future outcome fields are excluded. Each rolling fold uses all strictly
+earlier common-triple weeks, labels incidents above that fold's incident-only q75 early-excess
+threshold, and assigns both controls an exact zero target. The expert activation threshold is the
+q75 of the fit-period incident scores and is not tuned on audit weeks.
+
+The three audit blocks remain W19–W24, W25–W30, and W31–W35 with 536, 618, and 338 common events.
+The prospective gate requires an incident ROC-AUC lower confidence bound above `0.55`, top-quartile
+impact enrichment lower bound above `1.2`, at least 5% incident activation, and no more than 35%
+activation on either routine control cohort. A pass authorizes only a subsequent node-localization
+audit; it does not authorize expert training or test access. A failure stops the observable impact
+identification line without changing any prior A/v6/v7 result.
