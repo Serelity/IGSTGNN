@@ -1529,3 +1529,87 @@ materialization, and bootstrap statistics rather than tensor backpropagation. Pr
 flushed after input verification, router feature construction, every fold fit, and every fold
 evaluation so an active run is distinguishable from a failed background process. The frozen v9b
 protocol SHA-256 is `7bc06e97d9df10a029133fe8cefb85d3c0b27065f37e499cbbf84daf98b81d43`.
+
+### Complete v9b result: residual direction is the limiting factor
+
+The server audit completed with status `ROUTED_RESIDUAL_DECOMPOSITION_AUDIT_COMPLETE` under the
+frozen protocol SHA-256
+`7bc06e97d9df10a029133fe8cefb85d3c0b27065f37e499cbbf84daf98b81d43`. It used past-only
+cross-fitted routers and experts, did not reuse the full-training v8c routes, did not read validation
+residual arrays or test, and did not use control future outcomes for expert fitting. The failed v9a
+gate remained unchanged.
+
+The decomposition identifies direction, rather than magnitude, as the immediate failure. Across
+20,168 audited routed event-node-phase rows, direction ROC-AUC was `0.483392` with a 95% week-cluster
+interval of `[0.446372, 0.518926]`; direction accuracy was `0.497610`. Fold AUCs were `0.466889`,
+`0.525288`, and `0.489697`, so two of three folds were below random. In contrast, predicted magnitude
+had correlation `0.190806` with absolute residual magnitude and interval `[0.113473, 0.263874]`;
+all three fold correlations were positive (`0.174741`, `0.175151`, and `0.276479`). The direct signed
+correlation remained negative overall at `-0.058884`.
+
+None of the three deployable policies improved the incident forecast. Direct signed correction
+changed full-positive routed MAE by `-0.059118` (negative denotes harm), or `-0.168434%`. Applying
+the direction-times-magnitude model on every routed row caused `1.683730` MAE harm (`-4.797147%`),
+and abstention reduced but did not remove it: the primary abstained policy caused `0.527029` routed
+MAE harm (`-1.501568%`) with improvement interval `[-0.649384, -0.218188]`. The same abstained policy
+also harmed common incidents by `0.535073` routed MAE. Its primary-control harm interval was entirely
+positive, while its secondary-control point estimate improved but the interval crossed zero. Thus
+the benefit and routine-safety checks both fail; global non-inferiority and exact hard-support
+protection alone cannot rescue the model.
+
+The diagnostic oracles must be read asymmetrically. Supplying the future true direction while
+retaining predicted magnitude yields `13.755233%` routed improvement (`oracle_direction`). Supplying
+the future true magnitude while retaining the predicted direction yields `-24.691814%` routed change
+(`oracle_magnitude`). The latter does not mean true magnitude is harmful; it means wrong predicted
+signs overwhelm even perfect magnitude information. These outcome-conditioned quantities are not
+deployable model results, but together with the prospective AUC and correlation checks they localize
+the bottleneck cleanly.
+
+The frozen recommendation is
+`ROUTED_RESIDUAL_DIRECTION_OR_MAGNITUDE_NOT_ESTABLISHED`, and the diagnostic gate is false. More
+specifically, magnitude repeatability is established but residual direction is not. Consequently,
+the current report-time feature set and event-node-phase residual target do not authorize a neural
+point-correction MoE, a weaker direction threshold, validation tuning, or test access. v9b closes the
+present signed-residual expert line rather than supplying a reason to make it more expressive.
+
+### Next research direction: preserve the point forecast and model routed risk
+
+The positive magnitude result suggests a different, bounded question. A future audit may retain
+frozen A exactly as the point forecast and use the successful v8a/v8b hierarchy only to estimate
+absolute-error scale or calibrated prediction intervals on routed H1--H6 support. This would test
+whether high-impact event and affected-node localization can support incident-onset uncertainty or
+risk prediction without requiring an unlearnable correction sign. The relevant endpoints would be
+out-of-time interval coverage, interval width or sharpness, high-error enrichment, routine-control
+width inflation, and exact preservation of A point predictions. Such an audit requires a new
+prospectively frozen protocol and cannot be reported as MAE improvement or as a successful MoE.
+
+### Prospective v10a plan: protected residual-risk identification
+
+v10a implements the first bounded step of that direction. It does not build prediction intervals
+and does not alter a single frozen-A point prediction. Instead, it asks whether the already frozen
+v9b magnitude score can identify large absolute residuals on the cross-fitted hierarchical route.
+This avoids reusing the failed residual direction while testing the positive magnitude observation
+as a distinct out-of-time risk-ranking hypothesis. Because the same rolling audit rows already
+supplied v9b's aggregate magnitude correlation, this is a frozen development characterization, not
+an independent confirmation dataset or a new confirmatory performance result.
+
+The three v9b fold-specific event routers, node routers, and magnitude ridge models are loaded from
+the hash-verified `fold_models.npz`; v10a never refits them. For each fold, the high-risk outcome is
+the absolute event-node-phase median residual above the event-equal weighted q75 calculated only on
+that fold's past fit weeks. The risk alert threshold is likewise the weighted q75 of frozen magnitude
+scores on those fit rows. The next 6, 6, and 5 weeks are then audited exactly once. Full positives
+are primary, common incidents are a transfer check, and C1/C2 future residuals are read only after
+all frozen models have loaded and only for evaluation. Controls never enter a new fit.
+
+The primary gate requires a full-positive risk ROC-AUC lower confidence bound above `0.55`, alert
+lift lower bound above `1.2`, magnitude-correlation lower bound above zero, and AUC above `0.5` in
+all three folds. Common-incident AUC must exceed `0.5`; full-positive alert coverage must remain
+between 5% and 50%; and routed-row alert fractions on each routine control must not exceed 35%.
+All 17 audit weeks must be covered once and the point forecast must remain exactly A. Uncertainty is
+a 2,000-draw ISO-week cluster bootstrap stratified by fold.
+
+A complete pass authorizes only a separately preregistered interval-calibration audit. It does not
+construct an interval, revive the failed point-correction expert, authorize neural training, claim
+MAE improvement, or open test. A failure stops the routed-risk line under this score and target. The
+frozen v10a protocol SHA-256 is
+`14ec52cf5ec93bbab0b527ca6f6418431611697a4da240a3fcf9f9b04ee846a6`.

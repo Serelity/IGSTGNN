@@ -1,0 +1,85 @@
+{
+  "protocol_id": "contra_v8_protected_risk_identification_v10a",
+  "scope": "train_only_rolling_origin_frozen_point_forecast_routed_risk_identification",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_train_samples": 3106,
+  "expected_full_positive_train_samples": 3604,
+  "v9b_input": {
+    "protocol_id": "contra_v8_routed_residual_decomposition_v9b",
+    "protocol_sha256": "7bc06e97d9df10a029133fe8cefb85d3c0b27065f37e499cbbf84daf98b81d43",
+    "status": "ROUTED_RESIDUAL_DECOMPOSITION_AUDIT_COMPLETE",
+    "observed_recommendation": "ROUTED_RESIDUAL_DIRECTION_OR_MAGNITUDE_NOT_ESTABLISHED",
+    "observed_direction_auc": 0.4833916754156446,
+    "observed_magnitude_correlation": 0.19080560698706533,
+    "observed_magnitude_correlation_ci_low": 0.11347316362646023,
+    "role": "frozen_cross_fitted_models_and_motivation_not_point_correction_authorization"
+  },
+  "rolling_origin": {
+    "time_source": "positive_incident_t0_iso_week",
+    "expected_unique_train_iso_weeks": 35,
+    "initial_fit_week_count": 18,
+    "audit_fold_count": 3,
+    "audit_week_block_sizes": [6, 6, 5],
+    "fit_rule": "reuse_v9b_models_fit_on_all_weeks_strictly_before_each_audit_block",
+    "audit_rule": "each_of_the_final_17_train_iso_weeks_exactly_once",
+    "expected_full_positive_audit_counts": [602, 731, 514],
+    "expected_common_audit_counts": [536, 618, 338]
+  },
+  "support": {
+    "route_source": "frozen_v9b_fold_specific_hierarchical_route",
+    "active_horizons_zero_based_half_open": [0, 6],
+    "phase_slices_zero_based_half_open": [[0, 3], [3, 6]],
+    "risk_row": "routed_event_node_phase",
+    "point_forecast": "frozen_A_unchanged_everywhere",
+    "prediction_correction": "exact_zero_everywhere"
+  },
+  "risk_definition": {
+    "score": "frozen_v9b_nonnegative_clipped_magnitude_prediction",
+    "outcome": "absolute_median_signed_residual_per_routed_node_phase",
+    "high_risk_label_threshold": "fold_fit_incident_outcome_weighted_q75",
+    "alert_threshold": "fold_fit_incident_score_weighted_q75",
+    "row_weighting": "equal_routed_event_weight",
+    "primary_population": "incident_full",
+    "common_incident_population": "incident",
+    "routine_negative_controls": ["primary_control", "secondary_control"]
+  },
+  "uncertainty": {
+    "method": "audit_iso_week_cluster_bootstrap_stratified_by_fold",
+    "draws": 2000,
+    "confidence_level": 0.95,
+    "seed": 2025
+  },
+  "development_gate": {
+    "require_incident_full_auc_ci_lower_above": 0.55,
+    "require_incident_full_alert_lift_ci_lower_above": 1.2,
+    "require_incident_full_magnitude_correlation_ci_lower_above": 0.0,
+    "require_each_fold_incident_full_auc_above": 0.5,
+    "require_common_incident_auc_above": 0.5,
+    "minimum_incident_full_alert_fraction": 0.05,
+    "maximum_incident_full_alert_fraction": 0.5,
+    "maximum_primary_control_alert_fraction": 0.35,
+    "maximum_secondary_control_alert_fraction": 0.35,
+    "require_all_audit_weeks_covered_once": true,
+    "require_point_forecast_exactly_A": true
+  },
+  "information_boundary": {
+    "train_residual_arrays_only": true,
+    "validation_residual_arrays_prohibited": true,
+    "test_split_prohibited": true,
+    "v9b_fold_models_and_routes_not_refit": true,
+    "audit_weeks_prohibited_from_fold_thresholds": true,
+    "future_weeks_prohibited_from_each_fold_threshold": true,
+    "control_future_Y_prohibited_from_any_model_fit": true,
+    "control_future_Y_read_only_after_models_are_frozen_for_evaluation": true,
+    "point_prediction_modification_prohibited": true,
+    "prediction_interval_claim_prohibited": true,
+    "mae_improvement_claim_prohibited": true,
+    "independent_confirmation_claim_prohibited": true,
+    "folds_score_target_thresholds_and_gate_may_not_change_after_result": true,
+    "test_access_requires_a_separate_final_protocol": true
+  },
+  "interpretation": "A train-only out-of-time development characterization of whether the frozen v9b magnitude score can identify high frozen-A residual risk on the same rolling audit rows whose aggregate magnitude correlation was already observed; it is not independent confirmation, and a pass authorizes only a separately preregistered interval-calibration design, not point correction, performance claims, neural training, or test access"
+}
