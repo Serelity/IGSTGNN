@@ -340,8 +340,8 @@ def audit(data_dir, primary_dir, secondary_dir, placebo_dir, sensors_path,
         labels = (excess >= threshold).astype(np.int64)
         model, route_threshold = fit_fold(
             features, labels, fit_indices, protocol['estimator']['ridge_alpha'])
-        fold_metrics = {'fold': fold['fold'], 'fit_weeks': fold['fit_weeks'].tolist(),
-                        'audit_weeks': fold['audit_weeks'].tolist(),
+        fold_metrics = {'fold': fold['fold'], 'fit_weeks': list(fold['fit_weeks']),
+                        'audit_weeks': list(fold['audit_weeks']),
                         'fit_events': int(len(fit_indices)),
                         'audit_events': int(len(audit_indices)),
                         'fit_label_threshold': threshold,

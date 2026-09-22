@@ -48,6 +48,8 @@ class RollingOriginTests(unittest.TestCase):
                                 [103] * 6 + [68] * 4 + [66])
         folds = rolling_folds(weeks, protocol)
         self.assertEqual([len(fold['audit_indices']) for fold in folds], [536, 618, 338])
+        self.assertIsInstance(folds[0]['fit_weeks'], list)
+        self.assertIsInstance(folds[0]['audit_weeks'], list)
         for fold in folds:
             self.assertLess(max(fold['fit_weeks']), min(fold['audit_weeks']))
             self.assertEqual(np.intersect1d(
