@@ -1326,3 +1326,40 @@ impact enrichment lower bound above `1.2`, at least 5% incident activation, and 
 activation on either routine control cohort. A pass authorizes only a subsequent node-localization
 audit; it does not authorize expert training or test access. A failure stops the observable impact
 identification line without changing any prior A/v6/v7 result.
+
+### Complete v8a result: observable incident-impact identification passes
+
+The frozen v8a server audit completed successfully at commit `f485743` with status
+`OBSERVABLE_IMPACT_AUDIT_COMPLETE`. It used three past-only rolling folds over the 35 common
+training weeks, read no validation residual arrays, and did not read the test split. The estimator
+was a report-time-safe event-level weighted ridge score; no expert or neural router was trained.
+
+The incident impact signal passed every predeclared development check. ROC-AUC was `0.697463`
+with a 95% confidence interval of `[0.656978, 0.735879]`, and top-quartile lift was `1.688073`
+with interval `[1.476887, 1.901842]`. The route fractions were `0.223861` for incidents,
+`0.181635` for the primary matched control, and `0.191019` for the secondary matched control.
+All audit weeks were covered exactly once, so the frozen recommendation is
+`OBSERVABLE_IMPACT_GATE_DEVELOPMENT_ALLOWED`.
+
+This is authorization for the next feasibility audit only, not evidence that a trained expert
+improves forecasting. The signal identifies high-impact incident events, but it does not yet say
+which affected nodes should receive an expert. Therefore v8b audits observable node-level impact
+localization before any protected node expert is implemented.
+
+### Prospective v8b plan: observable affected-node localization
+
+The v8b audit keeps the v8a information boundary and uses only report-time-safe event/node
+features. Its training label is a node-level early excess divergence: incident-versus-control
+divergence in Y steps 14--20, baseline-adjusted by Y steps 9--12 and scaled by the frozen training
+standard deviation. Candidate nodes are restricted to positive report-location distance support.
+Incidents receive a fold-specific q75 node label threshold; both matched controls receive exact-zero
+labels. A weighted ridge binary node score is fitted on incidents, primary controls, and secondary
+controls with equal event/cohort weighting. Routing uses the fit-incident score q75 and changes only
+candidate-node expert activation; this remains an audit, not expert training.
+
+The v8b rolling protocol is W01--W18 fit to W19--W24 audit, W01--W24 fit to W25--W30 audit, and
+W01--W30 fit to W31--W35 audit, with common audit counts `[536, 618, 338]` and frozen fit minimums
+`[1, 1, 1]`. Its gate requires incident node ROC-AUC lower bound above `0.55`, node top-quartile
+lift lower bound above `1.2`, at least 5% incident routing, at most 35% routing on either control,
+and exact audit-week coverage. Validation residual arrays, test data, future outcome features,
+post-result threshold changes, and all expert training remain prohibited.

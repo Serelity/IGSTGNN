@@ -1,0 +1,100 @@
+{
+  "protocol_id": "contra_v8_observable_incident_impact_node_localization_v8b",
+  "scope": "train_only_rolling_origin_observable_incident_impact_node_localization",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_train_samples": 3106,
+  "expected_full_positive_train_samples": 3604,
+  "v8a_context": {
+    "protocol_id": "contra_v8_observable_incident_impact_identification_v8a",
+    "protocol_sha256": "1462d7b2a4d51f947ede97f772d2ae002f008698f1f3d4325f7cadeea16576e6",
+    "observed_recommendation": "OBSERVABLE_IMPACT_GATE_DEVELOPMENT_ALLOWED",
+    "role": "development_authorization_only_not_an_input"
+  },
+  "v5c_context": {
+    "protocol_id": "contra_v8_matched_placebo_audit_v5c",
+    "summary_sha256": "c443581334f1f0aebece82c910a38c78b1dc29a22565d081f6a583298875571a",
+    "triple_metrics_sha256": "192b44e82223a9f943f3b47a5141ea1d19819b7cd0d0c75b0c234d372dcb5bc5",
+    "role": "freeze_common_sample_identity_and_time_order"
+  },
+  "sensor_metadata": {
+    "sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+    "role": "derive_report_freeway_direction_from_nonzero_distance_support"
+  },
+  "rolling_origin": {
+    "time_source": "positive_incident_t0_iso_week",
+    "expected_unique_train_iso_weeks": 35,
+    "initial_fit_week_count": 18,
+    "audit_fold_count": 3,
+    "audit_week_block_sizes": [6, 6, 5],
+    "fit_rule": "all_common_train_weeks_strictly_before_each_audit_block",
+    "audit_rule": "each_of_the_final_17_common_train_weeks_exactly_once",
+    "expected_common_audit_counts": [536, 618, 338],
+    "expected_common_fit_minimums": [1, 1, 1]
+  },
+  "target": {
+    "family": "node_early_excess_divergence",
+    "formula": "mean_early(incident_control_divergence_baseline_adjusted - routine_control_divergence_baseline_adjusted)",
+    "early_Y_slice": [14, 20],
+    "baseline_slice": [9, 12],
+    "scale": "frozen_train_scaler_std",
+    "incident_label": "node_excess_at_or_above_fit_incident_candidate_node_q75",
+    "control_label": "exact_zero",
+    "candidate_support": "positive_report_location_distance_nonzero",
+    "future_outcome_target_used_only_in_fit_and_audit_labels": true
+  },
+  "features": {
+    "family": "report_time_safe_event_node_features",
+    "event_features": [
+      "report_age_minutes",
+      "forecast_tod_sin_cos",
+      "forecast_dow_sin_cos",
+      "candidate_count",
+      "candidate_distance_summaries",
+      "candidate_history_summaries",
+      "freeway",
+      "direction"
+    ],
+    "node_features": ["node_distances", "node_history_state"],
+    "future_outcome_features_forbidden": true,
+    "frozen_A_prediction_features_forbidden": true,
+    "post_event_fields_forbidden": true
+  },
+  "estimator": {
+    "family": "weighted_ridge_binary_node_score",
+    "ridge_alpha": 10.0,
+    "training_cohorts": ["incident", "primary_control", "secondary_control"],
+    "row_weighting": "equal_cohort_and_equal_event_weight_within_candidate_nodes",
+    "score_clip": [0.0, 1.0],
+    "route_threshold": "fit_incident_node_score_q75",
+    "route_unit": "candidate_node_expert_activation"
+  },
+  "uncertainty": {
+    "method": "audit_iso_week_cluster_bootstrap",
+    "draws": 2000,
+    "confidence_level": 0.95,
+    "seed": 2025
+  },
+  "development_gate": {
+    "require_incident_node_auc_ci_lower_above": 0.55,
+    "require_incident_node_top_quartile_lift_ci_lower_above": 1.2,
+    "require_incident_node_route_fraction_at_least": 0.05,
+    "maximum_primary_control_node_route_fraction": 0.35,
+    "maximum_secondary_control_node_route_fraction": 0.35,
+    "require_all_audit_weeks_covered_once": true
+  },
+  "information_boundary": {
+    "train_common_triples_only": true,
+    "validation_residual_arrays_prohibited": true,
+    "test_split_prohibited": true,
+    "future_outcome_labels_prohibited_from_features": true,
+    "audit_weeks_prohibited_from_fit": true,
+    "future_weeks_prohibited_from_each_fold_fit": true,
+    "thresholds_and_gate_may_not_change_after_result": true,
+    "expert_training_prohibited": true,
+    "neural_node_localizer_prohibited": true
+  },
+  "interpretation": "A train-only prospective feasibility audit for observable node-level incident-impact localization; not an expert result, not causal evidence, and not test evidence"
+}
