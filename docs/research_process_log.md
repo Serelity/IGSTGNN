@@ -1613,3 +1613,55 @@ construct an interval, revive the failed point-correction expert, authorize neur
 MAE improvement, or open test. A failure stops the routed-risk line under this score and target. The
 frozen v10a protocol SHA-256 is
 `14ec52cf5ec93bbab0b527ca6f6418431611697a4da240a3fcf9f9b04ee846a6`.
+
+### Complete v10a result: moderate generic risk signal misses the frozen gate
+
+The corrected `_02` server run completed with status
+`PROTECTED_RISK_IDENTIFICATION_AUDIT_COMPLETE` under the frozen protocol SHA-256
+`14ec52cf5ec93bbab0b527ca6f6418431611697a4da240a3fcf9f9b04ee846a6`. It loaded all three
+v9b fold models without refitting, used no control future outcome for model fitting, did not read
+validation residuals or test, and left every frozen-A point prediction unchanged. It constructed no
+prediction interval and is explicitly not an independent confirmation of v9b.
+
+The full-positive risk ranking was moderate and stable but failed the prospectively required
+confidence bound. Across 20,168 routed event-node-phase rows from 392 events, ROC-AUC was `0.593361`
+with a 95% fold-stratified week-cluster interval of `[0.542653, 0.639438]`. The lower bound is
+`0.007347` below the frozen strict requirement of greater than `0.55`. All three fold point estimates
+were above random and tightly grouped (`0.592305`, `0.599079`, and `0.601338`), so the failure is
+uncertainty-based rather than caused by one reversed fold. The threshold must not be weakened after
+observing this result.
+
+Other positive checks passed. The alert covered `23.7341%` of routed full-positive rows and enriched
+high-risk rows by `1.473304`, with interval `[1.308907, 1.676717]`. Magnitude correlation was
+`0.190806`, with interval `[0.113473, 0.263874]`. Common incidents showed similar AUC (`0.597431`),
+lift (`1.555480`), and correlation (`0.207670`). The three full-positive fold correlations remained
+positive (`0.174741`, `0.175151`, and `0.276479`), and fold alert lift rose from approximately
+`1.39` in the first two blocks to `1.78` in the last block.
+
+Routine alert fractions stayed within the frozen 35% cap: `13.1381%` for C1 and `16.1278%` for C2.
+However, the score also ranked routine-window errors: C1 AUC was `0.522086`, while C2 AUC was
+`0.580802` with interval `[0.547680, 0.619143]`; both controls had alert-lift lower bounds above one.
+This indicates that part of the magnitude score captures generic traffic forecast difficulty rather
+than an accident-specific uncertainty mechanism. Low routine alert frequency satisfies the safety
+check, but the control ranking limits an incident-specific interpretation.
+
+Ten of eleven frozen checks passed. The sole failure was the primary full-positive AUC confidence
+lower bound, so the frozen gate is false and the recommendation is
+`STOP_ROUTED_RISK_IDENTIFICATION_NOT_ESTABLISHED`. v10b interval calibration is therefore not
+authorized under this route, score, and evidence set. The result also cannot revive the failed v9
+point expert. Further specialist development requires genuinely new report-time information or an
+independent dataset, not a weaker threshold or another model fit to the same features and audit rows.
+
+### Research decision after v10a
+
+The evidence now separates two conclusions. v8a/v8b establish that report-time features moderately
+identify high-impact events and affected nodes relative to matched controls. v7/v9/v10 do not
+establish a deployable point correction, residual direction, or incident-specific risk expert that
+passes the frozen safeguards. The current dataset supports an impact-identification/localization
+study more strongly than an accuracy-improving MoE claim.
+
+The next defensible work is evidence consolidation and external-information assessment: quantify
+which unavailable incident fields could resolve direction (for example severity, lanes blocked,
+clearance state, response actions, weather, or richer text), and determine whether an independent
+city/year can support a fresh confirmatory protocol. Reusing the current validation or test split to
+tune another residual or risk gate would not provide that evidence.
