@@ -1462,3 +1462,70 @@ path loaded the entire residual package before constructing zero targets. A cont
 deserializes only sample identity, candidate geometry, and frozen-A prediction; a regression fixture
 places object arrays in every future-derived field and proves those fields are not read. Neither
 correction changed the frozen v9a model family, features, weights, clipping rule, gate, or protocol.
+
+### Complete v9a result: shallow protected residual expert does not validate
+
+The complete server run finished with status `PROTECTED_RESIDUAL_EXPERT_AUDIT_COMPLETE` under the
+frozen protocol SHA-256
+`bec1f27bf5d45376ad8becab429d31e4a63d493926172aa1be87c0df240186b3`. It did not read test,
+did not update A or the v8c router, and did not use control future outcomes for expert fitting.
+
+The full-positive global point estimate was technically positive but practically negligible: A MAE
+changed from `22.6866662` to `22.6862675`, a raw improvement of `0.0003986` or `0.001757%`.
+Within routed candidate H1--H6 support, A MAE changed from `35.4846033` to `35.4104461`, a raw
+improvement of `0.0741572` or `0.208984%`. This routed estimate was not stable: its week-cluster
+interval was `[-0.0585470, 0.1780797]`. The common-incident routed point estimate was larger at
+`0.1516426`, but its interval also crossed zero. Signed-target correlation was only `0.157515` on
+the full-positive cohort and `0.219092` on common incidents.
+
+Both routine safeguards also failed. Primary-control routed harm had an upper confidence bound of
+`0.217311`, above its frozen allowance of approximately `0.133096`. Secondary-control routed harm
+had an upper bound of `0.175306`, above its allowance of approximately `0.126534`; its routed
+improvement interval was entirely negative (`[-0.175306, -0.008731]`). Thus the three failed checks
+were full-positive routed improvement, primary-control routed harm, and secondary-control routed
+harm. The frozen recommendation is `STOP_SHALLOW_PROTECTED_RESIDUAL_EXPERT_NOT_VALIDATED`, so this
+result does not authorize neural expert training.
+
+The route-conditioned outcome oracle remains large: full-positive global improvement was
+`0.453570%` and routed improvement was `53.944545%`. This does not rescue the model because the
+oracle uses the same event's future outcomes. It instead localizes the remaining problem: the router
+finds a population with substantial ex-post correction opportunity, while current report-time
+features and a signed linear correction do not reliably recover direction and magnitude.
+
+### Prospective v9b plan: cross-fitted residual direction and magnitude decomposition
+
+The first v9b sketch considered conditioning a rolling residual audit on the already materialized
+v8c training routes. That design was rejected before implementation because v8c was fitted on all
+training weeks; its later training-week routes are therefore not out-of-time for a rolling audit.
+The corrected v9b design refits both the v8a event router and v8b node router independently inside
+each fold using only strictly earlier weeks. The residual expert is then fitted on the same past
+weeks and audited on the next 6, 6, and 5 weeks. Every one of the final 17 training weeks is audited
+exactly once, and neither router labels nor residual targets from an audit week enter its fit.
+
+Within each fold, three equal-cohort/equal-routed-event weighted ridge models share the v9a
+report-time event-node-phase features. The signed model predicts the original residual target. The
+direction model predicts incident target sign with controls fixed to zero, and the magnitude model
+predicts absolute incident target with controls fixed to zero. Signed and magnitude predictions use
+the fit-incident absolute-target q99 clip. A fit-incident absolute direction-score q75 threshold
+defines a no-op option for uncertain rows. Control residual and validity arrays are not deserialized
+until every fold's router and expert models have been fitted.
+
+Three deployable policies are frozen: direct signed correction, direction-times-magnitude correction
+on all routed rows, and direction-times-magnitude correction only above the fit-only confidence
+threshold. Two explicitly non-deployable diagnostics isolate the bottleneck by pairing oracle future
+direction with predicted magnitude or predicted direction with oracle future magnitude. These oracle
+policies cannot enter the performance gate or any paper claim as model results.
+
+The primary abstained policy must pass the existing global noninferiority and routine-control harm
+bounds, show positive full and common incident benefit, and retain exact A outside the cross-fitted
+hierarchical route. In addition, direction AUC must have a week-bootstrap lower bound above `0.55`,
+magnitude correlation must have a lower bound above zero, every fold must independently exceed
+random direction AUC and positive magnitude correlation, and at least 5% of routed rows must remain
+active after abstention. Even a complete pass can only recommend a newly preregistered nonlinear
+expert hypothesis; it cannot override v9a, authorize neural training directly, or open test.
+
+v9b remains a CPU audit because it consists of small weighted ridge fits, deterministic route
+materialization, and bootstrap statistics rather than tensor backpropagation. Progress records are
+flushed after input verification, router feature construction, every fold fit, and every fold
+evaluation so an active run is distinguishable from a failed background process. The frozen v9b
+protocol SHA-256 is `7bc06e97d9df10a029133fe8cefb85d3c0b27065f37e499cbbf84daf98b81d43`.

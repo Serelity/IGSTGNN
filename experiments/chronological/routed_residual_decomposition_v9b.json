@@ -1,0 +1,110 @@
+{
+  "protocol_id": "contra_v8_routed_residual_decomposition_v9b",
+  "scope": "train_only_rolling_origin_cross_fitted_router_residual_decomposition",
+  "main_training_ready": false,
+  "source_year": 2023,
+  "source_version": 8,
+  "expected_sensor_count": 496,
+  "expected_common_train_samples": 3106,
+  "expected_full_positive_train_samples": 3604,
+  "v7a_input": {
+    "protocol_id": "contra_v8_signed_residual_materialize_v7a",
+    "protocol_sha256": "c3d547679b9c6c97ad29720578ddc46a2460d7e9ba336114c59aba429ac03541",
+    "status": "SIGNED_RESIDUAL_MATERIALIZATION_COMPLETE"
+  },
+  "router_design": {
+    "event_protocol_sha256": "1462d7b2a4d51f947ede97f772d2ae002f008698f1f3d4325f7cadeea16576e6",
+    "node_protocol_sha256": "318a4701c2dc3754656d5653af9f37a841c5969899e2df4f2bee93d11de08c0c",
+    "fit": "refit_v8a_event_and_v8b_node_router_on_each_fold_past_weeks",
+    "route": "event_route_and_node_route_and_candidate_mask",
+    "full_train_v8c_routes_used": false
+  },
+  "v5c_context": {
+    "protocol_id": "contra_v8_matched_placebo_audit_v5c",
+    "summary_sha256": "c443581334f1f0aebece82c910a38c78b1dc29a22565d081f6a583298875571a",
+    "triple_metrics_sha256": "192b44e82223a9f943f3b47a5141ea1d19819b7cd0d0c75b0c234d372dcb5bc5",
+    "sensor_metadata_sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094"
+  },
+  "v9a_context": {
+    "protocol_id": "contra_v8_protected_residual_expert_v9a",
+    "protocol_sha256": "bec1f27bf5d45376ad8becab429d31e4a63d493926172aa1be87c0df240186b3",
+    "observed_recommendation": "STOP_SHALLOW_PROTECTED_RESIDUAL_EXPERT_NOT_VALIDATED",
+    "observed_full_positive_routed_gain_raw_mae": 0.07415722674564051,
+    "observed_full_positive_routed_gain_ci_low": -0.05854695574359848,
+    "role": "motivation_only_not_an_input"
+  },
+  "rolling_origin": {
+    "time_source": "positive_incident_t0_iso_week",
+    "expected_unique_train_iso_weeks": 35,
+    "initial_fit_week_count": 18,
+    "audit_fold_count": 3,
+    "audit_week_block_sizes": [6, 6, 5],
+    "fit_rule": "all_train_iso_weeks_strictly_before_each_audit_block",
+    "audit_rule": "each_of_the_final_17_train_iso_weeks_exactly_once",
+    "expected_full_positive_audit_counts": [602, 731, 514],
+    "expected_common_audit_counts": [536, 618, 338]
+  },
+  "support": {
+    "route_source": "fold_past_only_cross_fitted_v8a_and_v8b_router",
+    "active_horizons_zero_based_half_open": [0, 6],
+    "phase_slices_zero_based_half_open": [[0, 3], [3, 6]],
+    "protected_horizons_zero_based_half_open": [6, 12],
+    "protected_noncandidate_nodes": true,
+    "protected_unrouted_candidate_nodes": true,
+    "correction_exactly_zero_outside_hierarchical_route": true
+  },
+  "expert": {
+    "features": "v9a_report_time_event_node_phase_plus_frozen_A_prediction",
+    "ridge_alpha": 10.0,
+    "training_cohorts": ["incident_full", "primary_control", "secondary_control"],
+    "row_weighting": "equal_cohort_and_equal_routed_event_weight",
+    "signed_target": "incident_median_signed_residual_and_control_exact_zero",
+    "direction_target": "incident_sign_of_median_signed_residual_and_control_exact_zero",
+    "magnitude_target": "incident_absolute_median_signed_residual_and_control_exact_zero",
+    "signed_clip": "fit_incident_target_abs_q99",
+    "magnitude_clip": "fit_incident_target_abs_q99",
+    "direction_score_clip": [-1.0, 1.0],
+    "abstention_threshold": "fit_incident_absolute_direction_score_q75"
+  },
+  "policies": {
+    "direct_signed": "clipped_signed_ridge_prediction",
+    "two_part_all": "sign_of_direction_score_times_nonnegative_magnitude_prediction",
+    "two_part_abstained": "two_part_all_only_above_fit_direction_confidence_q75",
+    "oracle_direction": "future_direction_times_predicted_magnitude_diagnostic_only",
+    "oracle_magnitude": "predicted_direction_times_future_magnitude_diagnostic_only"
+  },
+  "uncertainty": {
+    "method": "audit_iso_week_cluster_bootstrap",
+    "draws": 2000,
+    "confidence_level": 0.95,
+    "seed": 2025
+  },
+  "diagnostic_gate": {
+    "primary_policy": "two_part_abstained",
+    "require_direction_auc_ci_lower_above": 0.55,
+    "require_magnitude_correlation_ci_lower_above": 0.0,
+    "require_each_fold_direction_auc_above": 0.5,
+    "require_each_fold_magnitude_correlation_above": 0.0,
+    "require_full_positive_global_point_improvement": true,
+    "maximum_full_positive_global_harm_fraction_of_A_mae": 0.001,
+    "require_full_positive_routed_improvement_ci_lower_above_zero": true,
+    "require_common_incident_routed_point_improvement": true,
+    "maximum_each_control_routed_harm_fraction_of_A_mae": 0.005,
+    "minimum_abstained_row_coverage": 0.05,
+    "require_exact_A_outside_hierarchical_route": true
+  },
+  "information_boundary": {
+    "train_residual_arrays_only": true,
+    "validation_residual_arrays_prohibited": true,
+    "test_split_prohibited": true,
+    "router_and_expert_fit_on_past_weeks_only": true,
+    "audit_weeks_prohibited_from_router_and_expert_fit": true,
+    "future_weeks_prohibited_from_each_fold_fit": true,
+    "control_future_Y_prohibited_from_expert_fit": true,
+    "oracle_policies_prohibited_from_performance_claims": true,
+    "v9a_gate_not_overridden": true,
+    "neural_expert_training_prohibited": true,
+    "folds_features_policies_thresholds_and_gate_may_not_change_after_result": true
+  },
+  "interpretation": "A train-only cross-fitted diagnostic separating routed residual direction, magnitude, and abstention; it cannot override the failed v9a gate, authorize test access, or support causal claims"
+}
