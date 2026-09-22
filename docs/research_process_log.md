@@ -1415,10 +1415,50 @@ artifact hashes are verified, but their audit scores are not used to fit v8c. Ou
 to a `.partial` directory and renamed only after every artifact and summary succeeds. The frozen
 v8c protocol SHA-256 is `6817e3636ac0886c1dcbab323a22ef9137ff856354716ec723a0d31007a1f114`.
 
-A full local engineering run against the archived source-v8 package reproduced the authorized v8a
-and v8b gates before completing v8c. It emitted exactly eight route files and one model file; all
-hashes and hard-support identities were rechecked after publication, and no `.partial` directory
-remained. On the 917 full-positive validation events, the frozen full-training router activated the
-event gate for `20.8288%` of events, the node gate for `27.3505%` of candidate nodes, and their hard
-intersection for `13.4551%` of candidate nodes (4,890 node instances). These are route-coverage
-diagnostics based only on report-time inputs, not outcome metrics or forecasting improvements.
+A complete server run at commit `c22a331` finished with status
+`HIERARCHICAL_IMPACT_ROUTER_MATERIALIZATION_COMPLETE`, exit code `0`, and wall time `2m27s`.
+The published output is `contra_v8c_router_materialization_03`. It emitted exactly eight route
+files and one model file; all hashes and hard-support identities were rechecked after publication,
+and no `.partial` directory remained. The full-training event and node route thresholds were
+`0.09996475438692713` and `0.09932851095118927`, respectively. On the 917 full-positive
+validation events, the frozen router activated the event gate for `20.8288%` of events, the node
+gate for `27.3505%` of candidate nodes, and their hard intersection for `13.4551%` of candidate
+nodes (4,890 node instances). These are route-coverage diagnostics based only on report-time
+inputs, not outcome metrics or forecasting improvements.
+
+### Prospective v9a plan: minimal protected residual expert
+
+v9a is the first forecasting-benefit test after the event and node routing gates passed. It is
+deliberately a shallow diagnostic rather than a neural MoE. Frozen A supplies the baseline forecast,
+and the frozen v8c hierarchical route is the only activation support. A correction can be written
+only to routed candidate nodes in H1--H6; H7--H12, noncandidate nodes, and unrouted candidate nodes
+remain exactly equal to A. The v8c router, thresholds, and validation routes may not be retrained or
+tuned from v9a outcomes.
+
+The expert is a weighted-ridge event-node-phase signed-residual model with separate H1--H3 and
+H4--H6 rows. It reuses the v7b report-time event/node/phase features plus the frozen-A early
+prediction. Training incidents use the median signed residual for each routed node-phase. Primary
+and secondary controls receive an exact-zero target; their future residual and validity arrays are
+not deserialized during fitting. Each of the three training cohorts has equal total weight, and
+each routed event has equal total weight within its cohort. Predictions are symmetrically clipped
+at the training-incident target absolute q99. Validation labels are read only after model fitting
+and only for evaluation; test remains sealed.
+
+The predeclared gate requires a positive full-positive global point improvement, a global
+week-cluster bootstrap lower bound no worse than 0.1% of A MAE, a strictly positive full-positive
+routed-improvement lower bound, and a positive common-incident routed point improvement. Each
+control's routed-harm upper bound must be no greater than 0.5% of its routed A MAE, at least 5% of
+routed support must receive a nonzero correction, and every protected cell must remain exactly A.
+Only a complete pass authorizes development of a neural protected residual expert. Failure stops
+this residual-expert form without weakening the gate or opening test. The frozen v9a protocol
+SHA-256 is `bec1f27bf5d45376ad8becab429d31e4a63d493926172aa1be87c0df240186b3`.
+
+Two implementation-boundary defects were found and corrected before any v9a server result existed.
+First, the initial validation row builder reused the training-target helper, so a routed node-phase
+with no valid future target could disappear from the prediction set. Validation now always emits
+every frozen-route node-phase row and records an unevaluable target as `NaN`; a regression test
+proves that future validity cannot shrink prediction support. Second, the initial control fitting
+path loaded the entire residual package before constructing zero targets. A control-only loader now
+deserializes only sample identity, candidate geometry, and frozen-A prediction; a regression fixture
+places object arrays in every future-derived field and proves those fields are not read. Neither
+correction changed the frozen v9a model family, features, weights, clipping rule, gate, or protocol.
