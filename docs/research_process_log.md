@@ -1665,3 +1665,104 @@ which unavailable incident fields could resolve direction (for example severity,
 clearance state, response actions, weather, or richer text), and determine whether an independent
 city/year can support a fresh confirmatory protocol. Reusing the current validation or test split to
 tune another residual or risk gate would not provide that evidence.
+
+### Post-v10a audit of locally available information sources
+
+A read-only inventory found several locally available inputs that were not part of the frozen
+v8--v10 feature set. Most importantly, the source monthly traffic tensor has three channels whose
+published ordering is inferred as flow, occupancy, and speed, while the chronological package
+builder explicitly retained only channel zero. Consequently A and the v8--v10 routers used flow
+history, forecast clock, report age, event location geometry, and derived flow summaries, but did
+not use pre-report occupancy or speed. These two channels are the highest-priority incremental
+source because they directly characterize congestion state and shock formation. Their ordering and
+units remain source-semantics assumptions and must be carried explicitly in any new protocol. A
+prior 2022 report-pre detection audit found only weak pre-report incident detectability; that result
+does not test whether the same channels improve post-report impact or risk ranking.
+
+The released incident objects and recovered 2023 source rows also contain coarse type, 29-category
+description, holiday, source type, exact latitude/longitude, area, and free-text location. The
+current `report_location_v1` schema deliberately excludes type, description, holiday, duration, and
+legacy position, so these fields have not been tested in the chronological A/v8--v10 line. However,
+the recovered archive is not certified as an initial-report snapshot. Description and type may have
+been revised after first report and therefore require provenance certification before use as online
+features. Duration is a post-event outcome and is prohibited as an inference input, although it can
+serve as an outcome or descriptive stratifier. Holiday can be regenerated from the forecast clock
+without relying on the archived event record.
+
+The 496-node sensor table contains unused static road attributes including segment length, sensor
+technology, road and lane width, shoulder width, design speed, median configuration, terrain,
+urban/rural class, barrier, surface, roadway use, and coordinates. The chronological fixed-A model
+sets `use_sensor_info=False`; v8--v10 chiefly use freeway, direction, report-location distances, and
+traffic-history summaries. Static attributes are report-time safe, but they should be evaluated as
+incremental context with time-separated validation because many are nearly node identifiers. The
+existing adjacency and coordinates can also yield path distance, upstream/downstream junction,
+bottleneck, and neighborhood-state features beyond the current same-road postmile mask.
+
+Finally, local raw tables cover 2022, 2023, and 2024 with a common incident schema, and the full
+sensor metadata covers 16,972 statewide nodes. Existing derived 2022 artifacts include a 300-event
+multichannel panel, but complete cross-year traffic windows are not presently materialized locally.
+Thus 2022/2024 provide a route toward independent cross-year confirmation only after a separately
+frozen build and split protocol; they are not additional observations that may be mixed into the
+current 2023 validation or unopened test. No local continuous weather, lane-blockage, response-action,
+or incident-update stream was found. Those would require an external, timestamped join and are the
+most relevant genuinely new sources if historical first-report availability can be demonstrated.
+
+The next bounded step should therefore be a feature-availability and incremental-information audit,
+not v10b or another fit on the same inputs. It should preserve the existing sample identities and
+information boundary, rebuild report-time X with occupancy and speed, derive static/topological
+context, and compare prospectively frozen ablations on rolling training weeks. Archived incident
+type/description should form a separate diagnostic arm unless and until their first-report timing is
+certified; validation residuals and test remain unopened.
+
+### Frozen and complete v11a multichannel history data gate
+
+The first bounded step was frozen as
+`contra_v8_multichannel_history_materialize_v11a`, with protocol SHA-256
+`a264e4411ab9573486d888c234391a0164297e86d9b67292c1ca1ab524d24a7c`.
+It is a data-availability and integrity gate only. The materializer has no network client and reads
+only the existing January--October row cache, train/validation manifests, station axes, the original
+flow history anchor, and the train-only flow scaler. It emits exactly the twelve report-time history
+steps in source channel order `[flow, occupancy, speed]`; it cannot read the two-slot latency gap,
+future Y values, validation targets or residuals, test, or incident semantic fields. Source channel
+meaning remains inferred from the publication and numeric ranges rather than declared in the matrix
+metadata, so occupancy and speed units remain deliberately unclaimed.
+
+An initial two-sample engineering report incorrectly marked two full-data acceptance items as true
+even though only January and September had been exercised. This reporting defect was corrected
+before treating v11a as a complete result: engineering checks now have a separate subset checklist,
+the full gate is explicitly unevaluated and false under `--check`, and the only engineering-check
+recommendation is `NO_SCIENTIFIC_AUTHORIZATION`. The corrected two-sample rerun verified 992 cached
+node-month rows, reproduced both flow histories with zero mismatches, and passed all engineering
+checks without granting downstream authorization.
+
+The complete local run then materialized all 3,604 train and 917 validation histories. It verified
+all ten declared source-month manifests, 4,960 cached node-month rows, and 4,839 unique blob hashes.
+Every requested sample-history cell was written exactly once. Reconstructed flow had zero mismatches
+against the existing package in both splits, across 21,451,008 train cells and 5,457,984 validation
+cells, and its unique-train-slot mean, standard deviation, valid counts, zero counts, and per-station
+fill means reproduced the existing scaler.
+
+All three channels were finite and nonnegative in the materialized histories. Train occupancy ranged
+from `0` to `0.8263000` with train-only standard deviation `0.0441316`; speed ranged from `3.0` to
+`84.0` with standard deviation `8.3257693`. Validation occupancy ranged from `0` to `0.7773000`, and
+speed from `3.0` to `83.5`. No station was all-missing in any train channel. The frozen data gate
+therefore passed and recommends
+`ALLOW_SEPARATE_PROSPECTIVE_MULTICHANNEL_INCREMENTAL_INFORMATION_AUDIT`. This authorizes only a new
+v11b protocol comparing the incremental report-time information in occupancy and speed. It does not
+override v10a, authorize interval calibration or a neural expert, evaluate predictive benefit, or
+open test.
+
+The preserved local artifact is
+`论文学习/研究开发_20260911/contra_v11a_multichannel_history_01`. Its train and validation arrays
+have SHA-256 values `0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9`
+and `5d2394667da81b95cdbd8b22f08718ea3767a386c0b046ba1c56208fb9e09ce3`;
+the train-only multichannel scaler hash is
+`f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4`.
+
+Implementation verification passed all seven v11a unit tests and all eleven existing chronological
+source-builder tests in the WSL `hx-prediction` environment. Full test discovery ran 189 tests: 181
+passed, while eight pre-existing PyTorch-dependent modules failed during import because none of the
+available WSL Conda environments contains `torch`. These were environment import failures rather
+than assertion failures. The PyTorch-dependent suite remains to be rerun in the server `igstgnn`
+environment; v11a itself imports only NumPy and completed both its engineering check and full local
+materialization without PyTorch.

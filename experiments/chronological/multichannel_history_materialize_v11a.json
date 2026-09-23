@@ -1,0 +1,67 @@
+{
+  "protocol_id": "contra_v8_multichannel_history_materialize_v11a",
+  "scope": "cache_only_report_time_multichannel_history_materialization",
+  "status": "prospectively_frozen_before_materialization",
+  "data_input": {
+    "summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "source_version": 8,
+    "source_year": 2023,
+    "expected_split_samples": {
+      "train": 3604,
+      "val": 917
+    },
+    "expected_nodes": 496,
+    "expected_months": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "expected_source_channels": 3
+  },
+  "channel_semantics": {
+    "source_order": ["flow", "occupancy", "speed"],
+    "evidence_status": "inferred_from_publication_and_numeric_ranges_not_declared_by_source_matrix_metadata",
+    "flow_units": "source_units",
+    "occupancy_units": "unconfirmed_source_units",
+    "speed_units": "unconfirmed_source_units"
+  },
+  "materialization": {
+    "splits": ["train", "val"],
+    "history_steps": 12,
+    "step_minutes": 5,
+    "output_dtype": "float32",
+    "output_axis_order": ["sample", "history_step", "node", "channel"],
+    "preserve_raw_nonfinite_and_negative_values": true,
+    "existing_flow_channel_exact_anchor": true,
+    "fit_statistics_on_unique_train_history_slots_only": true,
+    "valid_for_statistics": "finite_and_nonnegative_with_zero_retained",
+    "cache_only": true,
+    "network_access_prohibited": true,
+    "future_gap_and_Y_values_prohibited": true
+  },
+  "information_boundary": {
+    "development_train_and_validation_manifests_only": true,
+    "report_time_history_only": true,
+    "validation_targets_prohibited": true,
+    "validation_residual_arrays_prohibited": true,
+    "test_manifest_and_test_traffic_prohibited": true,
+    "incident_type_description_duration_prohibited": true,
+    "model_training_prohibited": true,
+    "performance_evaluation_prohibited": true,
+    "v10a_gate_not_overridden": true
+  },
+  "acceptance": {
+    "all_declared_source_months_hash_verified": true,
+    "all_cached_source_rows_complete_and_hash_verified": true,
+    "every_history_cell_materialized_exactly_once": true,
+    "flow_channel_exactly_matches_existing_history": true,
+    "flow_train_statistics_reproduce_existing_scaler": true,
+    "each_channel_has_positive_train_standard_deviation": true,
+    "no_channel_has_an_all_missing_train_station": true,
+    "no_test_or_future_target_read": true
+  },
+  "authorization": {
+    "on_pass": "ALLOW_SEPARATE_PROSPECTIVE_MULTICHANNEL_INCREMENTAL_INFORMATION_AUDIT",
+    "on_fail": "STOP_MULTICHANNEL_INFORMATION_BRANCH",
+    "engineering_check_on_pass": "NO_SCIENTIFIC_AUTHORIZATION",
+    "does_not_authorize_v10b": true,
+    "does_not_authorize_neural_expert": true,
+    "does_not_authorize_test_access": true
+  }
+}
