@@ -1,0 +1,48 @@
+{
+  "protocol_id": "contra_v8_icsf_strength_gate_v12c",
+  "scope": "exploratory_adapter_training_on_reused_train_package",
+  "v12a_protocol_sha256": "8334dfcdcfccfc9526e606ddec40536d284ca603070222d50bf4308674bbce08",
+  "variants": ["scalar", "node"],
+  "seeds": [2025, 2026, 2027],
+  "periods": {
+    "fit": ["2023-01-02T00:00:00", "2023-04-24T00:00:00"],
+    "selection": ["2023-05-01T00:00:00", "2023-06-26T00:00:00"],
+    "audit": ["2023-07-03T00:00:00", "2023-09-04T00:00:00"]
+  },
+  "eligibility": "Positive report t0 and complete positive support interval inside the period; matched evaluations additionally require both complete control support intervals inside that same period. Preserve source IDs/order; publish all exclusions. One-week embargoes. Eligibility uses manifest times only.",
+  "training": {
+    "epochs": 12,
+    "batch_size": 8,
+    "evaluation_batch_size": 16,
+    "learning_rate": 0.001,
+    "adam_eps": 1e-8,
+    "weight_decay": 0.0,
+    "clip_grad_norm": 5.0,
+    "gate_identity_penalty": 0.001,
+    "node_hidden_width": 16,
+    "progress_every_batches": 10,
+    "objective": "All-node/all-12-horizon pooled valid-cell MAE in original standardized flow units plus 0.001 mean squared gate deviation from 1 over candidate nodes. Only eligible fit incident_full Y updates the gate. Frozen backbone remains eval, with gradient propagation through graph and decoder."
+  },
+  "selection": {
+    "objective": "Lowest selection incident_full all-cell MAE among eligible epochs; strict improvement, earlier epoch wins ties. Epoch 0 (original A) always available.",
+    "maximum_relative_harm": 0.001,
+    "protected_regions": ["all", "candidate_h1_h6", "candidate_h7_h12", "noncandidate_all"],
+    "protected_cohorts": ["incident_full", "incident", "primary_control", "secondary_control"],
+    "constraints": "Each protected selection MAE must be no greater than A MAE * 1.001; undefined metrics reject the epoch. Constraints are selection point estimates, not confidence bounds. No audit-period selection, retraining or winning-seed choice."
+  },
+  "bootstrap": {"draws": 2000, "seed": 12028, "confidence": 0.95, "sensitivity_circular_block_weeks": 4, "minimum_valid_draw_fraction": 0.95},
+  "check": {"samples_per_cohort_period": 2, "epochs": 2, "seeds": [2025]},
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "backbone_optimizer_updates": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_selection": true,
+    "backbone_pretrained_on_entire_train": true,
+    "backbone_checkpoint_previously_selected_on_validation": true,
+    "scaler_previously_fit_on_entire_train_X": true,
+    "independent_confirmation": false
+  },
+  "decision": "EXPLORATORY_ADAPTER_COMPARISON_REQUIRES_REVIEW_NO_TEST_AUTHORIZATION",
+  "interpretation": "Chronology and embargoes separate new adapter fitting, epoch selection and audit only. The backbone and input scaler already used the wider train package, and research repeatedly inspected its outcomes. Thus no independent holdout/generalization claim. Report all three seeds, scalar and node; paired pointwise week/four-week intervals condition on fitted weights and do not cover seed uncertainty or multiple comparisons. No new residual expert, router, multichannel inputs, TIID parameter update or graph-parameter update."
+}
