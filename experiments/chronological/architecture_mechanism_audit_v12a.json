@@ -1,0 +1,45 @@
+{
+  "protocol_id": "contra_v8_architecture_mechanism_audit_v12a",
+  "scope": "train_only_frozen_A_path_interventions",
+  "baseline_protocol": "incident_branch_materialize_v6a.json",
+  "baseline_protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",
+  "model_source_sha256": {
+    "src/models/igstgnn.py": "7a6b2d611b6a1cd346c59278f3b1704029d312795e0fa66654fce3bab41dc08d",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8"
+  },
+  "split": "train",
+  "cohorts": ["incident_full", "incident", "primary_control", "secondary_control"],
+  "paths": ["off", "norm_only", "icsf_only", "tiid_only", "full", "full_norm_graph"],
+  "path_definitions": {
+    "off": "Unmodified embedded X; its own graph; no TIID. Reproduce native incident_data=None.",
+    "norm_only": "LayerNorm at every node of latest embedded X; its own graph; no incident V and no TIID.",
+    "icsf_only": "Native ICSF including LayerNorm; its own graph; no TIID.",
+    "tiid_only": "Same history and graph as norm_only; native TIID uses original report context.",
+    "full": "Native ICSF history and graph plus native TIID. Reproduce native fixed A.",
+    "full_norm_graph": "Same ICSF history and TIID as full; replay norm_only dynamic graph with shared static graph. Conditional sensitivity diagnostic."
+  },
+  "batch_size": 16,
+  "progress_every_batches": 5,
+  "check_samples_per_cohort": 2,
+  "native_replay_atol_standardized": 0.000001,
+  "native_replay_rtol": 0.000001,
+  "synthetic_seed": 12025,
+  "synthetic_probe": "Copy ICSF weights; 2 samples, 12 steps, 4 nodes, fixed mixed support. Probe scalar projection gradients, history change, same-support distance change and zero support. No Y and no optimizer.",
+  "regions": ["all", "candidate_h1_h3", "candidate_h4_h6", "candidate_h7_h12", "noncandidate_h1_h6", "noncandidate_h7_h12"],
+  "per_horizon_regions": true,
+  "information_boundary": {
+    "train_only": true,
+    "validation_arrays_prohibited": true,
+    "test_split_prohibited": true,
+    "checkpoint_frozen": true,
+    "optimizer_prohibited": true,
+    "synthetic_gradients_on_module_copy_only": true,
+    "real_data_gradients_prohibited": true,
+    "targets_for_descriptive_error_only": true,
+    "cohort_selection_independent_of_Y": true,
+    "control_own_X_and_clock_positive_report_age_and_distances": true
+  },
+  "output": "Per-cohort sample/region sums, counts and maxima in NPZ, synthetic diagnostics, summary, hashes, host/PID/progress. Atomic publication from a .partial directory.",
+  "decision": "MECHANISM_REVIEW_ONLY_NO_AUTOMATIC_TRAINING_AUTHORIZATION",
+  "interpretation": "Fixed-weight path sensitivities on reused training data. Components can interact and removals can be out of distribution. No causal attribution, independent confirmation, performance win, variance-explained percentage or additive MAE attribution. Check mode verifies engineering only."
+}
