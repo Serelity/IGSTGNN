@@ -1,0 +1,35 @@
+{
+  "protocol_id": "contra_v8_architecture_region_audit_v12b",
+  "scope": "posthoc_train_only_v12a_region_error_analysis",
+  "v12a_protocol_sha256": "8334dfcdcfccfc9526e606ddec40536d284ca603070222d50bf4308674bbce08",
+  "v12a_auditor_sha256": "f54cb495d0807a2f4fb24db85b3f2391d6e8e0f21d064ff0969fd176114eb752",
+  "baseline_protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",
+  "checkpoint_sha256": "b0c712ad9c00007417ccc6ea6268f373852d04063efba2d15d3f49f5497b8e13",
+  "cohort_samples": {"incident_full": 3604, "incident": 3106, "primary_control": 3106, "secondary_control": 3106},
+  "paths": ["off", "norm_only", "icsf_only", "tiid_only", "full", "full_norm_graph"],
+  "base_regions": ["all", "candidate_h1_h3", "candidate_h4_h6", "candidate_h7_h12", "noncandidate_h1_h6", "noncandidate_h7_h12"],
+  "horizon_count": 12,
+  "node_count": 496,
+  "derived_regions": {
+    "candidate_h1_h6": ["candidate_h1_h3", "candidate_h4_h6"],
+    "candidate_all": ["candidate_h1_h3", "candidate_h4_h6", "candidate_h7_h12"],
+    "noncandidate_all": ["noncandidate_h1_h6", "noncandidate_h7_h12"]
+  },
+  "comparisons": {
+    "normalization": ["off", "norm_only"],
+    "icsf_given_normalization": ["norm_only", "icsf_only"],
+    "tiid_given_normalization": ["norm_only", "tiid_only"],
+    "tiid_given_icsf": ["icsf_only", "full"],
+    "full_given_normalization": ["norm_only", "full"],
+    "full_vs_off": ["off", "full"],
+    "native_graph_vs_replay": ["full_norm_graph", "full"]
+  },
+  "primary_descriptive_endpoint": {"cohort": "incident_full", "comparison": "icsf_given_normalization", "region": "candidate_h1_h6"},
+  "estimand": "pooled valid-cell MAE(reference) minus MAE(candidate); positive is improvement. Same counts for every path. Region numerators divided by all-cell counts are geographic/horizon accounting within one comparison, not module attribution.",
+  "sensitivity_estimand": "equal-sample mean of paired per-sample regional MAE differences among samples with regional valid cells",
+  "bootstrap": {"draws": 2000, "seed": 12026, "confidence": 0.95, "cluster": "positive_incident_ISO_week", "shared_draws_across_paths_regions_and_cohorts": true, "sensitivity_circular_block_weeks": 4, "minimum_valid_draw_fraction": 0.95},
+  "matched_comparison": "common incident pooled benefit minus mean of C1/C2 pooled benefits under identical positive-week bootstrap weights; not a causal effect",
+  "information_boundary": {"train_only": true, "raw_traffic_arrays_prohibited": true, "validation_arrays_prohibited": true, "test_split_prohibited": true, "model_loading_prohibited": true, "model_training_prohibited": true},
+  "decision": "EXPLORATORY_MECHANISM_REVIEW_NO_AUTOMATIC_TRAINING_AUTHORIZATION",
+  "interpretation": "Post-hoc analysis after v12a aggregate errors were seen, on reused training data. Pointwise percentile intervals are not multiplicity-adjusted, not independent confirmation, and not a trained-model comparison. Positive-week clustering and four-week sensitivity do not eliminate all cross-week control reuse dependence. No significance-based selection or thresholds authorize neural training."
+}
