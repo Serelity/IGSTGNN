@@ -100,8 +100,8 @@ bash experiments/chronological/run_incident_strength_gate.sh start contra_v12c_s
 
 依次执行单元测试、真实 checkpoint 小样本检查（每时段/cohort 两条样本、两次 epoch、
 两个门控），成功后才执行完整六次拟合。小样本结果只用于工程验证，不参与完整实验选择。
-训练/评估有周期日志，每 epoch 保存历史、last gate 和优化器状态，最终保存 selected gate。
-本版本不支持自动续跑；失败保留现场并使用新运行名。实际 GPU 耗时尚未测量。
+训练/评估有周期日志，每 epoch 原子保存当前 gate、优化器、完整历史和历史最佳 gate，
+最终另存 selected gate。失败保留现场，恢复时使用新运行名。实际完整 GPU 耗时尚未测量。
 
 ```bash
 tail -f experiments/chronological_runs/contra_v12c_strength_gate_01.job/run.log
@@ -132,3 +132,41 @@ LayerNorm 前注入及 TIID 上下文不变、跨时段对照过滤、局部对�
 随机权重及四个 cohort 各两条真实输入核验 scalar/node 的原生前向精确复现；用随机投影的
 合成目标分别反向更新两次，门控梯度有限且非零、节点隐层在第二步收到梯度，骨干状态不变。
 该检查没有使用真实未来 Y 优化，也没有报告真实 MAE；真实 checkpoint/GPU 检查仍由服务器执行。
+
+## 被强制终止后的恢复
+
+用户回传原版 `contra_v12c_strength_gate_01` 在 scalar/seed2026/epoch11/batch171
+被 `Killed`，工作流退出码 137，Python 完整流程运行约 32 分钟。
+137 通常表示 SIGKILL；日志没有提供 OOM、作业时限或平台回收的确定证据。
+当时最终 summary 尚未发布，因此旧 report 的 FileNotFoundError 是中断的后果。
+
+更新后 `report` 在没有最终 summary 时会列出 `.partial` 的阶段与已保存组合，
+不把不完整运行当成最终实验结果。新增日志记录进程 RSS/峰值 RSS、CUDA allocated/reserved/peak；
+跨组合释放不再使用的模型引用与 CUDA 缓存。这些是可观测性与资源管理改进，不能据此
+声称已修复服务器强制终止的根因；根因仍需平台作业记录或内核 OOM 记录。
+
+```bash
+git pull --ff-only origin research/chronological-tiid
+bash experiments/chronological/run_incident_strength_gate.sh report contra_v12c_strength_gate_01
+bash experiments/chronological/run_incident_strength_gate.sh resume contra_v12c_strength_gate_02 contra_v12c_strength_gate_01
+```
+
+resume 在新 `.job` 中先运行测试及真实 checkpoint 小样本检查。确认原运行已结束后使用；
+仍需有效的 GPU 资源分配，nohup 不能绕过作业时限和内存限制。
+程序重新校验全部冻结输入、时间资格清单、协议/骨干身份，重新计算 A 基线和审计，
+复用可恢复的门控训练状态。源目录只读；恢复使用的文件哈希记录在新输出中。
+训练预算、样本顺序、batch size、超参数、保护阈值和选择规则不变。
+
+- 新格式：按最后完整 epoch 恢复当前权重、优化器及历史最佳状态；中断的半个 epoch 重做。
+- 旧格式已完成组合：校验历史与 selected_gate 后复用，无需重新优化。
+- 旧格式未完成组合：若历史最佳为 epoch 0 或最后已保存 epoch，可恢复。
+  若最佳在更早的中间 epoch，旧代码没有保存那份权重，只重跑该组合。
+  不会把当前权重冒充历史最佳，也不会仅因缺少最佳权重而丢弃其他完整组合。
+
+新格式原子 checkpoint 内的历史为权威记录，即使中断时外部 history.json 尚未刷新也能恢复。
+恢复一致性测试在相同 CPU/软件环境完成；不同 GPU/数值环境可能存在数值差异，
+最好沿用相同设备类型。任何基线与冻结选择规则冲突都会明确失败。
+
+恢复补丁验证：12 项原门控测试及 10 项恢复测试通过（共 22 项）。覆盖旧检查点的三种
+可恢复情形和历史最佳缺失时的重跑判定、协议/历史篡改拒绝、原子历史优先、未完成报告、
+源目录只读、完整恢复流程不再调用优化器，以及中断续跑与不中断运行的逐元素权重一致性。

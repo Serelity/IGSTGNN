@@ -2,6 +2,7 @@
 
 import argparse
 import copy
+import gc
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -25,6 +26,7 @@ from experiments.chronological.audit_matched_controls import read_csv, sha256
 from experiments.chronological.materialize_incident_branch import FullPositiveDataset, MatchedCounterfactualDataset
 from experiments.chronological.smoke import make_model, device_batch, set_seed
 from experiments.chronological.train import configure_determinism, save_checkpoint
+from experiments.chronological.gate_recovery import cpu_tree, memory_snapshot, partial_report, recover
 from src.models.incident_strength_gate import attach_gate
 from src.utils.chronological import masked_flow_mae
 
@@ -237,7 +239,7 @@ def assert_backbone(model, expected):
 
 
 def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protocol, device,
-                output, progress):
+                output, progress, resume_from=None):
     set_seed(seed)
     original_hash = backbone_hash(model)
     first = next(iter(loader(datasets['incident_full'], plan['fit']['indices']['incident_full'], 2)))
@@ -258,7 +260,38 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
             'state': copy.deepcopy(gate.state_dict())}
     history = []
     steps = 0
-    for epoch in range(1, settings['epochs'] + 1):
+    first_epoch = 1
+    recovery = {'method': 'fresh_fit'}
+    if resume_from is not None:
+        recovered = recover(resume_from, variant, seed, protocol, PROTOCOL_SHA256, original_hash,
+                            baseline_selection, best['state'], selection_eligible)
+        if recovered is not None:
+            if recovered['restart_required']:
+                recovery = {k: v for k, v in recovered.items()}
+                progress('legacy_fit_restart_required', reason=recovered['reason'],
+                         last_epoch=recovered['last_epoch'], best_epoch=recovered['best_epoch'])
+            else:
+                gate.load_state_dict(recovered['gate_state'], strict=True)
+                optimizer.load_state_dict(recovered['optimizer_state'])
+                best, history, steps = recovered['best'], recovered['history'], recovered['steps']
+                first_epoch = recovered['epoch'] + 1
+                recovery = {'method': recovered['method'], 'epoch': recovered['epoch'],
+                            'source_hashes': recovered['source_hashes']}
+                progress('fit_restored', epoch=recovered['epoch'], best_epoch=best['epoch'])
+    write_json(output / 'recovery.json', recovery)
+
+    def publish_epoch(epoch):
+        # One atomic bundle is authoritative, including the historical best state.
+        save_checkpoint(output / 'last_gate.pt', cpu_tree({
+            'format_version': 2, 'variant': variant, 'seed': seed, 'epoch': epoch,
+            'gate_state': gate.state_dict(), 'optimizer_state': optimizer.state_dict(),
+            'best': best, 'history': history, 'training_settings': settings,
+            'protocol_sha256': PROTOCOL_SHA256, 'backbone_state_sha256': original_hash}))
+        write_json(output / 'history.json', history)
+
+    if first_epoch > 1:
+        publish_epoch(first_epoch - 1)
+    for epoch in range(first_epoch, settings['epochs'] + 1):
         training = train_epoch(model, gate, optimizer, datasets['incident_full'],
             plan['fit']['indices']['incident_full'], settings, device, seed, epoch, progress)
         steps += training['optimizer_steps']
@@ -274,10 +307,7 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
         assert_backbone(model, original_hash)
         history.append({'epoch': epoch, 'training': training, 'selection': current,
                         'eligible': eligible, 'protection_checks': checks, 'best_epoch': best['epoch']})
-        write_json(output / 'history.json', history)
-        save_checkpoint(output / 'last_gate.pt', {'variant': variant, 'seed': seed, 'epoch': epoch,
-            'gate_state': gate.state_dict(), 'optimizer_state': optimizer.state_dict(),
-            'protocol_sha256': PROTOCOL_SHA256, 'backbone_state_sha256': original_hash})
+        publish_epoch(epoch)
         progress('epoch_complete', epoch=epoch, eligible=eligible, best_epoch=best['epoch'],
                  selection_all_mae=current['incident_full']['mae']['all'])
     gate.load_state_dict(best['state'], strict=True)
@@ -287,7 +317,8 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
         'backbone_state_sha256': original_hash})
     return {'selected_epoch': best['epoch'], 'selection_metrics': best['selection_metrics'],
             'optimizer_steps': steps, 'trainable_parameters': sum(p.numel() for p in gate.parameters()),
-            'initial_prediction_exactly_A': True, 'backbone_state_unchanged': True}
+            'initial_prediction_exactly_A': True, 'backbone_state_unchanged': True,
+            'recovery': recovery}
 
 
 def comparison_records(reference, variants):
@@ -314,12 +345,17 @@ def save_arrays(path, record):
     np.savez_compressed(path, **{k: np.asarray(v) for k, v in record.items()})
 
 
-def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0', check=False):
+def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0', check=False,
+        resume_from=None):
     protocol = load_protocol()
     identity_protocol = mechanisms.load_protocol(mechanisms.PROTOCOL)
     if sha256(mechanisms.PROTOCOL) != protocol['v12a_protocol_sha256']:
         raise ValueError('v12a identity protocol changed')
     output = Path(output)
+    if resume_from is not None:
+        resume_from = Path(resume_from).resolve()
+        if check or not resume_from.is_dir() or output.resolve().is_relative_to(resume_from):
+            raise ValueError('Recovery needs an existing full-run directory and a separate new output')
     partial = output.with_name(output.name + '.partial')
     if output.exists() or partial.exists():
         raise FileExistsError('Output/.partial exists; preserve it and choose a new run name')
@@ -329,7 +365,8 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
                 'started_utc': datetime.now(timezone.utc).isoformat()}
 
     def progress(stage, **fields):
-        value = {**identity, 'stage': stage, 'elapsed_seconds': time.monotonic() - started, **fields}
+        value = {**identity, 'stage': stage, 'elapsed_seconds': time.monotonic() - started,
+                 'memory': memory_snapshot(device), **fields}
         write_json(partial / 'progress.json', value)
         print(json.dumps(value), flush=True)
 
@@ -344,6 +381,12 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
         primary = read_csv(Path(primary_dir) / 'train_control_manifest.csv')
         secondary = read_csv(Path(secondary_dir) / 'train_second_control_manifest.csv')
         plan = make_plan(positive, primary, secondary, protocol)
+        recovery_source = None
+        if resume_from is not None:
+            old_plan = resume_from / 'effective_plan.json'
+            if json.loads(old_plan.read_text()) != plan:
+                raise ValueError('Recovery source uses different sample/period eligibility')
+            recovery_source = {'path': str(resume_from), 'effective_plan_sha256': sha256(old_plan)}
         write_json(partial / 'eligibility.json', plan)
         datasets = make_datasets(data_dir, primary_dir, secondary_dir, baseline)
         if check:
@@ -399,7 +442,8 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
                     progress(stage, variant=variant, seed=seed, **fields)
                 update('adapter_started')
                 detail = fit_variant(model, variant, seed, datasets, plan, baseline_selection,
-                                     protocol, device, directory, update)
+                                     protocol, device, directory, update,
+                                     resume_from / directory.name if resume_from is not None else None)
                 learned[variant] = {}
                 detail['audit'] = {}
                 for cohort in COHORTS:
@@ -411,7 +455,11 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
                     save_arrays(directory / f'audit_{cohort}.npz', record)
                 runs[str(seed)][variant] = detail
                 write_json(directory / 'summary.json', detail)
+                model.icsf_module.last_gate = None
                 del model
+                gc.collect()
+                if device.type == 'cuda':
+                    torch.cuda.empty_cache()
             if not check:
                 analysis, _, weekly = audit_comparisons(reference['audit'], learned, times, protocol)
                 comparisons[str(seed)] = analysis
@@ -422,6 +470,7 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
                    Path(mechanisms.__file__), REPO / 'experiments/chronological/audit_architecture_regions.py',
                    REPO / 'experiments/chronological/materialize_incident_branch.py',
                    REPO / 'experiments/chronological/smoke.py', REPO / 'experiments/chronological/train.py',
+                   REPO / 'experiments/chronological/gate_recovery.py',
                    REPO / 'src/utils/chronological.py']
         summary = {'status': 'ENGINEERING_CHECK_PASS' if check else 'ICSF_STRENGTH_GATE_EXPERIMENT_COMPLETE',
             'protocol_id': protocol['protocol_id'], 'protocol_sha256': PROTOCOL_SHA256,
@@ -434,10 +483,13 @@ def run(data_dir, primary_dir, secondary_dir, checkpoint, output, device='cuda:0
             'baseline_audit': {c: metric_summary(r) for c, r in reference['audit'].items()},
             'phase_samples': {phase: {c: len(v) for c, v in item['indices'].items()} for phase, item in plan.items()},
             'checkpoint': baseline['checkpoint'], 'inputs': hashes,
+            'recovery_source': recovery_source,
             'code_sha256': {str(p.relative_to(REPO)): sha256(p) for p in sources},
             'environment': {**identity, 'python': sys.version, 'numpy': np.__version__,
                 'torch': torch.__version__, 'device': str(device),
                 'gpu': torch.cuda.get_device_name(device) if device.type == 'cuda' else None,
+                'scheduler': {key: os.environ.get(key) for key in
+                              ('SLURM_JOB_ID', 'SLURM_STEP_ID', 'PBS_JOBID', 'LSB_JOBID')},
                 'git_head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()},
             'outputs': {str(p.relative_to(partial)): sha256(p) for p in sorted(partial.rglob('*'))
                         if p.is_file() and p.name != 'progress.json'}}
@@ -487,14 +539,18 @@ def main():
         execute.add_argument('--' + name, required=True, type=Path)
     execute.add_argument('--device', default='cuda:0')
     execute.add_argument('--check', action='store_true')
+    execute.add_argument('--resume-from', type=Path)
     view = commands.add_parser('report')
     view.add_argument('summary', type=Path)
     args = parser.parse_args()
     if args.command == 'report':
-        report(json.loads(args.summary.read_text()))
+        if args.summary.is_file():
+            report(json.loads(args.summary.read_text()))
+        else:
+            partial_report(args.summary.parent)
     else:
         run(args.data_dir, args.primary_control_dir, args.secondary_control_dir, args.checkpoint,
-            args.output, args.device, args.check)
+            args.output, args.device, args.check, args.resume_from)
 
 
 if __name__ == '__main__':
