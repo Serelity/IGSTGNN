@@ -14,16 +14,52 @@ OUT="$REPO_DIR/experiments/chronological_runs/$RUN_NAME"
 JOB="${OUT}.job"
 LOG="$JOB/run.log"
 
+resource_snapshot() {
+  printf 'Recorded: %s\nHost: %s\n' "$(date -Is)" "$(hostname)"
+  for KEY in SLURM_JOB_ID SLURM_JOB_PARTITION SLURM_CPUS_PER_TASK SLURM_CPUS_ON_NODE SLURM_MEM_PER_NODE SLURM_MEM_PER_CPU CUDA_VISIBLE_DEVICES; do
+    printf '%s=%s\n' "$KEY" "${!KEY:-unset}"
+  done
+  # Walk the current cgroup and its ancestors: a limit may live at the job level.
+  if [[ -r /proc/self/cgroup ]]; then
+    cat /proc/self/cgroup
+    CGROUP_REL=$(awk -F: '$1 == "0" {print $3}' /proc/self/cgroup)
+    if [[ "$CGROUP_REL" == /* ]]; then
+      CGROUP_DIR="/sys/fs/cgroup${CGROUP_REL%/}"
+      while [[ "$CGROUP_DIR" == /sys/fs/cgroup* ]]; do
+        for METRIC in memory.current memory.peak memory.max memory.events; do
+          if [[ -r "$CGROUP_DIR/$METRIC" ]]; then
+            printf '\n%s\n' "$CGROUP_DIR/$METRIC"
+            cat "$CGROUP_DIR/$METRIC" || true
+          fi
+        done
+        [[ "$CGROUP_DIR" == /sys/fs/cgroup ]] && break
+        CGROUP_DIR=${CGROUP_DIR%/*}
+      done
+    fi
+  fi
+  return 0
+}
+
 if [[ "$ACTION" == _worker ]]; then
   PYTHON_BIN=$3
   DEVICE=$4
   RECOVERY_SOURCE=${5:-}
-  trap 'STATUS=$?; printf "%s\n" "$STATUS" > "$JOB/exit_code"; printf "Workflow exit code: %s\nFinished: %s\n" "$STATUS" "$(date -Is)"' EXIT
+  trap 'STATUS=$?; resource_snapshot > "$JOB/resources_finished.txt" 2>&1 || true; printf "%s\n" "$STATUS" > "$JOB/exit_code"; printf "Workflow exit code: %s\nFinished: %s\n" "$STATUS" "$(date -Is)"' EXIT
+  printf '%s\n' "$$" > "$JOB/pid"
+  resource_snapshot > "$JOB/resources_started.txt" 2>&1 || true
+  if [[ -n "${SLURM_JOB_ID:-}" ]]; then
+    printf '%s\n' "$SLURM_JOB_ID" > "$JOB/slurm_job_id"
+  fi
   export CUBLAS_WORKSPACE_CONFIG=:4096:8
   export OMP_NUM_THREADS=3 OPENBLAS_NUM_THREADS=3 MKL_NUM_THREADS=3 NUMEXPR_NUM_THREADS=3
   printf 'Started: %s\nHost: %s\nWorker PID: %s\nPython: %s\nDevice: %s\n' \
     "$(date -Is)" "$(hostname)" "$$" "$PYTHON_BIN" "$DEVICE"
   git log -1 --format='commit=%H'
+  printf 'Slurm job: %s\nResources: %s\n' "${SLURM_JOB_ID:-unset}" "$JOB/resources_started.txt"
+  ALLOCATED_CPUS=${SLURM_CPUS_PER_TASK:-${SLURM_CPUS_ON_NODE:-}}
+  if [[ "$ALLOCATED_CPUS" =~ ^[0-9]+$ ]] && (( ALLOCATED_CPUS < 3 )); then
+    echo '注意：本实验固定使用 3 个 CPU 线程，当前分配不足 3 CPU；建议重新申请匹配资源。'
+  fi
   "$PYTHON_BIN" -c 'import sys,numpy,torch; print("python:",sys.version,"numpy:",numpy.__version__,"torch:",torch.__version__,flush=True)'
   "$PYTHON_BIN" -m unittest discover -s tests -p 'test_incident_strength_gate*.py' -v
   ARGS=(
@@ -45,7 +81,7 @@ if [[ "$ACTION" == _worker ]]; then
 fi
 
 case "$ACTION" in
-  start|resume)
+  start|run|resume)
     PYTHON_BIN=$(python -c 'import sys; print(sys.executable)')
     DEVICE=${V12C_DEVICE:-cuda:0}
     "$PYTHON_BIN" -c 'import sys,torch; d=sys.argv[1]; assert not d.startswith("cuda") or torch.cuda.is_available(), "CUDA unavailable: activate igstgnn on an allocated GPU node"' "$DEVICE"
@@ -71,6 +107,14 @@ case "$ACTION" in
     mkdir -p -- "$(dirname -- "$OUT")"
     mkdir -- "$JOB"
     hostname > "$JOB/host"
+    if [[ "$ACTION" == run ]]; then
+      printf 'v12c foreground workflow; log: %s\n' "$LOG"
+      # pipefail preserves worker failure even when tee succeeds. No detached process
+      # is left behind when a platform batch command reaches the end of this script.
+      bash "$SCRIPT_DIR/run_incident_strength_gate.sh" _worker "$RUN_NAME" "$PYTHON_BIN" "$DEVICE" "$RECOVERY_SOURCE" \
+        2>&1 | tee "$LOG"
+      exit 0
+    fi
     nohup bash "$SCRIPT_DIR/run_incident_strength_gate.sh" _worker "$RUN_NAME" "$PYTHON_BIN" "$DEVICE" "$RECOVERY_SOURCE" \
       > "$LOG" 2>&1 < /dev/null &
     RUN_PID=$!
@@ -86,6 +130,9 @@ case "$ACTION" in
     fi
     RUN_HOST=$(< "$JOB/host")
     printf 'Run host: %s\nCurrent host: %s\n' "$RUN_HOST" "$(hostname)"
+    if [[ -f "$JOB/slurm_job_id" ]]; then
+      printf 'Slurm job: %s\n' "$(< "$JOB/slurm_job_id")"
+    fi
     if [[ -f "$JOB/exit_code" ]]; then
       printf 'Workflow exit code: %s\n' "$(< "$JOB/exit_code")"
     elif [[ "$RUN_HOST" == "$(hostname)" && -f "$JOB/pid" ]]; then
@@ -106,7 +153,8 @@ case "$ACTION" in
     python "$SCRIPT_DIR/train_incident_strength_gate.py" report "$OUT/summary.json"
     ;;
   help)
-    echo '用法：bash experiments/chronological/run_incident_strength_gate.sh {start|status|report} [contra_v12c_strength_gate_01]'
+    echo '用法：bash experiments/chronological/run_incident_strength_gate.sh {run|start|status|report} [contra_v12c_strength_gate_01]'
+    echo 'run：前台从头执行，适用于平台批任务入口；start：已分配节点内 nohup 后台执行。'
     echo '恢复：bash experiments/chronological/run_incident_strength_gate.sh resume contra_v12c_strength_gate_02 contra_v12c_strength_gate_01'
     echo '默认 cuda:0；先单元测试和小样本梯度检查，再执行两种门控、三个种子、每次 12 epoch。'
     ;;

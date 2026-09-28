@@ -135,6 +135,50 @@ LayerNorm 前注入及 TIID 上下文不变、跨时段对照过滤、局部对�
 
 ## 被强制终止后的恢复
 
+### 2026-09-28 从头重启
+
+此次用户要求重新提交代码并从头运行。新运行名使用
+`contra_v12c_strength_gate_restart_20260928_01`，不传 `--resume-from`，
+六组拟合重新初始化。旧运行、日志及 `.partial` 保留；协议、三个种子、训练预算、
+线程数、batch size 和选择阈值均不变，不依据中断时的局部结果修改实验。
+
+在服务器拉取本次提交后，向平台重新申请 GPU 任务。建议资源为至少 3 CPU、20 GiB
+主机内存及可用 CUDA GPU，时限按平台允许值申请（原任务为 6 小时，完整耗时仍待验证）。
+具体分区、GPU/shard、账户和 QOS 以平台实际配置为准，不预设可用的 sbatch 参数。
+尽量使用与此前相同的 GPU 类型及 `igstgnn` 环境。
+
+新增 `run` 是同步前台入口，供平台启动命令或已有批任务脚本调用；它等待测试、小样本
+检查和全部训练结束，实时显示并保存日志，原样向平台返回工作流失败码：
+
+```bash
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-code || exit 1
+bash experiments/chronological/run_incident_strength_gate.sh run contra_v12c_strength_gate_restart_20260928_01
+```
+
+运行命令前须激活 `igstgnn`。如果平台只提供交互终端，可在有效 GPU 分配内用原 `start`
+后台入口；不要将 `start` 用作运行后即退出的批任务脚本的最后一条命令。
+`run` 和 `start` 二选一，相同运行名的任何旧输出都会被拒绝覆盖。
+
+```bash
+bash experiments/chronological/run_incident_strength_gate.sh status contra_v12c_strength_gate_restart_20260928_01
+bash experiments/chronological/run_incident_strength_gate.sh report contra_v12c_strength_gate_restart_20260928_01
+```
+
+`.job` 新增 `slurm_job_id`（存在 Slurm 环境变量时）及 `resources_started.txt`、
+`resources_finished.txt`。资源快照记录有限的分配字段和当前 cgroup 到根的内存计数，
+不读取完整环境变量。若整个 shell/cgroup 被 SIGKILL，结束快照及退出码可能来不及写入。
+这些记录帮助定位，不能保证防止或解释所有外部 SIGKILL。
+
+此前用户回传 job 1127699 的内存峰值约 2.25 GiB、上限约 19.7 GiB、OOM 计数为零，
+且当时作业仍在 6 小时时限内运行。这不支持该作业内存限额 OOM 或整作业超时的解释；
+终止信号来源仍未查明。前台入口和重新提交资源任务不应被描述为已修复根因。
+
+本次本地验证：`test_incident_strength_gate*.py` 共 25 项通过，包含前台成功执行、
+训练失败码经 tee 传回、工程检查失败阻止训练、资源记录和旧目录拒绝覆盖；
+Bash 语法和 diff 空白检查通过。尚未在服务器执行此次从头重跑。
+
+### 旧任务恢复说明
+
 用户回传原版 `contra_v12c_strength_gate_01` 在 scalar/seed2026/epoch11/batch171
 被 `Killed`，工作流退出码 137，Python 完整流程运行约 32 分钟。
 137 通常表示 SIGKILL；日志没有提供 OOM、作业时限或平台回收的确定证据。
