@@ -1,5 +1,8 @@
 # v12c：保留原 A 初始输出的 ICSF 强度门控
 
+2026-09-29 已收到从头重跑的完整日志。结果与后续只读诊断见
+[训练轨迹诊断](incident_strength_gate_diagnostics.md)。
+
 ## 来自 v12a/v12b 的依据
 
 用户于 2026-09-27 回传 `contra_v12b_regions_01`，状态为
