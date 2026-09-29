@@ -239,7 +239,12 @@ def assert_backbone(model, expected):
 
 
 def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protocol, device,
-                output, progress, resume_from=None):
+                output, progress, resume_from=None, *, epoch_trainer=None, protocol_hash=None,
+                diagnostic=None):
+    # Default v12c behavior is unchanged; later controlled comparisons can reuse
+    # identical fitting/selection/recovery machinery with an explicit objective.
+    epoch_trainer = train_epoch if epoch_trainer is None else epoch_trainer
+    protocol_hash = PROTOCOL_SHA256 if protocol_hash is None else protocol_hash
     set_seed(seed)
     original_hash = backbone_hash(model)
     first = next(iter(loader(datasets['incident_full'], plan['fit']['indices']['incident_full'], 2)))
@@ -258,12 +263,22 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
         eps=settings['adam_eps'], weight_decay=settings['weight_decay'])
     best = {'epoch': 0, 'selection_metrics': baseline_selection,
             'state': copy.deepcopy(gate.state_dict())}
+    diagnostics = {}
+    def diagnose(label):
+        if diagnostic is not None:
+            # Even DataLoader construction consumes RNG state. Observations must
+            # leave the fitting sequence untouched.
+            devices = [device.index if device.index is not None else torch.cuda.current_device()] if device.type == 'cuda' else []
+            with torch.random.fork_rng(devices=devices):
+                diagnostics[label] = diagnostic(model, gate, label)
+            assert_backbone(model, original_hash)
+    diagnose('initial')
     history = []
     steps = 0
     first_epoch = 1
     recovery = {'method': 'fresh_fit'}
     if resume_from is not None:
-        recovered = recover(resume_from, variant, seed, protocol, PROTOCOL_SHA256, original_hash,
+        recovered = recover(resume_from, variant, seed, protocol, protocol_hash, original_hash,
                             baseline_selection, best['state'], selection_eligible)
         if recovered is not None:
             if recovered['restart_required']:
@@ -286,13 +301,13 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
             'format_version': 2, 'variant': variant, 'seed': seed, 'epoch': epoch,
             'gate_state': gate.state_dict(), 'optimizer_state': optimizer.state_dict(),
             'best': best, 'history': history, 'training_settings': settings,
-            'protocol_sha256': PROTOCOL_SHA256, 'backbone_state_sha256': original_hash}))
+            'protocol_sha256': protocol_hash, 'backbone_state_sha256': original_hash}))
         write_json(output / 'history.json', history)
 
     if first_epoch > 1:
         publish_epoch(first_epoch - 1)
     for epoch in range(first_epoch, settings['epochs'] + 1):
-        training = train_epoch(model, gate, optimizer, datasets['incident_full'],
+        training = epoch_trainer(model, gate, optimizer, datasets['incident_full'],
             plan['fit']['indices']['incident_full'], settings, device, seed, epoch, progress)
         steps += training['optimizer_steps']
         current = {}
@@ -310,15 +325,17 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
         publish_epoch(epoch)
         progress('epoch_complete', epoch=epoch, eligible=eligible, best_epoch=best['epoch'],
                  selection_all_mae=current['incident_full']['mae']['all'])
+    diagnose('last')
     gate.load_state_dict(best['state'], strict=True)
     assert_backbone(model, original_hash)
+    diagnose('selected')
     save_checkpoint(output / 'selected_gate.pt', {'variant': variant, 'seed': seed,
-        'epoch': best['epoch'], 'gate_state': best['state'], 'protocol_sha256': PROTOCOL_SHA256,
+        'epoch': best['epoch'], 'gate_state': best['state'], 'protocol_sha256': protocol_hash,
         'backbone_state_sha256': original_hash})
     return {'selected_epoch': best['epoch'], 'selection_metrics': best['selection_metrics'],
             'optimizer_steps': steps, 'trainable_parameters': sum(p.numel() for p in gate.parameters()),
             'initial_prediction_exactly_A': True, 'backbone_state_unchanged': True,
-            'recovery': recovery}
+            'recovery': recovery, **({'parameter_gradient_diagnostics': diagnostics} if diagnostic is not None else {})}
 
 
 def comparison_records(reference, variants):

@@ -1,0 +1,35 @@
+{
+  "protocol_id": "contra_v8_regional_gate_objective_v12e",
+  "scope": "controlled_node_gate_objective_comparison_on_reused_development_periods",
+  "v12c_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "arms": ["global", "regional"],
+  "architecture": "v12c node gate, 100->16->1 Tanh, identity initialized, original A backbone frozen/eval",
+  "inherit": "All v12c seeds, periods, support eligibility, Adam settings, batch sizes, 12-epoch budget, regularization coefficient, selection constraints and bootstrap settings. Run both node arms afresh, matching initialization and sample order per seed. Never reuse a v12c scalar fit as this global node arm.",
+  "objectives": {
+    "global": "Original v12c all-valid-cell standardized flow MAE plus unchanged identity penalty.",
+    "regional": "For each fit minibatch: arithmetic mean of candidate H1-H6 mean MAE, candidate H7-H12 mean MAE, and noncandidate all-horizon mean MAE, in standardized flow units; plus unchanged 0.001 candidate gate identity penalty. All three regions must have valid cells, otherwise fail rather than silently reweight."
+  },
+  "regions": ["candidate_h1_h6", "candidate_h7_h12", "noncandidate_all"],
+  "region_weights": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+  "selection": "Unchanged v12c strict incident_full global MAE improvement subject to all original region/cohort 0.1% point-harm constraints. Epoch 0 is always available. Do not choose by regional loss, diagnostic gradients or audit outcomes.",
+  "parameter_gradient_probe": {
+    "samples": 64,
+    "sample_rule": "Evenly spaced positions from ordered eligible fit incident_full indices, using linspace integer positions, determined solely by manifest eligibility. All eligible indices when fewer than 64.",
+    "states": ["initial", "last", "selected"],
+    "batch_size": 8,
+    "target": "Gradients with respect to actual shared node-gate parameters, including all layers, for pooled fixed-probe regional mean standardized MAE and candidate mean identity penalty. Save vectors, parameter names/shapes and sample IDs. Report raw region cosine and directional alignment with global and regional objective gradients, with and without penalty.",
+    "boundary": "Fit positive samples only. No parameter updates, no control/selection/audit gradient targets. Probe is a fixed descriptive subset, not the full fit set and not the Adam minibatch trajectory. Preserve RNG state around diagnostics."
+  },
+  "audit": "Report A, global-node and regional-node for every seed using the inherited paired week/four-week bootstrap and all cohorts/regions. No best seed or arm chosen from audit; these audit weeks were already inspected in v12c and are not independent confirmation.",
+  "decision": "CONTROLLED_DEVELOPMENT_COMPARISON_REQUIRES_REVIEW_NO_TEST_AUTHORIZATION",
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_gradient_probe": false,
+    "control_Y_used_for_selection": true,
+    "audit_Y_used_for_selection": false,
+    "backbone_optimizer_updates": false,
+    "independent_confirmation": false
+  }
+}
