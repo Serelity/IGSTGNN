@@ -1,0 +1,34 @@
+{
+  "protocol_id": "contra_v8_icsf_strength_response_v12d",
+  "scope": "post_v12c_exploratory_fixed_strength_and_fit_gradient_diagnostic",
+  "v12c_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "strengths": [0.0, 0.5, 0.8, 0.95, 0.99, 1.0, 1.01, 1.05, 1.2, 1.5, 2.0],
+  "phases": ["fit", "selection"],
+  "regions": ["all", "candidate_h1_h6", "candidate_h7_h12", "noncandidate_all"],
+  "evaluation_batch_size": 16,
+  "gradient_batch_size": 8,
+  "threads": 3,
+  "check_samples_per_cohort_phase": 2,
+  "gradient_strength": 1.0,
+  "gradient_objective": "Fit incident_full pooled valid-cell standardized MAE, evaluated with fixed weights. Save derivatives of each disjoint regional error SUM with respect to per-sample per-node direct injection strengths. Divide all regions by the same whole-fit valid-cell count to obtain contributions to the full loss; also report each region's own mean derivative. Sum coordinates for the shared scalar derivative. At g=1, v12c scalar-logit derivative is one half of the direct-strength derivative.",
+  "gradient_interpretation": "Input-coordinate derivatives, not MLP parameter gradients. Region-vector cosine and cancellation do not prove optimizer conflict in a shared neural gate. Positive derivative favors a local decrease in strength. At g=1 the identity penalty derivative is zero. No inference about penalty dominance at trained weights. No optimizer or parameter updates.",
+  "identity": "g=1 must exactly reproduce native full predictions on every evaluated batch. g=0 removes only ICSF injection; LayerNorm, original TIID context and all downstream computations remain. g=2 is a diagnostic endpoint, not a finite-logit value of the v12c sigmoid gate.",
+  "information_boundary": {
+    "audit_period_samples_evaluated": false,
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_targets_used_for_gradients": false,
+    "model_training_performed": false,
+    "new_checkpoint_selection_performed": false,
+    "independent_confirmation": false
+  },
+  "decision": "REPORT_ALL_FIXED_POINTS_AND_FIT_GRADIENTS_NO_WINNER_SELECTION",
+  "limitations": [
+    "Reuse v12c time eligibility, original A and original all-train scaler; development data already inspected.",
+    "Hash entire frozen train artifacts for identity; dataset wrappers may load train metadata/context but only fit/selection samples are fetched for evaluation.",
+    "Full-period pooled gradient is not the sequence of equally stepped minibatch gradients used by Adam.",
+    "MAE and graph computations can be nonsmooth; finite strength differences need not match infinitesimal derivatives.",
+    "Finite grid cannot establish an optimum or exclude all useful state-dependent gates.",
+    "No confidence intervals, new thresholds, learning-rate search, model selection or test authorization."
+  ]
+}
