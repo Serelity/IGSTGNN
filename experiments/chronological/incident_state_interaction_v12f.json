@@ -1,0 +1,42 @@
+{
+  "protocol_id": "contra_v8_incident_state_interaction_v12f",
+  "scope": "bounded_vector_adapter_comparison_on_reused_development_periods",
+  "v12c_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "arms": ["strength", "state_vector", "interaction_vector"],
+  "inherit": "All v12c seeds, temporal/support eligibility, Adam settings, batch sizes, 12 epochs, global standardized flow MAE, 0.001 regularization coefficient, selection constraints and paired bootstrap settings. Fit every arm afresh with the same per-seed sample permutation. Original A is frozen/eval.",
+  "architecture": {
+    "features": "F = [H_last, mean_time(H), H_last-H_first, three distances, report_age_minutes/5]. H is the frozen linear input embedding of local flow, before temporal/graph encoding.",
+    "value": "V is the frozen native ICSF value projection of the report_location_v1 embedding (report age and forecast clock). No new severity/type/text/weather/speed/occupancy source is introduced.",
+    "strength": "Exact original v12c node gate: F->16 Tanh->1, g=2 sigmoid(logit), LayerNorm(H_last+g*mask*V). 1633 parameters at H=32.",
+    "state_vector": "u=tanh(Linear(F,H)); r=tanh(Linear(u,H)); delta=RMS(V)*r. 4288 parameters at H=32.",
+    "interaction_vector": "Same tensors/init as state_vector, except output input is u*(1+tanh(V)). 4288 parameters at H=32; no trainable context projection.",
+    "vector_injection": "LayerNorm((H_last+mask*V)+mask*delta). Both vector output layers start at exact zero. Keep original graph, normalization, decoder and TIID context. Each residual has norm <= norm(V). V=0 gives exact zero delta without epsilon scaling.",
+    "regularizer": "strength: mean_candidate((g-1)^2), using original trainer; vectors: mean_candidate_channel(r^2). Both are normalized correction energy when V!=0. For V=0 vector r is still regularized, but applied delta is zero. Coefficient remains 0.001.",
+    "capacity_boundary": "Only the two vector arms have matched capacity and initialization. Strength-vs-vector is not a parameter-count-controlled attribution. State_vector already sees age/distances and the RMS(V) scale; it is not incident-free. Interaction-vs-state tests additional frozen context conditioning, not multiplication versus every other fusion mechanism."
+  },
+  "selection": "Unchanged v12c: strict improvement of selection incident_full global MAE subject to all four cohorts and all protected regional point MAEs <= A*1.001. Epoch 0 always available. No selection by local gain, diagnostics, audit outcome or best seed.",
+  "representation_probe": {
+    "samples": 64,
+    "sample_rule": "Evenly spaced integer linspace positions in eligible ordered fit indices; all when fewer than 64. Same positive fit subset for all arms/states, no target-based choice.",
+    "states": ["initial", "last", "selected"],
+    "batch_size": 8,
+    "metrics": "Regional MAE; candidate correction RMS, correction norm / injection norm, perpendicular-to-V correction norm / injection norm, post-LayerNorm change RMS, frozen context modifier mean/std, zero injection count. Store per-sample/node arrays. Undefined relative norms at V=0 use NaN and explicit valid counts. No optimizer steps or new gradients; isolate diagnostic RNG.",
+    "boundary": "Fixed descriptive subset, not whole-fit performance or graph causal attribution. Local off-mask injection is exact native ICSF; downstream graph/decoder predictions can still change off-mask and at late horizons."
+  },
+  "audit": "Report every seed and arm against A and both vectors against strength, interaction_vector against state_vector, all cohorts/regions with paired week and four-week-block intervals. No best-seed selection or independent-confirmation claim. Existing train-package audit weeks have repeatedly been inspected.",
+  "decision": "EXPLORATORY_REPRESENTATION_COMPARISON_REQUIRES_REVIEW_NO_TEST_AUTHORIZATION",
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_selection": true,
+    "audit_Y_used_for_selection": false,
+    "backbone_optimizer_updates": false,
+    "new_external_information_source": false,
+    "high_impact_router_used": false,
+    "backbone_pretrained_on_entire_train": true,
+    "backbone_checkpoint_previously_selected_on_validation": true,
+    "scaler_previously_fit_on_entire_train_X": true,
+    "independent_confirmation": false
+  }
+}

@@ -240,11 +240,15 @@ def assert_backbone(model, expected):
 
 def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protocol, device,
                 output, progress, resume_from=None, *, epoch_trainer=None, protocol_hash=None,
-                diagnostic=None):
+                diagnostic=None, adapter_factory=None, evaluator=None, summarizer=None,
+                diagnostic_key='parameter_gradient_diagnostics'):
     # Default v12c behavior is unchanged; later controlled comparisons can reuse
     # identical fitting/selection/recovery machinery with an explicit objective.
     epoch_trainer = train_epoch if epoch_trainer is None else epoch_trainer
     protocol_hash = PROTOCOL_SHA256 if protocol_hash is None else protocol_hash
+    adapter_factory = attach_gate if adapter_factory is None else adapter_factory
+    evaluator = evaluate if evaluator is None else evaluator
+    summarizer = metric_summary if summarizer is None else summarizer
     set_seed(seed)
     original_hash = backbone_hash(model)
     first = next(iter(loader(datasets['incident_full'], plan['fit']['indices']['incident_full'], 2)))
@@ -252,7 +256,7 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
     model.eval()
     with torch.no_grad():
         original = model(batch['x'], incident_data=batch['incident'])
-    gate = attach_gate(model, variant, protocol['training']['node_hidden_width'])
+    gate = adapter_factory(model, variant, protocol['training']['node_hidden_width'])
     with torch.no_grad():
         initial = model(batch['x'], incident_data=batch['incident'])
     if not torch.equal(original, initial):
@@ -312,7 +316,7 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
         steps += training['optimizer_steps']
         current = {}
         for cohort in COHORTS:
-            current[cohort] = metric_summary(evaluate(model, datasets[cohort],
+            current[cohort] = summarizer(evaluator(model, datasets[cohort],
                 plan['selection']['indices'][cohort], settings['evaluation_batch_size'], device,
                 lambda stage, **fields: progress(stage, epoch=epoch, phase='selection', cohort=cohort, **fields)))
         eligible, checks = selection_eligible(current, baseline_selection, protocol)
@@ -335,7 +339,7 @@ def fit_variant(model, variant, seed, datasets, plan, baseline_selection, protoc
     return {'selected_epoch': best['epoch'], 'selection_metrics': best['selection_metrics'],
             'optimizer_steps': steps, 'trainable_parameters': sum(p.numel() for p in gate.parameters()),
             'initial_prediction_exactly_A': True, 'backbone_state_unchanged': True,
-            'recovery': recovery, **({'parameter_gradient_diagnostics': diagnostics} if diagnostic is not None else {})}
+            'recovery': recovery, **({diagnostic_key: diagnostics} if diagnostic is not None else {})}
 
 
 def comparison_records(reference, variants):
