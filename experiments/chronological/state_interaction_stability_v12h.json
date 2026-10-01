@@ -1,0 +1,59 @@
+{
+  "protocol_id": "contra_v8_state_interaction_stability_audit_v12h",
+  "scope": "saved_v12g_calendar_paired_composition_contrasts_and_temporal_sensitivity",
+  "source_protocol_sha256": "cef7b6b53d78bd11b5af547585a9758015af350e09c93feccb2cc84a582af683",
+  "source_v12f_protocol_sha256": "d782ed11d2044583d7dda2d0025a6fe24c06ac512ab9465258ccfb894ee0379c",
+  "source_v12f_git_head": "a1b4bdf44f27ee7db27d1a3e3f2304e607d708bb",
+  "source_code_sha256": {
+    "experiments/chronological/audit_state_interaction_transfer.py": "e26695f89723d1d7624fbd2febe8421f730abe46b6ad06b8fce40fe5ea697d99",
+    "experiments/chronological/state_interaction_transfer_v12g.json": "cef7b6b53d78bd11b5af547585a9758015af350e09c93feccb2cc84a582af683",
+    "experiments/chronological/state_interaction_trajectory.py": "4303e7553aba63a2d0c1a8537f816353221c6a7e27d48cbf663c425f8550258e",
+    "experiments/chronological/audit_architecture_regions.py": "688820cccce609e67932269d3f455853be5a90e8a7dda9600eff23463ea05d71",
+    "experiments/chronological/audit_matched_controls.py": "5a659d2e35f68b04ef7724f7becd7b70ed8b9348e057098aa46d262b037b466e"
+  },
+  "seeds": [2025, 2026, 2027],
+  "arms": ["strength", "state_vector", "interaction_vector"],
+  "regions": ["all", "candidate_h1_h6", "candidate_h7_h12", "noncandidate_all"],
+  "comparisons": {
+    "strength_vs_A": ["A", "strength"],
+    "state_vector_vs_A": ["A", "state_vector"],
+    "interaction_vector_vs_A": ["A", "interaction_vector"],
+    "state_vector_vs_strength": ["strength", "state_vector"],
+    "interaction_vector_vs_strength": ["strength", "interaction_vector"],
+    "interaction_vector_vs_state_vector": ["state_vector", "interaction_vector"]
+  },
+  "cohort_samples": {
+    "incident_full": 1010,
+    "incident": 378,
+    "primary_control": 378,
+    "secondary_control": 378,
+    "incident_full_common": 378,
+    "incident_full_complement": 632
+  },
+  "source_phase_samples": {
+    "fit": {"incident_full": 1520},
+    "selection": {"incident_full": 856, "incident": 206, "primary_control": 206, "secondary_control": 206},
+    "audit": {"incident_full": 1010, "incident": 378, "primary_control": 378, "secondary_control": 378}
+  },
+  "weeks": ["2023-W27", "2023-W28", "2023-W29", "2023-W30", "2023-W31", "2023-W32", "2023-W33", "2023-W34", "2023-W35"],
+  "bootstrap": {"draws": 2000, "seed": 12028, "confidence": 0.95, "sensitivity_circular_block_weeks": 4, "minimum_valid_draw_fraction": 0.95},
+  "inputs": "Only the completed v12g summary and three saved audit_weekly_sSEED.npz files, plus local frozen protocol metadata. Verify exact source protocol, recorded code identity, source budget and all consumed output hashes. Do not load v12f checkpoints, traffic, manifests, residuals or model code. This verifies the recorded saved-source chain, not an independent recheck of its original traffic inputs.",
+  "validation": "Preserve ordered axes and the original full-positive calendar grid. Saved float counts must be finite nonnegative exact integers. Check common/complement gain, count, equal-window gain-sum and evaluable-window partitions; regional additivity applies only to gain sums and valid counts. Reconcile original point estimates, interval status, valid draws and endpoints. Verify saved bootstrap matrices against the frozen generator and across seeds. Check all six comparison identities.",
+  "composition_contrast": "Gain(common) minus Gain(complement), positive meaning better gain in common. Compute both pooled-valid-cell and equal-forecast-window differences directly under the same saved calendar-week/bootstrap draws; do not subtract CI endpoints or assume individual windows are paired across groups. Undefined group denominators propagate to undefined paired draws.",
+  "temporal_stability": "Publish each original week gain, regional evaluable forecast-window count, and leave-one-calendar-week-out point estimate for every saved group/region/comparison. Report positive/negative/zero/undefined counts separately. Deletions are correlated descriptive sensitivities, not independent replicates, new confidence intervals, model-selection rules or development gates.",
+  "global_accounting": "Whole-period group/region gain sums divided by full-positive whole-period global valid cells; weekly contributions divided by that week's full-positive global valid cells. Common and complement contributions reconstruct the full global gain. Whole-period contribution is the cell-weighted, not unweighted, mean of defined weekly contributions. Empty global weeks have undefined weekly contributions.",
+  "decision": "DIAGNOSTIC_REVIEW_REQUIRED_NO_NEW_TRAINING_OR_MODEL_SELECTION_OR_TEST_AUTHORIZATION",
+  "information_boundary": {
+    "model_loaded": false,
+    "checkpoint_loaded": false,
+    "model_training_performed": false,
+    "gradient_computation_performed": false,
+    "raw_traffic_arrays_read": false,
+    "manifests_read": false,
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "new_model_selection_performed": false,
+    "independent_confirmation": false
+  },
+  "interpretation": "Post-hoc description of repeatedly reused development data and saved fitted models. A/scaler used wider train and A was previously validation-selected. Group membership is observational and not a deployable incident gate. Pointwise shared-calendar week/block intervals condition on saved weights and omit seed and multiple-comparison uncertainty. Only nine audit calendar weeks and overlapping windows limit inference. Composition differences or temporal fragility do not establish distribution shift, overfitting, objective mismatch or architecture defects as causes. No winning seed, epoch, subgroup or new performance claim."
+}
