@@ -237,7 +237,7 @@ def analyze(records, times, protocol, progress=lambda *args, **kwargs: None):
         return interval(values, bspec['confidence'], bspec['minimum_valid_draw_fraction'])
 
     for cohort, record in records.items():
-        index = np.asarray([positions[int(sample)] for sample in record['ids']])
+        index = np.asarray([positions[int(sample)] for sample in record['ids']], dtype=np.int64)
         errors, counts = record['errors'], record['counts']
         gains = np.stack([errors[:, protocol['paths'].index(left)] - errors[:, protocol['paths'].index(right)]
                           for left, right in protocol['comparisons'].values()], axis=1)
