@@ -1,0 +1,47 @@
+{
+  "protocol_id": "contra_v8_vector_objective_alignment_v12k",
+  "scope": "paired_two_loss_two_selection_vector_adapter_development_comparison",
+  "v12c_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "v12f_protocol_sha256": "d782ed11d2044583d7dda2d0025a6fe24c06ac512ab9465258ccfb894ee0379c",
+  "arms": ["state_vector", "interaction_vector"],
+  "losses": ["global", "candidate_early"],
+  "selectors": ["global", "candidate_early"],
+  "seeds": [2025, 2026, 2027],
+  "inherit": "Unchanged v12f vector architecture, inputs, zero residual initialization and bounded injection; unchanged v12c chronological eligibility, embargoes, 12 epochs, batches, Adam settings, clipping, regularizer and bootstrap settings. Twelve fresh fits, 144 epochs, twenty-four selected endpoints. Both selectors observe each same fit trajectory; neither changes optimization, budget or early stopping. All four architecture/loss combinations share exact tensor initialization and per-epoch sample order within each seed.",
+  "loss_definition": {
+    "global": "Call the original v12f vector trainer unchanged: pooled all-node/all-horizon valid-cell standardized MAE plus 0.001 candidate-channel mean squared unit residual.",
+    "candidate_early": "Pooled candidate H1-H6 valid-cell standardized MAE plus the identical 0.001 candidate-channel mean squared unit residual. Empty early target support is an error, not a zero loss. Other regions receive no direct data loss, but their selection safeguards remain. This changes objective weighting, not the report-time prediction support.",
+    "boundary": "Only eligible fit incident_full Y enters optimization. Pre-graph candidate injection may still change noncandidate and late predictions. No hard output protection, new router, feature, backbone update, loss rescaling or post-result hyperparameter adjustment."
+  },
+  "selection_definition": {
+    "common_safeguards": "All original sixteen selection point constraints: four cohorts by all/candidate H1-H6/candidate H7-H12/noncandidate, each <= A*1.001. Undefined/nonfinite metrics reject the epoch. Every nonzero selected endpoint must also strictly improve incident_full global MAE versus A. Epoch 0 is always available.",
+    "global": "Exact original selection ranking: among safeguarded epochs choose minimum incident_full global MAE; strict improvement, earlier epoch wins ties.",
+    "candidate_early": "Among epochs satisfying the same safeguards AND strict full-positive global improvement versus A, require strict incident_full candidate H1-H6 improvement versus A and choose its lowest MAE. Earlier epoch wins ties. Otherwise retain epoch 0. This policy changes both the early-benefit eligibility requirement and ranking, not ranking alone.",
+    "boundary": "Selection-period outcomes alone determine both saved endpoints. No fit metric, audit outcome, v12j group or best seed enters selection. Selection point constraints do not guarantee audit safety."
+  },
+  "expected_phase_samples": {
+    "fit": {"incident_full": 1520},
+    "selection": {"incident_full": 856, "incident": 206, "primary_control": 206, "secondary_control": 206},
+    "audit": {"incident_full": 1010, "incident": 378, "primary_control": 378, "secondary_control": 378}
+  },
+  "evaluation": "Finish all twelve fits and freeze all twenty-four endpoint identities before evaluating any audit target. Save full per-window errors/counts/IDs/source indices/candidate masks for A and both selected endpoints on fit incident_full and all four selection/audit cohorts. Reconcile saved selected selection metrics and exact epoch-0 errors against A. Use evaluation batch 16 consistently. Save online losses separately from fixed-model full-fit metrics.",
+  "contrasts": "Report every endpoint versus A; selector changes holding architecture/loss fixed; loss changes holding architecture/selector fixed; context conditioning changes holding loss/selector fixed. Positive gain is reference MAE minus compared MAE. Do not attribute a joint change to one factor or select a winning configuration. Primary scientific region is incident_full candidate H1-H6; all, late candidate, noncandidate and both routine cohorts remain co-reported safeguards.",
+  "statistics": "Shared 2000-draw ISO-week and four-week circular-block resampling within each phase; same full-positive calendar across models/cohorts/seeds including empty group weeks. Report pooled valid-cell and equal-forecast-window gains, pointwise 95% intervals and exact regional contributions in global MAE units. Fit/selection intervals are in-sample/selection-conditioned descriptions; audit is reused development, not independent confirmation. No cross-phase paired CI or automatic success gate. Equal-window weighting is not equal-independent-accident weighting.",
+  "recovery": "Atomic epoch checkpoint stores current adapter, optimizer, RNG, contiguous history and BOTH historically selected states, including epoch 0. New-name resume verifies run/code/protocol/input/sample and fit arm/loss/seed identities, validates history by replaying both selectors, and preserves source files. Completed fits do not optimize again. Recompute final evaluations after all fits; never recover v12f/v12e checkpoints as v12k runs.",
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_selection": true,
+    "audit_Y_used_for_selection": false,
+    "backbone_optimizer_updates": false,
+    "high_impact_router_used": false,
+    "v12j_groups_used_for_training_or_selection": false,
+    "new_external_information_source": false,
+    "backbone_pretrained_on_entire_train": true,
+    "backbone_checkpoint_previously_selected_on_validation": true,
+    "scaler_previously_fit_on_entire_train_X": true,
+    "independent_confirmation": false
+  },
+  "decision": "OBJECTIVE_ALIGNMENT_DEVELOPMENT_COMPARISON_REQUIRES_REVIEW_NO_TEST_AUTHORIZATION"
+}
