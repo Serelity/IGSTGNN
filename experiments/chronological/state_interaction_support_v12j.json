@@ -1,0 +1,57 @@
+{
+  "protocol_id": "contra_v8_state_interaction_observable_support_v12j",
+  "scope": "fit_only_observable_state_bins_and_saved_model_transfer_diagnostic",
+  "fit_protocol_sha256": "7c5e7090fed6e1b28660accc76331db43b5b42fa306c0c5b6cdcaa23b8bf08ea",
+  "fit_git_head": "ab5625bc4da05a69a8e3375fe8402ff528cf74f1",
+  "source_v12f_git_head": "a1b4bdf44f27ee7db27d1a3e3f2304e607d708bb",
+  "fit_producer_code_sha256": {
+    "experiments/chronological/audit_state_interaction_fit.py": "839513cc1e6e0772eb3d2b807563d45a60c388300224ab55267b64bbcca5add1",
+    "experiments/chronological/state_interaction_fit.py": "2947f6a740dc001152139c8cd7c1dad104c49896a733b8c23598192e514d18eb",
+    "experiments/chronological/run_state_interaction_fit_audit.sh": "66b7431ffc8fdb0a03fa42333a9d257ca800fd5cdda7c43accd7f8fb8d36cb17",
+    "experiments/chronological/state_interaction_fit_v12i.json": "7c5e7090fed6e1b28660accc76331db43b5b42fa306c0c5b6cdcaa23b8bf08ea"
+  },
+  "seeds": [2025, 2026, 2027],
+  "source_arms": ["strength", "state_vector", "interaction_vector"],
+  "comparisons": ["state_vector_vs_A", "interaction_vector_vs_A"],
+  "features": ["history_mean", "history_trend", "history_volatility", "history_missing_fraction", "report_age_minutes", "candidate_node_count"],
+  "feature_definition": {
+    "history_mean": "Mean finite nonnegative raw flow over candidate nodes and X slots 0:12, without scaler or imputation.",
+    "history_trend": "Mean over candidate nodes with observed values in both halves of (mean X slots 6:12 minus mean slots 0:6), in raw flow units.",
+    "history_volatility": "Mean within-node population standard deviation over X slots 0:12, retaining candidate nodes with at least two valid history values.",
+    "history_missing_fraction": "Invalid X candidate cells divided by 12 times candidate-node count; finite nonnegative zero is observed, not missing.",
+    "report_age_minutes": "Verified report-time context t0 minus report_time, in (0,5] minutes.",
+    "candidate_node_count": "Count of nonzero-distance report-location candidate nodes, verified against saved model masks."
+  },
+  "state_spec": {
+    "quantiles": [0.25, 0.5, 0.75],
+    "joint_features": ["history_mean", "history_trend", "candidate_node_count"],
+    "joint_quantiles": [0.5],
+    "minimum_fit_windows": 30,
+    "minimum_fit_weeks": 4
+  },
+  "binning": "Fit-only finite-value linear quantiles, deduplicated cuts and right-side ties. Remove minimum-endpoint cuts; for nonconstant features retain maximum-endpoint cuts because right ties form a nonempty upper bin. Constant features collapse to one bin; retain other empty bins explicitly. Never clip audit extremes into fitted bins. Keep below-range, above-range and missing marginal groups. Joint support uses only three median-split features (at most eight cells), not a high-dimensional quartile cross-product. All six feature ranges and missingness remain checked. All cutpoints/counts/week coverage use X/context/manifest only, never errors, target validity or future Y.",
+  "support_groups": ["missing_state", "outside_fit_range", "low_joint_support", "supported"],
+  "support_priority": "Any missing feature first; otherwise any feature outside its full fit min/max; otherwise joint cell with fewer than 30 fit windows or four distinct fit calendar weeks; otherwise supported. These coarse observable summaries do not establish overlap in the full model input space. Thresholds are diagnostic conventions, not learned thresholds or evidence of deployable safety.",
+  "statistics": "All six vectors retained. Read all four saved source paths for alignment/reconciliation, but scientific comparisons are the two vector arms versus A. Report all four regions, pooled valid-cell and equal-forecast-window gains, group cell shares and exact contributions, full calendar including empty group weeks, shared week and four-week-block bootstraps within each phase. In-sample fit and reused audit intervals are pointwise conditional descriptions, not independent tests.",
+  "composition_accounting": "Point-only algebra on supported joint cells with nonzero region support in both phases. Separately for cell and equal-window weights, report fit and audit shared-support coverage, fit-common gain, audit-common gain and audit gain standardized to fit-common masses. Audit-common minus fit-common equals composition term plus within-cell term. Publish excluded mass; never extrapolate into empty cells or treat phases as paired. No gap CI or causal distribution-shift attribution.",
+  "input_boundary": "Completed hashed v12i full-fit arrays and the exact v12f audit arrays consumed by v12i. Verify the original train manifest, flow, station IDs and report context fingerprints. Memory-map train_flow.npy and numerically access only selected fit/audit X slots 0:12; no selection X or raw future targets are accessed. Whole train files, including bytes containing future targets, are hashed for identity only. No ChronologicalDataset, Torch, model/checkpoint, control traffic, old val/test arrays or scaler is loaded. Selection per-window adapter errors were not saved, so no conditional selection statistics are fabricated.",
+  "information_boundary": {
+    "model_loaded": false,
+    "checkpoint_loaded": false,
+    "model_training_performed": false,
+    "gradient_computation_performed": false,
+    "new_model_selection_performed": false,
+    "raw_train_history_values_read": true,
+    "raw_train_future_values_accessed": false,
+    "whole_train_flow_file_hashed_for_identity": true,
+    "raw_selection_history_values_read": false,
+    "control_traffic_read": false,
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "deployable_router_constructed": false,
+    "automatic_development_gate": false,
+    "independent_confirmation": false
+  },
+  "decision": "OBSERVABLE_SUPPORT_DIAGNOSTIC_REVIEW_REQUIRED_NO_NEW_ROUTER_TRAINING_OR_TEST_AUTHORIZATION",
+  "interpretation": "Post-hoc hypothesis generation on repeatedly reused development data, including in-sample fit. Original A/scaler used wider train and A was previously old-validation-selected. Marginal bins do not condition on all other features; supported median cells do not guarantee full representation overlap. Window counts are not independent accidents. Composition algebra describes these fixed predictions and target supports, not an identified cause of temporal failure. Sparse cells, pointwise multiplicity and short calendars limit intervals. Do not select favorable bins/seeds/weeks, weaken selection, or deploy an abstention rule from these results."
+}
