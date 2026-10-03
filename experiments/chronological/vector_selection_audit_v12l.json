@@ -1,0 +1,40 @@
+{
+  "protocol_id": "contra_v8_vector_selection_audit_v12l",
+  "scope": "read_only_replay_and_rejection_accounting_of_completed_v12k_selection_histories",
+  "source_protocol_sha256": "896a2969389c262aaf7b8dea78f969ab1d10337946bc4c5d6a5ba4a15e9620be",
+  "inherited_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "producer_code_sha256": {
+    "experiments/chronological/train_vector_objective_alignment.py": "89726e1f48f9ec7f331968b92b196e850662a6e013c3f7dcae8baa8d40af4c22",
+    "experiments/chronological/vector_objective_alignment.py": "36df6f35980cedcb32807f5080f76cfb5dbe455a4d43add9b397f5d9165bbe62",
+    "experiments/chronological/train_incident_strength_gate.py": "e0b40cc07bd6d08ac734df323c8b5106bf5e5a96336eeea58448e1930fc9660b",
+    "experiments/chronological/train_incident_state_interaction.py": "a2be80d3fed96ca3517e2bab76987e49f9832b97e826cef6b48208fd47d7c5bb",
+    "experiments/chronological/run_vector_objective_alignment.sh": "8907cbf58fd521cc57dd1cf357897f9735b2a5f0726661461090e2028cd9257c"
+  },
+  "arms": ["state_vector", "interaction_vector"],
+  "losses": ["global", "candidate_early"],
+  "selectors": ["global", "candidate_early"],
+  "seeds": [2025, 2026, 2027],
+  "epochs": 12,
+  "selection_rule": "Replay the original v12k selectors exactly, including all sixteen <= A * (1 + 0.001) + 1e-12 point protections, strict full-positive global improvement, additional strict early improvement for the early selector, strict incumbent ranking and earlier ties. Check all stored decisions, historical best epochs, final selection metrics and state-hash references. Never choose a new endpoint.",
+  "accounting": "Enumerate all 144 trajectory epochs and 288 selector decisions. Raw full-positive global/early improvements are computed independently of protection eligibility. Report all overlapping blockers and a separate mutually exclusive procedural reason. Reasons are ordered invalid protection metric, protection failure, no strict global gain, no strict early gain (early selector only), eligible but no incumbent replacement, incumbent replacement. Protection thresholds remain unchanged.",
+  "joint_positive_subset": "Prespecified diagnostic subset: both full-positive global and candidate H1-H6 point MAEs strictly below A, whether or not protections pass. List every rejected member, failed cohort/region, signed harm, nominal slack, exact decision slack and positive threshold excess. This is descriptive selection conditioning, not a new selection policy or a ranking of rejected models.",
+  "denominators": "Protection counts use trajectory epochs once, never twice for two selectors. Co-failures and cohort/region group counts overlap; global MAE overlaps regional MAEs. Report joint counts, singleton failures, pairs and union counts without interpreting sums as additive harm or independent observations. No p-values or confidence intervals from these aggregate histories.",
+  "source_verification": "Require a completed full v12k run, its exact frozen/inherited protocols, producer hashes, run identity, all twelve hash-verified histories and fit summaries, and frozen endpoint manifest. Cross-check recorded checkpoint hashes but do not open checkpoint files. Hash consumed JSON files again before publishing. This verifies consistency of saved artifacts, not an independent reproduction of model predictions or a cryptographic attestation of the source summary.",
+  "information_boundary": {
+    "source_summary_with_existing_audit_aggregates_read": true,
+    "source_audit_metrics_used_for_analysis": false,
+    "selection_history_metrics_read": true,
+    "raw_data_arrays_read": false,
+    "checkpoint_files_read": false,
+    "model_loaded": false,
+    "model_training_performed": false,
+    "new_model_evaluation_performed": false,
+    "new_model_selection_performed": false,
+    "thresholds_modified": false,
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "independent_confirmation": false
+  },
+  "decision": "SELECTION_FAILURE_ACCOUNTING_REQUIRES_REVIEW_NO_AUTOMATIC_ARCHITECTURE_DECISION",
+  "interpretation": "A rejected epoch can have multiple blockers. Failure locations describe saved selection metrics, not causal graph spillover, gradient conflict or generalization mechanisms. Absence of eligible epochs does not imply no learnable signal. No rejected-epoch audit evaluation, relaxed guard, best-seed recommendation, automatic training upgrade or test authorization."
+}
