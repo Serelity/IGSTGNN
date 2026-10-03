@@ -1789,6 +1789,145 @@ best state and validates the actual Adam settings, moments and update counts.
 
 Evidence is preserved in
 `复现结果/输出范围对照_20261003/delivery_validation.json`, outside the code repository.
-The check did not read validation or test arrays. The full 72-epoch GPU comparison
-has not run, and no v12m scientific improvement is established. Reused development
+The check did not read validation or test arrays. At this implementation-delivery
+stage the full 72-epoch GPU comparison had not run, and no v12m scientific improvement
+was established. The subsequent server result is recorded below; reused development
 periods and the legacy A/scaler information dependencies remain explicitly recorded.
+
+### 2026-10-03: v12m server comparison complete; early benefit not supported
+
+The user supplied the complete log for `contra_v12m_output_scope_01`: host `gpu12`,
+Slurm job `1137289`, commit `715482c012d1d9455f9942a69593d98769401df1`,
+PyTorch `2.3.1+cu121` and NumPy `1.24.4`. All 45 server tests and the engineering
+check passed. The formal run completed six shared trajectories, 72 epochs,
+twelve selected endpoints and eighteen output identities in 91m36.578s, with
+`VECTOR_OUTPUT_SCOPE_COMPARISON_COMPLETE` and exit code 0.
+
+Unrestricted output (U) fell back to A at four of six endpoints; protected
+candidate-early output (P) had no fallback. Protection-rejected epochs decreased
+from 68/72 to 55/72, while eligible epochs increased from 2 to 14. The 65 matched
+incident late-guard failures disappeared by construction, but 55 matched incident
+early-guard failures remained. Both policies observe the same 72 trajectory
+epochs; overlapping failures and policy counts are not independent replicates.
+
+P selected epochs 3/4/5 for state_vector and 3/4/7 for interaction_vector across
+seeds 2025/2026/2027. All six P endpoints improved fit and selection early MAE,
+yet all worsened audit `incident_full/candidate_h1_h6`: A-minus-P gains ranged
+from -0.010464 to -0.021092 raw MAE, with all six reported pointwise paired
+four-week 95% intervals below zero. Equal-window early gains were also negative.
+Protected late/noncandidate gains were exactly zero, a structural guarantee.
+The two non-fallback U endpoints also worsened audit early MAE relative to A.
+
+Matched-incident pooled-cell early gains were negative with intervals crossing
+zero, while equal-window point gains were positive. Both routine cohorts had
+positive point gains at all six P endpoints; six of twelve reported intervals
+were wholly positive. These outcomes do not offset the prespecified full-incident
+early result or identify accident-specific causal effects.
+
+Same-weight early output replacement was zero for every trajectory. Early policy
+differences therefore came from endpoint selection. For seed 2027 the protected
+policy improved global MAE relative to a harmed U endpoint mainly through output
+replacement, but still underperformed A. There was no extra early advantage for
+the interaction architecture. Output-scope protection worked; a transferable
+early correction on the reused development period was not supported.
+
+The preserved log SHA-256 is
+`c223b9b18ec6b6724fce3110bf60d883747fdc68aceb990153946ce27945f640`.
+The log-derived review and endpoint CSV are in
+`复现结果/输出范围对照_20261003/`. Local checks independently counted all 72 epochs,
+verified recorded selection transitions and audit-after-freeze ordering, recomputed
+four incident_full guards, and reconciled printed aggregate counts and contrasts.
+The other twelve guards and bootstrap intervals cannot be independently recomputed
+without the original server summary/history/NPZ artifacts, which have not been
+received. This remains reused development evidence, with no new test authorization.
+Do not promote the model based on easier selection or uniquely attribute the
+failure to overfitting or distribution shift. See the complete
+[server result and research interpretation](vector_output_scope_v12m_results.md).
+
+### 2026-10-03: v12n research design complete; fixed-correction geometry audit specified
+
+The next [research design](vector_correction_geometry_v12n_plan.md) and
+[machine-readable specification](../experiments/chronological/vector_correction_geometry_v12n.json)
+were complete at the design-only delivery; implementation and formal execution had not started
+at that point. The implementation delivery is recorded below. The design was written after
+the v12m outcomes were known; it is a specification for new diagnostics on reused development data,
+not an independent confirmatory preregistration. Its SHA-256 is
+`e999d0b9c124aa58c72868fe445651f2a811f6d2b94b6b48ba3ce38e55c29a0a`.
+
+Prior v12h/v12j work already studied weekly concentration, matched/complement composition and
+coarse observable support. Repeating those analyses is not the primary v12n contribution.
+The new question concerns the six frozen v12m protected-selected endpoints: does their final
+prediction correction have an unfavorable local empirical direction, or is a locally favorable
+direction offset by crossing the observed target at its original amplitude? With r=Y-A and d=P-A,
+the design fixes G=mean(abs(r)-abs(r-d)), its right slope S at zero scaling, and crossing penalty O,
+with exact accounting G=S-O under each original weighting. The r=0 derivative is -abs(d).
+Concavity implies G(lambda)<=lambda*S for nonnegative uniform final-output scaling. Nonpositive S
+rules out a strictly beneficial positive uniform scaling on those fixed samples and weights only;
+positive S with negative G does not establish a useful or transferable scaling policy.
+
+Six mutually exclusive cell categories, pooled/equal-window denominators, replay tolerances,
+numerical-boundary reporting, paired incident-minus-control contrasts and shared week draws are
+specified before their values are computed. The routine contrast remains auxiliary and noncausal.
+No real-data lambda search, new epoch selection, support-bin search or automatic model promotion
+is allowed. Every branch ends this diagnostic after one complete audit and preserves v12m's
+negative primary result.
+
+The original regional NPZ files cannot recover signed residuals. The implementation therefore
+requires one frozen inference replay of native A and all six selected P endpoints, covering the
+original 5,138 cohort-window rows per endpoint, followed by reconciliation against 63 saved window
+NPZ files and nine weekly files. Fit contains only full incidents. Original train inputs, reports,
+target masks, scaler and graph remain fixed; validation/test remain unopened. Checkpoint identities
+and separate backbone/adapter/buffer states must be verified. No optimizer or gradients are needed.
+The formal server checkpoints and NPZ files are not present locally; the engineering package cannot
+substitute for them.
+
+Design verification checked all 26 producer file fingerprints, the two source protocols, budgets,
+endpoint references and document links. Synthetic arithmetic exercised 81 residual/correction cases,
+486 scalar-identity cases, all six categories, weighting reversal and positive-slope/negative-gain
+without harmful-overshoot counterexamples. Independent read-only review found the design and JSON
+consistent. These are specification checks, not implementation tests or experimental evidence.
+
+### 2026-10-03: v12n implementation and local engineering delivery complete
+
+The [v12n frozen-correction audit](vector_correction_geometry_v12n_plan.md) now has
+an executable inference/export runner, NumPy-only geometry/statistics, a foreground
+launcher, and [server run and recovery instructions](vector_correction_geometry_v12n_run.md).
+The user confirmed the delivery workflow: local development and GitHub submission,
+then user-operated git pull and execution in the campus server's `igstgnn` environment
+on a V100. No SSH or direct campus-server access is part of this workflow.
+
+The implementation verifies all nineteen original inputs, twenty-six producer files,
+the original A checkpoint, and the six selected P checkpoint identities. It retains
+the frozen phase/cohort budgets, candidate H1-H6 support, exact protected outputs,
+shared original week/four-week draws, G=S-O accounting, six category contributions,
+matched contrasts and any-member support-week deletion sensitivity. Signed exports
+carry hashes and can be replayed into a fresh statistics directory without loading
+models. Training, new selection, lambda search and validation/test access are absent.
+
+All 30 new v12n tests, 45 v12m regression tests and 24 v12k regression tests passed
+(99 total). Shell syntax, Python compilation, document links and frozen producer/protocol
+hash checks passed. An authentic 496-node CPU engineering check replayed both architectures,
+seed 2025 and two windows per phase/cohort from the existing v12m engineering source:
+nine A forward batches, eighteen adapted forward batches, eighteen signed NPZ files
+and forty-five hashed output artifacts. The maximum per-window regional error-sum,
+pooled MAE and pooled G replay differences were all zero. The final statistics event
+was at 41.137 seconds and peak process RSS was 702,184 KiB. This small CPU workload
+does not estimate the full V100 runtime.
+
+A second invocation regenerated statistics from that authentic signed export with
+PyTorch imports explicitly prohibited. All endpoint statistics, matched contrasts,
+primary category contributions and selected-model records were identical, with
+`new_model_inference_this_invocation=false` and the engineering boundary retained.
+The first attempted check is also preserved: it exposed an incorrect comparison of
+a freshly initialized adapter with the producer's original initialization. The fix
+validates the original initialization through authenticated source/checkpoint metadata
+and strictly loads the selected state; no frozen producer code or protocol was changed.
+
+Evidence is preserved in `复现结果/修正方向幅度诊断_20261003/delivery_validation.json`,
+including test logs, artifact/code hashes, the successful check, statistics replay,
+and the retained failed attempt. Status is `ENGINEERING_CHECK_PASS` with
+`NOT_EVALUATED_ENGINEERING_ONLY`. The formal six-endpoint source is still on the
+server and has not been replayed locally. No new direction/amplitude finding or model
+improvement is established; v12m's negative scientific result remains the latest
+formal evidence. The frozen v12n JSON and its original SHA-256 remain unchanged;
+its design-time delivery status is a historical snapshot.

@@ -1,0 +1,339 @@
+{
+  "protocol_id": "contra_v8_vector_correction_geometry_v12n",
+  "specification_version": 1,
+  "delivery_status": "DESIGN_READY_IMPLEMENTATION_PENDING",
+  "scientific_results_computed": false,
+  "scope": "Post-v12m fixed-prediction correction geometry; one frozen inference audit, no new training or scaling search.",
+  "research_question": "On fixed v12m P endpoints, is the candidate-early correction locally unfavorable, or does crossing the observed target erase a positive local direction at the original amplitude?",
+  "source": {
+    "default_run": "contra_v12m_output_scope_01",
+    "git_head": "715482c012d1d9455f9942a69593d98769401df1",
+    "required_status": "VECTOR_OUTPUT_SCOPE_COMPARISON_COMPLETE",
+    "protocol_file": "experiments/chronological/vector_output_scope_v12m.json",
+    "protocol_sha256": "ac3478f320938a2e61af9529704e76b32cc68d3981d3a935e8851174a7782998",
+    "inherited_protocol_file": "experiments/chronological/incident_strength_gate_v12c.json",
+    "inherited_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+    "producer_code_sha256": {
+      "experiments/chronological/train_vector_output_scope.py": "5627780b8e78d47c5a6f9b01b5ce6ecc733e8e48a999bdf7190e03624f2e84e2",
+      "experiments/chronological/vector_output_scope_v12m.json": "ac3478f320938a2e61af9529704e76b32cc68d3981d3a935e8851174a7782998",
+      "experiments/chronological/vector_output_scope.py": "126b79b66db09676da9e96b07ed964bfb6cbff974fff20f1ed0d638b5ab02d7f",
+      "experiments/chronological/run_vector_output_scope.sh": "03dd24e2e0af193d04b1f186055e717cf3ffe3f734d2c74ac486e66cd71b242b",
+      "experiments/chronological/train_vector_objective_alignment.py": "89726e1f48f9ec7f331968b92b196e850662a6e013c3f7dcae8baa8d40af4c22",
+      "experiments/chronological/vector_objective_alignment_v12k.json": "896a2969389c262aaf7b8dea78f969ab1d10337946bc4c5d6a5ba4a15e9620be",
+      "experiments/chronological/vector_objective_alignment.py": "36df6f35980cedcb32807f5080f76cfb5dbe455a4d43add9b397f5d9165bbe62",
+      "experiments/chronological/train_incident_state_interaction.py": "a2be80d3fed96ca3517e2bab76987e49f9832b97e826cef6b48208fd47d7c5bb",
+      "experiments/chronological/incident_state_interaction_v12f.json": "d782ed11d2044583d7dda2d0025a6fe24c06ac512ab9465258ccfb894ee0379c",
+      "experiments/chronological/train_incident_strength_gate.py": "e0b40cc07bd6d08ac734df323c8b5106bf5e5a96336eeea58448e1930fc9660b",
+      "experiments/chronological/incident_strength_gate_v12c.json": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+      "experiments/chronological/audit_architecture_mechanisms.py": "f54cb495d0807a2f4fb24db85b3f2391d6e8e0f21d064ff0969fd176114eb752",
+      "experiments/chronological/architecture_mechanism_audit_v12a.json": "8334dfcdcfccfc9526e606ddec40536d284ca603070222d50bf4308674bbce08",
+      "experiments/chronological/audit_architecture_regions.py": "688820cccce609e67932269d3f455853be5a90e8a7dda9600eff23463ea05d71",
+      "experiments/chronological/run_vector_objective_alignment.sh": "8907cbf58fd521cc57dd1cf357897f9735b2a5f0726661461090e2028cd9257c",
+      "experiments/chronological/gate_recovery.py": "871a83f07dbee1a921305e0b61e89e08f730d1f39a99b6da9d7800ff2017afa5",
+      "experiments/chronological/audit_matched_controls.py": "5a659d2e35f68b04ef7724f7becd7b70ed8b9348e057098aa46d262b037b466e",
+      "experiments/chronological/materialize_incident_branch.py": "a0e65c693656a0a44b1ef3decd7518b9c373eb0355b812c4536db4603dfd485d",
+      "experiments/chronological/smoke.py": "3047e1692176cad96bed464f87897e1021549ca728143f99028da80f499ec646",
+      "experiments/chronological/train.py": "d77a5d65b7eb9c48a1bcd8c708fd60d83d4df3e38f515aeeaa1e4001b565939f",
+      "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+      "src/models/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/models/igstgnn.py": "7a6b2d611b6a1cd346c59278f3b1704029d312795e0fa66654fce3bab41dc08d",
+      "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+      "src/models/incident_state_interaction.py": "ee014863f1328e185901d9c304b2d9f6d9345ced23ce83958147a6ee2000bef0",
+      "src/models/incident_strength_gate.py": "b41d77e643396894f6cb0da7a0d549a4c287d95b67f0eeb79117bab7743234f2"
+    },
+    "engineering_check_allowed": false,
+    "endpoint_policy": "candidate_early_only",
+    "output_path": "protected_at_protected",
+    "checkpoint_template": "{arm}_s{seed}/selected_candidate_early_only.pt",
+    "metadata": [
+      "summary.json",
+      "run_identity.json",
+      "eligibility.json",
+      "selected_endpoints_frozen.json",
+      "evaluation_paths_frozen.json",
+      "{arm}_s{seed}/fit_summary.json"
+    ],
+    "selected_epochs": {
+      "state_vector": {
+        "2025": 3,
+        "2026": 4,
+        "2027": 5
+      },
+      "interaction_vector": {
+        "2025": 3,
+        "2026": 4,
+        "2027": 7
+      }
+    },
+    "array_templates": [
+      "A/{phase}_{cohort}.npz",
+      "{arm}_s{seed}/protected_at_protected/{phase}_{cohort}.npz",
+      "{phase}_weekly_s{seed}.npz"
+    ],
+    "source_verification": "Require all original 19 input fingerprints and producer code identities, matching run and endpoint manifests, file hashes and strict tensor-state identities. Reconcile every consumed NPZ with summary.outputs and rehash before publication. Reject partial/check sources; checkpoint paths alone or printed logs do not certify outputs.",
+    "raw_inputs": "Use the same original A checkpoint, positive train package, primary and secondary train control packages, scaler, graph, station axis and manifests named by the source identity; no validation or test dataset instantiation."
+  },
+  "arms": [
+    "state_vector",
+    "interaction_vector"
+  ],
+  "seeds": [
+    2025,
+    2026,
+    2027
+  ],
+  "periods": {
+    "fit": [
+      "2023-01-02T00:00:00",
+      "2023-04-24T00:00:00"
+    ],
+    "selection": [
+      "2023-05-01T00:00:00",
+      "2023-06-26T00:00:00"
+    ],
+    "audit": [
+      "2023-07-03T00:00:00",
+      "2023-09-04T00:00:00"
+    ]
+  },
+  "expected_phase_samples": {
+    "fit": {
+      "incident_full": 1520
+    },
+    "selection": {
+      "incident_full": 856,
+      "incident": 206,
+      "primary_control": 206,
+      "secondary_control": 206
+    },
+    "audit": {
+      "incident_full": 1010,
+      "incident": 378,
+      "primary_control": 378,
+      "secondary_control": 378
+    }
+  },
+  "primary": {
+    "phase": "audit",
+    "cohort": "incident_full",
+    "region": "candidate_h1_h6",
+    "estimand": "pooled_valid_cells",
+    "endpoint_count": 6
+  },
+  "secondary_estimand": "equal_forecast_window",
+  "secondary_context": "The same six endpoints on all original fit/selection/audit cohorts. Fit has no controls. No cross-phase paired intervals, state bins or matched-complement search.",
+  "geometry": {
+    "inputs": "Raw-flow A, P and Y converted from original FP32 to float64 before r=Y-A and d=P-A. Preserve original y_valid and all predefined candidate H1-H6 prediction support.",
+    "gain": "g = abs(r) - abs(r-d)",
+    "slope": "s = sign(r)*d when r != 0; s = -abs(d) when r == 0",
+    "crossing_penalty": "o = 2*max(abs(d)-abs(r),0) when r,d have the same nonzero sign; otherwise 0",
+    "identities": [
+      "g = s-o",
+      "G(1) = S-O",
+      "O >= 0",
+      "G(lambda) <= lambda*S for all lambda >= 0 under fixed nonnegative weights"
+    ],
+    "categories_in_order": [
+      {
+        "name": "no_change",
+        "condition": "d == 0, including r == d == 0"
+      },
+      {
+        "name": "r_zero",
+        "condition": "d != 0 and r == 0"
+      },
+      {
+        "name": "wrong_direction",
+        "condition": "r and d nonzero with opposite signs"
+      },
+      {
+        "name": "same_direction_beneficial",
+        "condition": "same nonzero sign and abs(d) < 2*abs(r); may cross Y and still improve"
+      },
+      {
+        "name": "neutral_at_2r",
+        "condition": "same nonzero sign and abs(d) == 2*abs(r)"
+      },
+      {
+        "name": "harmful_overshoot",
+        "condition": "same nonzero sign and abs(d) > 2*abs(r)"
+      }
+    ],
+    "classification": "Compare signs without multiplying r*d; use exact zero and equality boundaries in float64. Never zero small r/d or threshold categories by outcomes.",
+    "pooled": "sum of cell values divided by N=sum_i n_i",
+    "equal_window": "mean over M evaluable windows of each window cell sum divided by its n_i",
+    "category_contributions": "Apply the same full-cohort N or window n_i and M denominators to masked category values. Do not sum within-category means. Zero-support windows remain identified with undefined means.",
+    "scientific_boundary": "Empirical theorem concerns final-output A+lambda*(P-A), fixed endpoints, fixed observed support, fixed nonnegative weights and lambda>=0 only. It is not a theorem about internal adapter scaling, retraining, elementwise gates or future data.",
+    "no_real_data_lambda_grid": true
+  },
+  "matched_auxiliary": {
+    "phases": [
+      "selection",
+      "audit"
+    ],
+    "pair_key": "positive_sample_index stored as NPZ ids; never cross-cohort source_indices",
+    "cohorts": [
+      "incident",
+      "primary_control",
+      "secondary_control"
+    ],
+    "contrasts": {
+      "incident_minus_mean_controls": "G_I - (G_C1+G_C2)/2",
+      "incident_minus_primary": "G_I-G_C1",
+      "incident_minus_secondary": "G_I-G_C2"
+    },
+    "metric": "G(1) only",
+    "pooled": "Difference of three cohort-specific total gain/total valid-cell ratios, using original matched cohort support.",
+    "equal_triad": "Average within-triplet window-MAE gain contrast over triplets where all three early valid counts are positive; disclose all exclusions and each cohort retained cell mass.",
+    "no_new_cell_intersection_estimand": true,
+    "bootstrap_cluster": "Assign the entire triplet to the matched incident t0 ISO week, as in v12m. Shared draws preserve pairing but do not fully model traffic dependence across different control weeks.",
+    "time_sensitivity": "For every original phase calendar week, remove every triplet for which ANY member complete support interval [start,end) intersects that week. Recompute each of the three D contrasts in both weightings with deletion counts and cell masses; no extra CI, cherry-picked week or gate.",
+    "interpretation": "Predictive correction-gain difference, not incident causal effect. A relative advantage cannot rescue negative full-incident absolute gain."
+  },
+  "bootstrap": {
+    "draws": 2000,
+    "seed": 12028,
+    "confidence": 0.95,
+    "sensitivity_circular_block_weeks": 4,
+    "minimum_valid_draw_fraction": 0.95,
+    "week_seed": 12028,
+    "four_week_block_seed": 12029,
+    "calendar": "Original continuous phase ISO-week grid including empty weeks; reconcile saved matrices and deterministic generator.",
+    "shared_draws": "All models, cohorts, G/S/O and matched contrasts use the same phase weights. Compute ratios and contrast within each draw; never subtract CI endpoints.",
+    "interval_scope": [
+      "G",
+      "S",
+      "O",
+      "matched_D"
+    ],
+    "no_cross_phase_paired_ci": true,
+    "interpretation": "Pointwise intervals conditional on saved weights, reused development and nine audit weeks. No joint 95 percent mechanism claim, seed independence or new success gate."
+  },
+  "replay": {
+    "evaluation_batch_size": 16,
+    "prediction_dtype": "float32",
+    "diagnostic_dtype": "float64",
+    "model_mode": "eval and no_grad; all parameters frozen; no optimizer; state and buffer hashes unchanged",
+    "prediction_policy": "P equals original adapted V at candidate H1-H6 and native A elsewhere bitwise. Preserve identical report context for native A; never score U(eP).",
+    "exact_fields": [
+      "ids",
+      "source_indices",
+      "candidate_mask",
+      "counts",
+      "prediction_counts",
+      "regions"
+    ],
+    "per_window_error_sum_tolerance": {
+      "rtol": 1e-06,
+      "atol": 0.0001
+    },
+    "pooled_mae_and_gain_absolute_tolerance": 1e-05,
+    "reconciliation_regions": [
+      "all",
+      "candidate_h1_h6",
+      "candidate_h7_h12",
+      "noncandidate_all"
+    ],
+    "algebra_tolerance": {
+      "rtol": 1e-10,
+      "atol": 1e-08
+    },
+    "slope_near_zero_reporting_band_raw_mae": 1e-06,
+    "near_zero_policy": "Keep raw S and exact cell categories; abs(S)<=band is NEAR_ZERO_UNRESOLVED. This reporting band is neither an error certificate nor a scientific benefit threshold.",
+    "failure_policy": "Stop scientific interpretation on source/support/replay/identity failure or reversal of the known negative audit full-incident G(1). Preserve diagnostics; never loosen tolerances after outcomes."
+  },
+  "budget": {
+    "new_training_runs": 0,
+    "optimizer_steps": 0,
+    "new_epoch_selections": 0,
+    "lambda_candidates_evaluated_on_real_data": 0,
+    "frozen_P_endpoints": 6,
+    "native_A_identities": 1,
+    "cohort_window_rows_per_endpoint": 5138,
+    "source_window_npz_files": 63,
+    "source_weekly_npz_files": 9,
+    "successful_formal_audits": 1,
+    "runtime": "Measure time, memory and storage during engineering check. Fixed inference may use original GPU environment; no training-time estimate or automatic paid job."
+  },
+  "planned_outputs": {
+    "summary.json": "engineering and scientific status separately; all six endpoints, boundaries, hashes, finite-or-null results and no automatic promotion",
+    "report.md": "six-row primary table and complete secondary context",
+    "replay_checks.csv": "support, model and original-output reconciliation",
+    "geometry_metrics.csv": "phase/cohort/arm/seed/estimand G/S/O, A/P MAE, supports and intervals",
+    "category_contributions.csv": "six categories: counts, shares, complete-denominator G/S/O contributions and separate within-category means",
+    "matched_contrasts.csv": "three fixed G differences and both estimands with supports and intervals",
+    "matched_week_sensitivity.csv": "any-member support-week deletion; remaining mass and D, no extra CI",
+    "window_geometry/*.npz": {
+      "ids": "int64 [N]",
+      "source_indices": "int64 [N]",
+      "valid_counts": "int64 [N]",
+      "gain_sums": "float64 [N]",
+      "slope_sums": "float64 [N]",
+      "crossing_penalty_sums": "float64 [N]",
+      "category_names": "string [6]",
+      "category_counts": "int64 [N,6]",
+      "category_gain_sums": "float64 [N,6]",
+      "category_slope_sums": "float64 [N,6]",
+      "category_crossing_penalty_sums": "float64 [N,6]",
+      "time_mapping": "positive-window and unique-incident IDs, incident/cohort t0, complete support start/end; source manifest identity retained"
+    },
+    "signed_cells/*.npz": {
+      "ids": "int64 [N]",
+      "source_indices": "int64 [N]",
+      "window_offsets": "int64 [N+1]",
+      "candidate_node_indices": "int64 [K]",
+      "horizon_indices": "int64 [K], H1-H6",
+      "A": "float32 [K]",
+      "Y": "float32 [K]",
+      "d": "float64 [K], difference of converted P and A",
+      "valid": "bool [K], original valid mask",
+      "packing": "All candidate prediction cells including invalid targets; K excludes protected output regions only. Never pack only beneficial/nonzero/valid cells. Invalid Y excluded from all numeric diagnostics. Shared immutable A/Y blocks may be referenced by hash."
+    },
+    "protocol_snapshot.json": "exact byte snapshot of this design baseline",
+    "input_manifest.json": "source inputs, consumed artifacts, implementation code hashes and runtime environment"
+  },
+  "minimum_verification_cases": [
+    "all six category boundaries",
+    "r_zero directional derivative",
+    "pooled and equal-window slopes with opposite signs",
+    "positive S and negative G without harmful_overshoot cells",
+    "complete G/S/O contribution identities",
+    "undefined and partial-triplet support",
+    "paired shared-draw contrasts",
+    "half-open cross-week member supports",
+    "tampered checkpoint or manifest or NPZ rejected",
+    "no optimizer or gradients or validation or test access",
+    "no last/rejected epoch loading",
+    "exact protected output and unchanged model state",
+    "engineering source rejected for formal mode",
+    "existing final/partial/job/symlink not overwritten"
+  ],
+  "decision": {
+    "engineering_failure": "Stop and fix reproducibility before any scientific interpretation.",
+    "negative_slope": "Record fixed-direction empirical non-rescue under positive uniform final-output scaling, scoped separately to each weighting and endpoint.",
+    "positive_slope_negative_gain": "Record local empirical opportunity with crossing penalty at original amplitude; do not choose lambda or claim useful or transferable gain.",
+    "near_zero_or_mixed": "Retain unresolved or differing endpoints/weightings; do not search finer cohorts.",
+    "after_one_complete_audit": "Close this diagnostic. Preserve v12m negative result. A new model experiment requires a separate hypothesis and unused-data confirmation plan; no automatic training or test authorization."
+  },
+  "information_boundary": {
+    "new_model_inference_planned": true,
+    "model_training_planned": false,
+    "gradient_computation_planned": false,
+    "future_Y_used_for_offline_diagnostics": true,
+    "future_Y_used_for_prediction_or_routing": false,
+    "raw_train_positive_and_control_arrays_read_planned": true,
+    "checkpoint_files_read_planned": true,
+    "validation_arrays_read_planned": false,
+    "test_split_read_planned": false,
+    "new_model_selection_planned": false,
+    "legacy_A_scaler_information_dependencies_retained": true,
+    "independent_confirmation": false
+  },
+  "implementation_files_planned": [
+    "experiments/chronological/vector_correction_geometry.py",
+    "experiments/chronological/audit_vector_correction_geometry.py",
+    "experiments/chronological/run_vector_correction_geometry.sh",
+    "tests/test_vector_correction_geometry*.py"
+  ],
+  "publication": "Read-only source; reject existing output/partial/job paths and symlinks. Publish .partial atomically after checking source and output hashes. Preserve failure.json. Statistics may resume from a verified signed export; no training recovery."
+}
