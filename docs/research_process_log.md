@@ -1766,3 +1766,29 @@ available WSL Conda environments contains `torch`. These were environment import
 than assertion failures. The PyTorch-dependent suite remains to be rerun in the server `igstgnn`
 environment; v11a itself imports only NumPy and completed both its engineering check and full local
 materialization without PyTorch.
+
+### 2026-10-03: v12m output-scope design and implementation complete
+
+Following the [v12l server selection audit](vector_selection_audit_v12l.md),
+the [v12m design and implementation](vector_output_scope_v12m_plan.md) freezes
+six shared candidate-early training trajectories (two vector architectures,
+three seeds, twelve epochs each). Two output policies select independently under
+the unchanged sixteen protections. All twelve checkpoint endpoints and eighteen
+output identities freeze before audit evaluation; the three paths separate
+same-weight output replacement from changed endpoint selection. Protected late
+and noncandidate equality with A is a construction guarantee, not a scientific gain.
+
+The protocol SHA-256 is
+`ac3478f320938a2e61af9529704e76b32cc68d3981d3a935e8851174a7782998`.
+Local validation passed 45 v12m tests and 24 v12k regression tests. An authentic
+496-node CPU engineering check verified all 19 input fingerprints and completed
+two architectures, one seed and two epochs per trajectory in approximately
+73.66 seconds. Both endpoint manifests, exact output support, exported regional
+identities and 77 output hashes passed. Atomic recovery retains each policy's
+best state and validates the actual Adam settings, moments and update counts.
+
+Evidence is preserved in
+`复现结果/输出范围对照_20261003/delivery_validation.json`, outside the code repository.
+The check did not read validation or test arrays. The full 72-epoch GPU comparison
+has not run, and no v12m scientific improvement is established. Reused development
+periods and the legacy A/scaler information dependencies remain explicitly recorded.

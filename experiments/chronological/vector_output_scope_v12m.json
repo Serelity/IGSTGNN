@@ -1,0 +1,45 @@
+{
+  "protocol_id": "contra_v8_vector_output_scope_v12m",
+  "scope": "paired_output_scope_and_endpoint_selection_on_shared_early_loss_trajectories",
+  "v12k_protocol_sha256": "896a2969389c262aaf7b8dea78f969ab1d10337946bc4c5d6a5ba4a15e9620be",
+  "v12c_protocol_sha256": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+  "v12f_protocol_sha256": "d782ed11d2044583d7dda2d0025a6fe24c06ac512ab9465258ccfb894ee0379c",
+  "arms": ["state_vector", "interaction_vector"],
+  "policies": ["unrestricted", "candidate_early_only"],
+  "output_paths": ["unrestricted_at_unrestricted", "protected_at_unrestricted", "protected_at_protected"],
+  "seeds": [2025, 2026, 2027],
+  "budget": {"trajectories": 6, "epochs_per_trajectory": 12, "total_epochs": 72, "selected_endpoints": 12, "derived_output_paths": 6},
+  "training": "Call the unchanged v12k early_train_epoch once per architecture/seed/epoch. Pooled valid candidate H1-H6 standardized MAE plus 0.001 candidate-channel mean squared unit residual. Same v12c optimizer, batches, sample order, clipping, zero initialization, frozen eval backbone and v12f bounded vectors. Both output policies observe the same trajectory. No extra native-A forward during optimizer updates and no policy-specific training. Only fit incident_full Y enters optimization.",
+  "output_definition": {
+    "unrestricted": "Original full vector-adapted prediction V_theta(X,I).",
+    "candidate_early_only": "torch.where(report-location candidate node AND fixed H1-H6, V_theta(X,I), A(X,I)). A is the same native frozen checkpoint with identical X and report context, never incident-off. Apply the selector to final raw-flow predictions; outside support equals A bitwise, active support equals V_theta bitwise. The mask uses no Y, validity mask, cohort identity, matched eligibility or high-impact router.",
+    "equivalence": "Candidate-early loss, regularizer and gradients are identical for both output policies at a fixed state. Shared trajectories are intentional. Any difference in final early errors comes from which epoch is selected, not a new early learning mechanism. Protected selection-phase improvement can follow mechanically from expanded eligibility and is not evidence of generalization."
+  },
+  "selection": "Independently apply the unchanged v12k candidate_early selector to each policy's selection metrics: all sixteen v12c point protections <= A*1.001+1e-12, strict incident_full global AND candidate H1-H6 improvement, then lowest early MAE, strict replacement and earlier ties. Epoch 0 is A. No global-selector duplicate, no relaxed guard, no fit/audit-based selection, no best-seed recommendation. Undefined metrics reject. Preserve matched-incident and both routine early safeguards.",
+  "expected_phase_samples": {
+    "fit": {"incident_full": 1520},
+    "selection": {"incident_full": 856, "incident": 206, "primary_control": 206, "secondary_control": 206},
+    "audit": {"incident_full": 1010, "incident": 378, "primary_control": 378, "secondary_control": 378}
+  },
+  "evaluation": "Freeze all six trajectories' twelve chosen checkpoint identities and all eighteen output path identities before any audit target evaluation. Evaluate U(e_U), P(e_U), P(e_P); do not calculate, save or report unrestricted errors at the protected-selected endpoint. A and all paths use identical batch size, samples and masks. Save per-window errors/counts/IDs/source indices/candidate masks for fit positives and all four selection/audit cohorts. Replay selected metrics exactly and epoch-0 errors exactly against A. Shared checkpoint identities do not constitute independent fits.",
+  "contrasts": "Every path versus A, within-arm output effect U(e_U)->P(e_U), selection effect P(e_U)->P(e_P), and total policy effect U(e_U)->P(e_P); protected-selected architecture contrast. Total gain equals output plus selection gain per supported cell aggregation. Early output effect is exactly zero; late/noncandidate selection effect is exactly zero. Primary region is incident_full candidate H1-H6, with matched-incident, routine early, global, late and noncandidate results co-reported for every seed.",
+  "statistics": "Inherit common-calendar 2000-draw ISO-week and four-week circular-block paired resampling, 95% pointwise intervals and valid-draw thresholds. Report pooled-cell and equal-forecast-window gains. Compute total-effect intervals directly with shared draws; never add marginal interval endpoints. Fit/selection are in-sample or selection-conditioned; audit is repeatedly reused development. No automatic success/promotion gate, no cross-phase paired CI, no independent-accident claim for forecast windows.",
+  "numerical_checks": {"protected_prediction_and_error_equality": "exact", "additive_error_rtol": 1e-10, "additive_error_atol": 1e-8, "selection_absolute_tolerance": 1e-12},
+  "recovery": "New v12m run/fit identities and format. Atomically save each epoch's shared adapter, optimizer, RNG, contiguous history with per-policy metrics/decisions, and both best states including epoch 0. Replay each policy separately; check current and best state hashes, step budget, loss, input/code/protocol/sample/device identity. Resume into a new output directory from a read-only source; completed fits do not optimize again. Reject v12k recovery packages. Recompute final evaluations after all endpoints freeze.",
+  "runtime": "Report extra native-A and modified evaluation forward batch counts, evaluator elapsed time and memory. Native A is obtained without gradients via a temporary original-ICSF bypass with guaranteed restoration; adapted inference is computed once per batch and reused for both output policies. Training uses one adapted forward only. No additional trainable backbone or physical parameters.",
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_selection": true,
+    "audit_Y_used_for_selection": false,
+    "backbone_optimizer_updates": false,
+    "high_impact_router_used": false,
+    "new_external_information_source": false,
+    "backbone_pretrained_on_entire_train": true,
+    "backbone_checkpoint_previously_selected_on_validation": true,
+    "scaler_previously_fit_on_entire_train_X": true,
+    "independent_confirmation": false
+  },
+  "decision": "OUTPUT_SCOPE_DEVELOPMENT_COMPARISON_REQUIRES_REVIEW_NO_TEST_AUTHORIZATION"
+}
