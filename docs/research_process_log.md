@@ -1931,3 +1931,114 @@ server and has not been replayed locally. No new direction/amplitude finding or 
 improvement is established; v12m's negative scientific result remains the latest
 formal evidence. The frozen v12n JSON and its original SHA-256 remain unchanged;
 its design-time delivery status is a historical snapshot.
+
+
+### 2026-10-04: v12n server geometry audit complete; mixed fixed-sample directions
+
+The user supplied the complete v12n server log: host gpu11, Slurm job 1137586,
+commit 12d970cc841e5ebc09e4478cd9aee7e86fc5ac08, igstgnn, CUDA device 0,
+Tesla V100-SXM2-32GB, PyTorch 2.3.1+cu121 and NumPy 1.24.4. Thirty tests,
+preflight and the engineering subset passed. The formal audit completed in
+5m20.570s (whole workflow 6m01s), with exit code 0 and
+VECTOR_CORRECTION_GEOMETRY_AUDIT_COMPLETE. It retained the six original P
+endpoints, 5,138 phase/cohort-window rows each, 54 signed exports, 324 native
+forward batches and 1,944 adapted forward batches, with zero optimizer steps.
+
+All six primary pooled audit full-incident candidate-H1-H6 G values and their
+printed four-week intervals remained negative, reproducing v12m. Pooled S was
+negative for state/2025, interaction/2025 and state/2027, and positive for
+state/2026, interaction/2026 and interaction/2027. Only state/2025 had a wholly
+negative S interval; the other five crossed zero and none was wholly positive.
+The negative empirical slopes imply no positive uniform final-output scaling
+can improve these fixed samples and weights for those three endpoints. Positive
+S with negative G establishes only local finite-sample opportunity, without an
+estimated useful scale, external transfer or permission to tune lambda on audit.
+
+Every endpoint had S_fit > S_selection > S_audit, while audit O was lower than
+both fit O and selection O. From selection to audit, S decreased by 0.018421 to
+0.027688 and O decreased by 0.002948 to 0.005445. O therefore buffered some of the
+G loss in the arithmetic decomposition; an increase in crossing penalty cannot
+alone explain the phase reversal. S includes correction amplitude and residual
+sign composition, so this does not uniquely identify overfitting or distribution
+shift. It describes reduced net local benefit under these phase compositions.
+
+Each endpoint had 240,342 valid primary cells. Wrong-direction cells were about
+49.22%-49.97%, and harmful overshoot about 0.49%-0.80%; the beneficial-category G
+contribution was smaller than the absolute wrong-direction G contribution for
+all six endpoints. These are contribution diagnostics, not a chance-accuracy
+benchmark or a deployable target-informed cell filter. Interaction had higher
+pooled S and O but lower G than state for each seed; this is descriptive only.
+
+Equal-window S was positive at four endpoints, with wholly positive intervals
+only for both seed-2026 endpoints. State/2027 changed S sign under that weighting.
+Equal-window G stayed negative in all six point estimates, with four wholly
+negative intervals. Matched incident-minus-mean-control D was negative under both
+weights at all six endpoints, but all 36 intervals including single controls
+crossed zero. All matched comparisons retained 378/378 triplets. No causal or
+statistically established incident-specific harm follows.
+
+The [full result review](vector_correction_geometry_v12n_results.md) and local
+artifacts in 复现结果/修正方向幅度诊断_20261004/ preserve the exact log, five CSV
+extracts and reproducible arithmetic checks. G=S-O and category closure errors
+were below 6e-17; printed v12m gain/interval agreement was within 2.52e-15.
+These are log checks, not an independent raw-array bootstrap, checkpoint hash
+verification or per-window inference replay. Ordinary-week and any-member
+support-week sensitivity outputs were not included in the pasted report.
+
+Close this diagnostic according to its frozen boundary. Future training needs a
+new hypothesis about transferable correction learning and an unused-data
+confirmation plan; uniform shrinkage is not established as a general remedy.
+Nine repeatedly reused audit weeks, legacy A/scaler dependencies, pointwise
+intervals and correlated endpoints limit generalization. No new model improvement,
+lambda search, training or test access was established by this diagnostic.
+
+Preserved server log SHA-256: `201c862ec721b70c3d0361bc2ade85550deb65bff4574d089f8923e40f1a8851`.
+
+
+### 2026-10-04: v12o prospective temporal excess reweighting implemented and checked
+
+The next bounded hypothesis tests whether fit-only temporal excess-loss weighting
+improves the transfer of a fixed-capacity adapter relative to original ERM. This
+follows v12n's declining phase slope, without treating that diagnostic as proof
+of a particular shift mechanism. The [design](temporal_robust_correction_v12o_plan.md)
+and [V100 handoff](temporal_robust_correction_v12o_run.md) preserve the GitHub-pull
+workflow, igstgnn environment and default CUDA execution; no SSH is used.
+
+Before new outcomes, the v12o protocol was frozen with SHA-256
+`8cbfe2c038f0a78b107981fb3b83a03ebd8ae05e097016506f9b51df5c8c6854`.
+Thirty original producer/protocol files remain pinned and unchanged. Four 28-day
+fit blocks contain 353/364/414/389 windows. Initial masses equal valid early-cell
+shares. After each complete fit inference, multiplicative updates use each
+block's excess MAE over A, scaled by the common fit A MAE, rate 20 and coverage
+mixture .05. Batch denominators, sample order, regularization and Adam settings
+remain original. No selection/audit targets affect temporal weights or gradients.
+
+Two architectures, two objectives and three seeds require 12 fresh trajectories,
+144 epochs and 27360 optimizer steps. The backbone remains fixed; 4288 adapter
+parameters per trajectory are trained. Paired initializations and first-epoch
+adapter/Adam states must match exactly. All 16 original guards and the early
+selector apply to protected outputs; A is the epoch-zero fallback. All twelve
+selected identities freeze before audit access. Shared ordinary-week/four-week
+paired intervals, equal-window results, fixed-endpoint G/S/O and matched D remain
+part of the report. Improvement relative to ERM alone is insufficient if both
+remain worse than A.
+
+Sixteen new tests and 75 v12m/v12n regression tests passed, plus final launcher
+checks. Tests include actual nonuniform learning, nonzero selected endpoints,
+future-label mutation, exact interrupted/continuous current/best/Adam/q recovery,
+epoch-zero recovery, and corrupt-state/output preservation checks. Shell syntax
+and Python compilation passed. A real 496-node CPU engineering check used two
+windows per fit block, two per other cohort/phase, one seed, four trajectories,
+eight epochs and eight updates. It finished in 143.06 seconds with peak RSS
+2177264 KiB. All four endpoints fell back to A; this small subset does not estimate
+scientific efficacy. Its status is ENGINEERING_CHECK_PASS with
+NOT_EVALUATED_ENGINEERING_ONLY. All 102 saved artifact hashes and 34 runtime
+hashes were reconciled; 19 input fingerprints passed original verification.
+Evidence lives in 复现结果/时间块稳健训练_20261004/delivery_validation.json.
+
+Full V100 training remains pending user execution. This is reused 2023 development,
+not independent confirmation. A separate future 2024 protocol must first certify
+source/version, report-time availability, support and sensor coverage, and require
+all fitting/selection to use only past observations. Rebuild A/scaler if provenance
+cannot prove that boundary; do not relabel previously exposed audit/val/test data.
+No new model improvement, rate search, capacity expansion or test access is claimed.

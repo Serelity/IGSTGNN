@@ -1,0 +1,197 @@
+{
+  "protocol_id": "contra_v8_temporal_excess_reweighting_v12o",
+  "design_date": "2026-10-04",
+  "scope": "prospective_bounded_optimization_comparison_on_reused_development_not_independent_confirmation",
+  "rationale": "v12n showed all six selected endpoints lose net local slope across phases while crossing penalty falls. Test a new fit-only temporal weighting mechanism against exact ERM with fixed architecture/input/output support; do not infer a proven shift cause or new information.",
+  "v12n_server_log_sha256": "201c862ec721b70c3d0361bc2ade85550deb65bff4574d089f8923e40f1a8851",
+  "source_code_sha256": {
+    "experiments/chronological/train_vector_output_scope.py": "5627780b8e78d47c5a6f9b01b5ce6ecc733e8e48a999bdf7190e03624f2e84e2",
+    "experiments/chronological/vector_output_scope_v12m.json": "ac3478f320938a2e61af9529704e76b32cc68d3981d3a935e8851174a7782998",
+    "experiments/chronological/vector_output_scope.py": "126b79b66db09676da9e96b07ed964bfb6cbff974fff20f1ed0d638b5ab02d7f",
+    "experiments/chronological/run_vector_output_scope.sh": "03dd24e2e0af193d04b1f186055e717cf3ffe3f734d2c74ac486e66cd71b242b",
+    "experiments/chronological/train_vector_objective_alignment.py": "89726e1f48f9ec7f331968b92b196e850662a6e013c3f7dcae8baa8d40af4c22",
+    "experiments/chronological/vector_objective_alignment_v12k.json": "896a2969389c262aaf7b8dea78f969ab1d10337946bc4c5d6a5ba4a15e9620be",
+    "experiments/chronological/vector_objective_alignment.py": "36df6f35980cedcb32807f5080f76cfb5dbe455a4d43add9b397f5d9165bbe62",
+    "experiments/chronological/train_incident_state_interaction.py": "a2be80d3fed96ca3517e2bab76987e49f9832b97e826cef6b48208fd47d7c5bb",
+    "experiments/chronological/incident_state_interaction_v12f.json": "d782ed11d2044583d7dda2d0025a6fe24c06ac512ab9465258ccfb894ee0379c",
+    "experiments/chronological/train_incident_strength_gate.py": "e0b40cc07bd6d08ac734df323c8b5106bf5e5a96336eeea58448e1930fc9660b",
+    "experiments/chronological/incident_strength_gate_v12c.json": "99a9ee432d858f9568e32132e4e2e5388524184efea5da4d16c99abd7b875def",
+    "experiments/chronological/audit_architecture_mechanisms.py": "f54cb495d0807a2f4fb24db85b3f2391d6e8e0f21d064ff0969fd176114eb752",
+    "experiments/chronological/architecture_mechanism_audit_v12a.json": "8334dfcdcfccfc9526e606ddec40536d284ca603070222d50bf4308674bbce08",
+    "experiments/chronological/audit_architecture_regions.py": "688820cccce609e67932269d3f455853be5a90e8a7dda9600eff23463ea05d71",
+    "experiments/chronological/run_vector_objective_alignment.sh": "8907cbf58fd521cc57dd1cf357897f9735b2a5f0726661461090e2028cd9257c",
+    "experiments/chronological/gate_recovery.py": "871a83f07dbee1a921305e0b61e89e08f730d1f39a99b6da9d7800ff2017afa5",
+    "experiments/chronological/audit_matched_controls.py": "5a659d2e35f68b04ef7724f7becd7b70ed8b9348e057098aa46d262b037b466e",
+    "experiments/chronological/materialize_incident_branch.py": "a0e65c693656a0a44b1ef3decd7518b9c373eb0355b812c4536db4603dfd485d",
+    "experiments/chronological/smoke.py": "3047e1692176cad96bed464f87897e1021549ca728143f99028da80f499ec646",
+    "experiments/chronological/train.py": "d77a5d65b7eb9c48a1bcd8c708fd60d83d4df3e38f515aeeaa1e4001b565939f",
+    "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+    "src/models/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/models/igstgnn.py": "7a6b2d611b6a1cd346c59278f3b1704029d312795e0fa66654fce3bab41dc08d",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_state_interaction.py": "ee014863f1328e185901d9c304b2d9f6d9345ced23ce83958147a6ee2000bef0",
+    "src/models/incident_strength_gate.py": "b41d77e643396894f6cb0da7a0d549a4c287d95b67f0eeb79117bab7743234f2",
+    "experiments/chronological/vector_correction_geometry.py": "59dd30b0f52f52d2229d5971ebf42c98ab0a2e6c7d1307b4eeb3a017fe15c604",
+    "experiments/chronological/audit_vector_correction_geometry.py": "13652ffec6f5f7cbd12e7a8699a63218561d2a44d795b0bc1c7663149b39bc38",
+    "experiments/chronological/vector_correction_geometry_v12n.json": "e999d0b9c124aa58c72868fe445651f2a811f6d2b94b6b48ba3ce38e55c29a0a",
+    "experiments/chronological/run_vector_correction_geometry.sh": "570e8314c0d3f3d291c97721be15aa16c9e106136a6d78ca7e1981748d0ed372"
+  },
+  "arms": [
+    "state_vector",
+    "interaction_vector"
+  ],
+  "objectives": [
+    "erm",
+    "temporal_excess"
+  ],
+  "seeds": [
+    2025,
+    2026,
+    2027
+  ],
+  "periods": {
+    "fit": [
+      "2023-01-02T00:00:00",
+      "2023-04-24T00:00:00"
+    ],
+    "selection": [
+      "2023-05-01T00:00:00",
+      "2023-06-26T00:00:00"
+    ],
+    "audit": [
+      "2023-07-03T00:00:00",
+      "2023-09-04T00:00:00"
+    ]
+  },
+  "expected_phase_samples": {
+    "fit": {
+      "incident_full": 1520
+    },
+    "selection": {
+      "incident_full": 856,
+      "incident": 206,
+      "primary_control": 206,
+      "secondary_control": 206
+    },
+    "audit": {
+      "incident_full": 1010,
+      "incident": 378,
+      "primary_control": 378,
+      "secondary_control": 378
+    }
+  },
+  "fit_groups": {
+    "assignment": "Positive report t0 into four consecutive 28-day blocks within the original fit period. No outcome-derived bins; these are overlapping-dependent training environments, not independent validation folds.",
+    "blocks": [
+      [
+        "2023-01-02T00:00:00",
+        "2023-01-30T00:00:00"
+      ],
+      [
+        "2023-01-30T00:00:00",
+        "2023-02-27T00:00:00"
+      ],
+      [
+        "2023-02-27T00:00:00",
+        "2023-03-27T00:00:00"
+      ],
+      [
+        "2023-03-27T00:00:00",
+        "2023-04-24T00:00:00"
+      ]
+    ],
+    "expected_windows": [
+      353,
+      364,
+      414,
+      389
+    ]
+  },
+  "weighting": {
+    "update_rate": 20.0,
+    "coverage_mixture": 0.05,
+    "baseline_scale_min_raw_mae": 1e-08,
+    "initial": "pi_g = original fit valid candidate H1-H6 cell mass in group g / full fit mass; q_0=pi. Require positive support in all four groups.",
+    "loss": "For each original minibatch, multiply each valid early cell absolute standardized error by q_g/pi_g, divide by ORIGINAL valid early minibatch count, add unchanged 0.001 candidate-vector energy penalty. Do not self-normalize weighted minibatch counts or change sample order. q is fixed throughout each epoch. ERM always uses original early_train_epoch.",
+    "update": "After complete epoch inference on fit incident_full only: u_g=(MAE_g(P_epoch)-MAE_g(A))/MAE_fit(A), with one common fixed baseline scale. v=softmax(log(q)+20*u); q_next=0.05*pi+0.95*v. Positive excess harm increases weight relative to less harmed groups. No selection/audit labels affect weights.",
+    "interpretation": "Multiplicative temporal excess-loss reweighting with coverage mixture, not a certified population DRO bound. It changes learned weights, not final-output lambda. Zero benefit is a legitimate result; no rate/mixture search."
+  },
+  "training": {
+    "epochs": 12,
+    "batch_size": 8,
+    "evaluation_batch_size": 16,
+    "learning_rate": 0.001,
+    "adam_eps": 1e-08,
+    "weight_decay": 0.0,
+    "clip_grad_norm": 5.0,
+    "gate_identity_penalty": 0.001,
+    "node_hidden_width": 16,
+    "progress_every_batches": 10,
+    "objective": "Original standardized candidate H1-H6 MAE with fit-only frozen-per-epoch group weights; unchanged vector energy regularizer."
+  },
+  "selection": "Original v12k candidate_early selection and all sixteen v12c guards on projected candidate-early P only; epoch 0 is A, strict better/earlier ties. Same rule for both objectives. No worst-block or audit-based checkpoint selection.",
+  "budget": {
+    "fits": 12,
+    "epochs_per_fit": 12,
+    "trajectory_epochs": 144,
+    "selected_endpoints": 12
+  },
+  "paired_design": "For each seed/architecture, same fresh zero-residual initialization, Adam settings, sample permutation, batches, epoch budget, full-fit evaluation and selection visits. Epoch-1 adapter state must match exactly before temporal weights first change. Both architectures remain prespecified. All twelve identities freeze before audit Y evaluation.",
+  "primary": "audit incident_full candidate_h1_h6 pooled gain: temporal_excess minus ERM (MAE_ERM-MAE_temporal). Co-report both objectives versus A for every architecture and seed. A relative gain while both remain worse than A does not establish useful correction.",
+  "evaluation": "Retain all original phases/cohorts and four regions. Projected late/noncandidate outputs equal native A exactly. Save window errors/support and fixed-endpoint G/S/O. Report shared week and four-week paired intervals, pooled and equal-window weights. Recompute paired differences within each draw; never subtract marginal CI bounds. No best-seed claim.",
+  "bootstrap": {
+    "draws": 2000,
+    "seed": 12028,
+    "confidence": 0.95,
+    "sensitivity_circular_block_weeks": 4,
+    "minimum_valid_draw_fraction": 0.95,
+    "week_seed": 12028,
+    "four_week_block_seed": 12029,
+    "calendar": "Original continuous phase ISO-week grid including empty weeks; reconcile saved matrices and deterministic generator.",
+    "shared_draws": "All models, cohorts, G/S/O and matched contrasts use the same phase weights. Compute ratios and contrast within each draw; never subtract CI endpoints.",
+    "interval_scope": [
+      "G",
+      "S",
+      "O",
+      "matched_D"
+    ],
+    "no_cross_phase_paired_ci": true,
+    "interpretation": "Pointwise intervals conditional on saved weights, reused development and nine audit weeks. No joint 95 percent mechanism claim, seed independence or new success gate."
+  },
+  "check": {
+    "seeds": [
+      2025
+    ],
+    "epochs": 2,
+    "fit_windows_per_group": 2,
+    "other_windows_per_cohort": 2,
+    "same_four_group_definition": true,
+    "scientific_status": "NOT_EVALUATED_ENGINEERING_ONLY"
+  },
+  "recovery": "Atomic epoch boundary with current adapter, Adam moments/settings/step count, q for next epoch, fit-group history, selected historical best, RNG, run/input/code/device identity. Replay q and selection independently on restore. New destination only; source read-only; recompute final evaluations after all selected identities freeze. Completed trajectories do not optimize again.",
+  "information_boundary": {
+    "validation_arrays_read": false,
+    "test_split_read": false,
+    "control_Y_used_for_optimizer": false,
+    "control_Y_used_for_selection": true,
+    "audit_Y_used_for_selection": false,
+    "backbone_optimizer_updates": false,
+    "high_impact_router_used": false,
+    "new_external_information_source": false,
+    "backbone_pretrained_on_entire_train": true,
+    "backbone_checkpoint_previously_selected_on_validation": true,
+    "scaler_previously_fit_on_entire_train_X": true,
+    "independent_confirmation": false,
+    "fit_Y_used_for_temporal_weights": true,
+    "selection_Y_used_for_temporal_weights": false,
+    "audit_Y_used_for_temporal_weights": false,
+    "new_model_training_performed": true
+  },
+  "independent_confirmation_plan": {
+    "status": "SEPARATE_PROTOCOL_REQUIRED_NOT_EXECUTED_BY_THIS_PROGRAM",
+    "candidate": "A distinct 2024 cohort; continuous traffic windows are not yet fully materialized. First certify and freeze source version, event identities, report-time availability, sensor coverage and temporal supports without consulting prediction outcomes.",
+    "past_only_requirement": "Every A/scaler/adapter fit, checkpoint choice and method choice must use only observations prior to confirmation windows. Audit the existing 2023 artifacts and exposure ledger; rebuild from a certified past-only package if provenance cannot establish this. Do not relabel the repeatedly used 2023 audit/val or previously exposed test as fresh confirmation.",
+    "evaluation": "Freeze the entire selected system and cohort before confirmation targets are evaluated; carry paired baseline, all prescribed seeds and ordinary-traffic safeguards. No confirmation-driven retuning."
+  },
+  "decision": "ONE_PAIRED_DEVELOPMENT_COMPARISON_THEN_REVIEW_NO_AUTOMATIC_PROMOTION_OR_TEST_ACCESS"
+}
