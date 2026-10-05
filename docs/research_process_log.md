@@ -2090,3 +2090,113 @@ The next information-ablation draft separates traffic/clock, added report locati
 and added report age with common normalization and explicit no-report input
 isolation. It requires new past-only training/scaling and capacity accounting;
 no formal v13b training entrypoint or predictive result is claimed in this delivery.
+
+## 2026-10-05: v13a frozen-A V100 equivalence completed in received server log
+
+Received the log of Slurm job 1148424, gpu10, 22:14:33–22:15:11 +08:00,
+commit `ba58d4bae9c5228aae92c05e38b656c4671f6098`, igstgnn, Torch 2.3.1+cu121,
+NumPy 1.24.4. All 18 server tests passed. The two-window frozen-A check passed,
+then the full run reported `FIT_INPUT_AND_EQUIVALENCE_COMPLETE` for 1,520/1,520
+eligible fit windows on cuda:0, Tesla V100-SXM2-32GB. Workflow exit code was 0.
+
+All 9,047,040 forecast values were exactly equal with maximum/summed absolute
+difference zero; enhanced history (289,505,280 cells), incident K (48,640) and
+distances (2,261,760) also matched exactly. Empty sensor features have no numeric
+cells and provide structural agreement only. The before/after tensor-state hash
+was unchanged in both runs: `f1c07e806342ba0514dc762786231a88e517857dc1ffefb3fdbcd78ec6655e26`.
+This is not the checkpoint-file SHA. The 1,409 bypassed parameters remain stored.
+
+The four printed inventories in both stages match the local final-code `_02`
+results exactly: full fit history has no nonfinite/negative inputs, 34,510 true
+zeros, report age 1–5 minutes, D0 all zero and 8–58 candidate nodes per window.
+Local producer files also match the logged commit. A reproducible review passed
+52 log/arithmetic/local-provenance checks; these are not additional model tests.
+
+Full-run peak CUDA allocated memory was 1,261,911,552 bytes (about 1.18 GiB).
+Whole workflow timestamps span about 38 seconds. Last full progress was 25.018
+seconds, including setup/inventory/loading/forward progress and excluding final
+report overhead; it is not isolated inference latency or a speedup benchmark.
+Optimizer steps were zero by design; no Y statistics/loss or predictive gain was
+measured. Whole train identity hashes still traverse unparsed Y bytes.
+
+This extends the previous random-weight CPU evidence to real frozen A and all
+declared fit windows under the logged V100 inference conditions. Singleton Q/
+fusion-MLP arithmetic is redundant here; V, mask, whole-node LayerNorm, K/TIID,
+graphs and decoder remain. Neither full ICSF uselessness nor training equivalence
+is established. Scientific status remains
+`INPUT_AND_EQUIVALENCE_REVIEW_ONLY_NO_PREDICTIVE_GAIN_CLAIM`; v12o's negative
+primary result relative to A is unchanged. Next priority is v13b fair retraining
+of traffic/clock, added location, and added age, with new past-only preprocessing
+and frozen selection/endpoint rules; its formal trainer remains unimplemented.
+
+Evidence boundary: only a pasted server log was received, not the remote summary,
+CSVs, row identities or checkpoint. Remote file/source hashes and replay cannot
+be independently certified from this log. Original 9,797-byte CRLF log SHA-256:
+`3db6a1a80c48871cc0ddd3b2e73d74a1d8882c8d0238fc6288804b64c5d7f38b`.
+Raw log, parser, parsed report, verification and tensor CSV are preserved under
+`复现结果/模块输入核验_20261005/server_review_1148424/` without an archive.
+See [full result review](effective_input_audit_v13a_results.md).
+
+## 2026-10-05: v13b fresh information-ablation training implemented and locally verified
+
+After the v13a equivalence result, froze a separate development protocol before
+new training outputs: `minimal_information_v13b.json`, SHA-256
+`ac832ff07a049a5bb0705fb2f2a0dcff8ffd97988ac017d4fabb5acd0e58db84`.
+Implemented M0 traffic/clock, M1 added location, M2 added report age. Their forward
+interfaces exclude labels, candidate masks and event identities; M0 cannot accept
+report tensors, and M1 cannot accept age. Shared forecast calendar is constructed
+from window timestamps independently of report context. Old ICSF/TIID parameters
+are removed from these new models, with a common context MLP and whole-node
+LayerNorm. Production model sources and historical protocols remain unchanged.
+
+All three models train the traffic backbone from the same per-seed initialization.
+No old A checkpoint or scaler is loaded. New unique-fit-X statistics use 12,140
+nominal slots / 6,021,440 valid station-slot inputs, mean 256.8559268214912,
+std 155.14245102535168 and 23,494 genuine zeros. Repeated-slot conflicts or a
+station without valid fit inputs fail rather than borrowing later information.
+Time-only eligibility remains fit 1,520, selection incident_full 856 with 206
+common triples, audit incident_full 1,010 with 378 common triples. Control supports
+must also lie fully within their phase. No val/test arrays are opened; whole-file
+train provenance hashes still traverse all unparsed label bytes.
+
+Frozen full budget: three arms x seeds 2025/2026/2027 x 60 epochs, batch 8,
+102,600 Adam steps; all-node/all-horizon fit MAE, same ordering and schedule.
+Strict lowest selection all-node pooled raw MAE chooses the earliest tied epoch.
+Control labels do not enter optimization or selection. All nine endpoints freeze
+before audit. Compare M1-M0 and M2-M1 on audit full-incident candidate H1-H6 MAE,
+with >=1% relative primary improvement in every seed, positive week and four-week
+paired lower bounds, <=1% protected point harm and positive matched-incident point
+gain. Minimum support and insufficient/not-supported branches are explicit.
+Shared calendar draws and saved window/week sufficient statistics permit replay.
+These are prespecified development gates, not independent or simultaneous 95%
+confirmation. Absence of support is not proof of equivalence or universal uselessness.
+
+Checkpoint recovery saves sealed current/best tensors, Adam, scheduler, history
+and Torch RNG at epoch boundaries. Recovery verifies input/code/runtime identity
+and historical selection, reads the old partial without modifying it, and writes
+a new run directory. Completed fits do not optimize again. Sources are checked
+before and after execution; failures preserve partial artifacts.
+
+Validation: 19 new behavioral/workflow/launcher tests plus 12 original architecture
+tests and 6 chronological-data tests passed (37 total). Synthetic complete and
+interrupted/resumed runs produced identical selected tensor hashes and prediction
+error CSVs; all-endpoint freeze ordering, corrupted recovery rejection and no
+audit in check/pilot modes were verified. Python/Bash/diff checks passed.
+
+A final-code real 496-node CPU check trained each arm for two epochs on four fit
+and four selection windows: four Adam steps per arm, twelve total, nonzero
+backbone gradients/updates, identical initial model hashes. Each model has 426,876
+nominal trainable parameters; known zero-input weights number 128/64/32 for M0/M1/M2.
+Additional inherited parameters without gradients are named in history records;
+nominal equality is not equality of effective capacity. Status is
+`V13B_ENGINEERING_CHECK_PASS`, scientific status `NOT_EVALUATED_ENGINEERING_ONLY`.
+Final artifacts are under `复现结果/最小信息消融_v13b_20261005/real_cpu_check_02`;
+`_01` is preserved as the earlier engineering run before the end-of-run input recheck.
+
+Next campus step is the CUDA pilot: three complete one-epoch fit/selection passes,
+570 Adam steps plus a separate 12-step precheck, with no audit. It estimates V100
+cost before the fixed full budget; pilot errors are not a tuning license. Existing
+igstgnn/V100 and GitHub pull workflow remain in use, without SSH. No V100 timing,
+formal nine-fit result or new predictive-gain claim exists yet. See
+[frozen design](minimal_information_ablation_v13b_draft.md) and
+[server runbook](minimal_information_v13b_run.md).

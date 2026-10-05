@@ -1,0 +1,162 @@
+{
+  "protocol_id": "contra_v8_minimal_information_retraining_v13b",
+  "design_date": "2026-10-05",
+  "scope": "reused_2023_conditional_development_information_ablation_not_independent_confirmation",
+  "data_contract_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",
+  "frozen_legacy_sources": {
+    "src/models/igstgnn.py": "7a6b2d611b6a1cd346c59278f3b1704029d312795e0fa66654fce3bab41dc08d",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/base/model.py": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83"
+  },
+  "nodes": 496,
+  "source_counts": {
+    "positive": 3604,
+    "primary": 3519,
+    "secondary": 3106
+  },
+  "frozen_only_candidate_pairs": [
+    [
+      1542,
+      402510
+    ]
+  ],
+  "periods": {
+    "fit": [
+      "2023-01-02T00:00:00",
+      "2023-04-24T00:00:00"
+    ],
+    "selection": [
+      "2023-05-01T00:00:00",
+      "2023-06-26T00:00:00"
+    ],
+    "audit": [
+      "2023-07-03T00:00:00",
+      "2023-09-04T00:00:00"
+    ]
+  },
+  "expected_phase_samples": {
+    "fit": {
+      "incident_full": 1520
+    },
+    "selection": {
+      "incident_full": 856,
+      "incident": 206,
+      "primary_control": 206,
+      "secondary_control": 206
+    },
+    "audit": {
+      "incident_full": 1010,
+      "incident": 378,
+      "primary_control": 378,
+      "secondary_control": 378
+    }
+  },
+  "arms": [
+    "M0",
+    "M1",
+    "M2"
+  ],
+  "seeds": [
+    2025,
+    2026,
+    2027
+  ],
+  "architecture": {
+    "hidden": 32,
+    "node_hidden": 12,
+    "time_hidden": 12,
+    "layers": 5,
+    "dropout": 0.1
+  },
+  "information": {
+    "common": "history_flow, static/node graph information, history and independent forecast clock; shared context projection and whole-node LayerNorm",
+    "M0": "forward(history,clock); D and age constructed as constant zeros internally",
+    "M1": "forward(history,clock,D); age constant zero internally",
+    "M2": "forward(history,clock,D,age); age scaled by fixed 5 minutes and broadcast to every node",
+    "context": "MLP([embedded last history, shared forecast calendar embeddings, D, age/5]); LayerNorm(last+context); no candidate output mask",
+    "removed": "old ICSF, TIID, K, V, all pretrained A weights",
+    "capacity": "same nominal shapes and initialization; report structurally inactive input-column weights, including constant D0; no claim of equal effective capacity",
+    "availability": "report location available at first report remains conditional; matched controls receive paired pseudo-event D/age and their own calendar; these are stress tests, not naturally reported accidents"
+  },
+  "training": {
+    "epochs": 60,
+    "batch_size": 8,
+    "evaluation_batch_size": 16,
+    "learning_rate": 0.002,
+    "weight_decay": 1e-05,
+    "adam_eps": 1e-08,
+    "clip_grad_norm": 5.0,
+    "lr_milestones": [
+      20,
+      40
+    ],
+    "lr_gamma": 0.5,
+    "progress_every_batches": 10,
+    "objective": "all-node all-12-horizon valid-cell pooled standardized MAE on incident_full fit only",
+    "selection": "lowest selection incident_full all-node pooled raw MAE; strict improvement, earlier epoch wins ties; epoch0 not a candidate",
+    "budget": "9 fresh full-backbone fits, 60 epochs each, 190 Adam steps per epoch = 102600 total steps; no early stopping or hyperparameter search"
+  },
+  "scaler": "new unique station/nominal-slot fit X only; verify duplicates; finite nonnegative, real zero valid; fail if any node has no fit history; no old scaler or Y fallback",
+  "evaluation": {
+    "regions": [
+      "all",
+      "candidate_early",
+      "candidate_late",
+      "noncandidate"
+    ],
+    "primary": "audit incident_full candidate_early H1-H6 pooled raw MAE gain: previous arm minus added-information arm",
+    "comparisons": [
+      [
+        "M0",
+        "M1"
+      ],
+      [
+        "M1",
+        "M2"
+      ]
+    ],
+    "secondary": "equal-window MAE; all regions and matched positive/primary/secondary pseudo-event cohorts; all seeds separately",
+    "minimum_windows": 30,
+    "minimum_nonempty_weeks": 8,
+    "practical_relative_gain": 0.01,
+    "maximum_relative_harm": 0.01,
+    "gate": "For each incremental comparison, all 3 seeds require primary relative gain >=1%, positive 95% week and 4-week-block CI lower bounds, and <=1% point harm in all-node/noncandidate incident_full and all four regions of both pseudo-event controls. Also require matched incident primary point gain positive. Otherwise NOT_SUPPORTED or INSUFFICIENT_SUPPORT; no best seed. This is a strict development screen, not simultaneous 95% confidence or equivalence.",
+    "endpoints_frozen_before_audit": true
+  },
+  "bootstrap": {
+    "draws": 2000,
+    "seed": 13026,
+    "confidence": 0.95,
+    "block_weeks": 4,
+    "minimum_valid_fraction": 0.95,
+    "calendar": "continuous 9-week audit grid; same draws for all seeds/arms/cohorts; cluster matched triples by positive origin week; pointwise conditional inference on reused development"
+  },
+  "check": {
+    "seed": 2025,
+    "epochs": 2,
+    "samples_per_phase": 4,
+    "batch_size": 2,
+    "evaluate_audit": false
+  },
+  "pilot": {
+    "seed": 2025,
+    "epochs": 1,
+    "all_fit_and_selection_windows": true,
+    "evaluate_audit": false,
+    "purpose": "GPU full-backbone cost/gradient check only; no model or threshold tuning from pilot errors"
+  },
+  "recovery": "sealed atomic epoch snapshots including current/best weights, Adam, scheduler, training history and torch RNG; source read-only, destination new; identical protocol/input/code/device identity",
+  "boundaries": {
+    "old_checkpoint_loaded": false,
+    "old_scaler_loaded": false,
+    "val_or_test_files_opened": false,
+    "control_labels_used_in_training": false,
+    "control_labels_used_in_selection": false,
+    "audit_labels_used_in_selection": false,
+    "backbone_retrained": true,
+    "independent_confirmation": false,
+    "new_external_information": false,
+    "train_file_hash": "hashing complete train files includes all unparsed future/held-out bytes; all-train metadata is used for identity/eligibility only"
+  },
+  "decision": "one prespecified development comparison; review all outcomes; no automatic new modules, test access or promotion"
+}
