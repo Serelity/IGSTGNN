@@ -2042,3 +2042,51 @@ source/version, report-time availability, support and sensor coverage, and requi
 all fitting/selection to use only past observations. Rebuild A/scaler if provenance
 cannot prove that boundary; do not relabel previously exposed audit/val/test data.
 No new model improvement, rate search, capacity expansion or test access is claimed.
+
+## 2026-10-05: v13a effective-input inventory and singleton-ICSF equivalence implementation
+
+Following the module-value review, implemented a separate fit-input inventory,
+an opt-in eval-only singleton-ICSF wrapper, a frozen protocol and a foreground
+server launcher. Production model sources and all earlier protocols remain intact.
+Protocol SHA-256 is `71aa29cde966505b4359b406cbc9f9db6826c95dc6bd9d52f08f4043a043d0ef`.
+
+Only the established 1,520 complete-support fit windows contribute numeric input
+statistics. The dedicated view refuses non-fit indices and never materializes
+gap/Y slots for statistics or model inputs. Whole-file train provenance hashing
+does traverse unparsed Y bytes; metadata covers all train rows. No val/test files
+are opened. Old A/scaler remain equivalence references with wider temporal
+dependencies, not certified initial conditions for a new past-only comparison.
+
+Local full inventory completed on 496 nodes: 9,047,040 window-exposure input cells,
+no nonfinite/negative inputs, 34,510 genuine zeros, 947 flow values spanning 0–993.
+Report age has five values (1–5 minutes); D0 is identically zero; supported-node
+counts range from 8 to 58 with mean 36.631579. These are descriptive fit-package
+properties, not guarantees about source missingness, future labels or prediction
+value. Overlapping history slots count again; this is not a fitted unique-slot scaler.
+
+The simplified wrapper preserves report encoding, mask, V, K for TIID, whole-node
+LayerNorm, graphs and decoder. It bypasses Q and the fusion MLP's singleton
+attention computation. A CPU engineering run on the first two real fit X windows
+and the 496-node production architecture used explicitly random weights: all
+11,904 predictions and compared intermediate tensors were exactly equal, and
+parameter/buffer hashes were unchanged. Status is
+`ENGINEERING_CHECK_PASS_RANDOM_WEIGHTS`, not frozen-A/GPU equivalence or a gain.
+The bypassed 1,409 parameters remain in the checkpoint; speed was not benchmarked.
+Training-mode equivalence is excluded because skipping dropout changes RNG use.
+
+Validation: 18 new behavioral/launcher tests, 12 existing architecture-mechanism
+tests and 6 chronological data tests passed (36 distinct tests). Bash syntax,
+Python compilation and diff whitespace checks passed. Final-code artifacts are
+under `复现结果/模块输入核验_20261005/fit_inventory_02` and
+`random_weight_cpu_check_02`; initial `_01` runs are preserved.
+
+The server launcher uses existing igstgnn/V100 and the frozen A checkpoint, tests
+first, then a two-window check, then all 1,520 fit X windows with CUDA inference.
+It records device/host/Slurm identity and exit code, preserves failed partials and
+refuses output reuse. Campus execution remains GitHub pull by the user, without SSH.
+See `docs/effective_input_audit_v13a.md` for commands and existing result filenames.
+
+The next information-ablation draft separates traffic/clock, added report location,
+and added report age with common normalization and explicit no-report input
+isolation. It requires new past-only training/scaling and capacity accounting;
+no formal v13b training entrypoint or predictive result is claimed in this delivery.

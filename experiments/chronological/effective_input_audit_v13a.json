@@ -1,0 +1,41 @@
+{
+  "protocol_id": "contra_v8_effective_input_audit_v13a",
+  "scope": "fit_input_inventory_and_frozen_A_single_incident_inference_equivalence",
+  "baseline_protocol": "incident_branch_materialize_v6a.json",
+  "baseline_protocol_sha256": "a403dcc0e4e2dd8791a39b0708436c202beee94cb17e3d21dc95e48e88c1d710",
+  "fit_period": ["2023-01-02T00:00:00", "2023-04-24T00:00:00"],
+  "expected_fit_samples": 1520,
+  "expected_train_samples": 3604,
+  "expected_nodes": 496,
+  "history_slice": [0, 12],
+  "batch_size": 16,
+  "check_samples": 2,
+  "unique_value_cap": 4096,
+  "seed": 13025,
+  "equivalence": {
+    "atol_standardized": 0.000001,
+    "rtol": 0.000001,
+    "mode": "eval_float32_inference_only",
+    "compare": ["enhanced_history", "incident_key", "sensor_features", "distances", "forecast"],
+    "preserve": ["whole_node_LayerNorm", "candidate_mask", "V", "K_for_TIID", "TIID", "graphs", "decoder"],
+    "bypass": ["ICSF_q_proj", "ICSF_fusion_MLP", "singleton_softmax"],
+    "benchmark_speedup": false
+  },
+  "model_source_sha256": {
+    "src/models/igstgnn.py": "7a6b2d611b6a1cd346c59278f3b1704029d312795e0fa66654fce3bab41dc08d",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8"
+  },
+  "information_boundary": {
+    "numeric_inventory": "eligible_fit_X_and_report_context_only; no Y statistics or loss",
+    "file_identity": "hash complete train package files, including unparsed Y bytes in train_flow.npy; train manifest and context metadata cover all train rows",
+    "validation_and_test_files_read": false,
+    "optimizer_or_training": false,
+    "original_model_source_modified": false,
+    "original_checkpoint_modified": false,
+    "old_scaler": "entire_train_X; only reused to reproduce old A inputs, not certified for a new past-only fit",
+    "old_checkpoint": "trained on wider train and selected on validation; equivalence reference only",
+    "independent_confirmation": false
+  },
+  "decision": "INPUT_AND_EQUIVALENCE_REVIEW_ONLY_NO_PREDICTIVE_GAIN_CLAIM",
+  "interpretation": "Variation and dependency are not predictive value. Equivalence applies only to the declared single-report, no-static-sensor, fixed-response inference path. No training RNG equivalence, speedup, or forecast gain is inferred."
+}
