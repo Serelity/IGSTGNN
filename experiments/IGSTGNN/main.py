@@ -46,6 +46,8 @@ def get_config():
     
     # Incident related parameters
     parser.add_argument('--module_name', type=str, default='igstgnn')
+    parser.add_argument('--incident_routing', choices=('none', 'acdg'), default='none',
+                        help='Optional accident-conditioned EstimationGate routing (P2)')
 
     # TIID parameters. lambda_incident is kept as an ablation scale and defaults
     # to the paper-equivalent value of 1.0.

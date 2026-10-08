@@ -53,7 +53,7 @@ def set_seed(seed):
     torch.backends.cudnn.deterministic = True
 
 
-def make_model(data_dir, node_count, device, variant):
+def make_model(data_dir, node_count, device, variant, incident_routing='none'):
     adjacency = np.load(data_dir / 'adjacency.npy', allow_pickle=False)
     if adjacency.shape != (node_count, node_count) or not np.isfinite(adjacency).all():
         raise ValueError('Adjacency and package node axis disagree')
@@ -66,7 +66,7 @@ def make_model(data_dir, node_count, device, variant):
         model_args=dict(num_feat=1, num_hidden=32, node_hidden=12, time_emb_dim=12,
                         layer=5, k_s=2, k_t=3, tpd=288, dropout=.1, gap=3, sigma_t=1.,
                         lambda_incident=1., adjs=supports, incident_schema='report_location_v1',
-                        time_response=variant),
+                        time_response=variant, incident_routing=incident_routing),
         node_num=node_count, input_dim=3, output_dim=1, seq_len=12, horizon=12,
         dataset='Contra_Costa', data_path=str(data_dir), use_sensor_info=False).to(device)
 

@@ -22,9 +22,12 @@ class IGSTGNN(BaseModel):
         self.model_args = model_args
         model_args.update(args)
         self._incident_schema = model_args.get('incident_schema', 'legacy')
+        self._incident_routing = model_args.get('incident_routing', 'none')
         self._time_response_mode = model_args.get('time_response', 'fixed')
         if self._incident_schema not in ('legacy', 'report_location_v1'):
             raise ValueError('Unknown incident_schema')
+        if self._incident_routing not in ('none', 'acdg'):
+            raise ValueError('Unknown incident_routing')
         if self._time_response_mode not in ('fixed', 'shared', 'conditioned', 'phase',
                                              'phase_residual'):
             raise ValueError('Unknown time_response')
@@ -106,6 +109,13 @@ class IGSTGNN(BaseModel):
         elif self._time_response_mode == 'phase_residual':
             self.tiid_module.time_response = ResidualPhaseResponse(self.horizon)
 
+        # Add optional P2 branches only after every native module has been
+        # initialized.  This preserves the native RNG draw order for exact
+        # baseline-to-ACDG common-state comparisons.
+        if self._incident_routing == 'acdg':
+            for layer in self.layers:
+                layer.estimation_gate.enable_incident_condition(self._hidden_dim)
+
     def reset_parameter(self):
         nn.init.xavier_uniform_(self.node_emb_u)
         nn.init.xavier_uniform_(self.node_emb_d)
@@ -177,7 +187,8 @@ class IGSTGNN(BaseModel):
             inh_backcast_seq_res, dif_forecast_hidden, inh_forecast_hidden = layer(inh_backcast_seq_res, 
                                                                                   dynamic_graph, static_graph, 
                                                                                   node_embedding_u, node_embedding_d, 
-                                                                                  time_in_day_feat, day_in_week_feat)
+                                                                                  time_in_day_feat, day_in_week_feat,
+                                                                                  incident_inputs=incident_inputs)
             dif_forecast_hidden_list.append(dif_forecast_hidden)
             inh_forecast_hidden_list.append(inh_forecast_hidden)
 
@@ -456,6 +467,7 @@ class IncidentContextSpatialFusion(nn.Module):
         enhanced_data[:, -1, :, :] = self.output_norm(history_data[:, -1, :, :] + incident_context)
         
         return enhanced_data, {
+            'incident_embedding': incident_embedding,
             'incident_key': K_incident.squeeze(1),
             'sensor_features': sensor_embed,
             'distances': incident_distances,
@@ -469,9 +481,11 @@ class DecoupleLayer(nn.Module):
         self.dif_layer = DifBlock(hidden_dim, forecast_hidden_dim=fk_dim, **model_args)
         self.inh_layer = InhBlock(hidden_dim, forecast_hidden_dim=fk_dim, **model_args)
 
-
-    def forward(self, history_data, dynamic_graph, static_graph, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat):
-        gated_history_data = self.estimation_gate(node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat, history_data)
+    def forward(self, history_data, dynamic_graph, static_graph, node_embedding_u, node_embedding_d,
+                time_in_day_feat, day_in_week_feat, incident_inputs=None):
+        gated_history_data = self.estimation_gate(
+            node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat,
+            history_data, incident_inputs=incident_inputs)
 
         dif_backcast_seq_res, dif_forecast_hidden = self.dif_layer(history_data=history_data, gated_history_data=gated_history_data, dynamic_graph=dynamic_graph, static_graph=static_graph)
 
@@ -485,17 +499,92 @@ class EstimationGate(nn.Module):
         self.fully_connected_layer_1 = nn.Linear(2 * node_emb_dim + time_emb_dim * 2, hidden_dim)
         self.activation = nn.ReLU()
         self.fully_connected_layer_2 = nn.Linear(hidden_dim, 1)
+        self.incident_condition = None
+
+    def enable_incident_condition(self, hidden_dim):
+        """Enable P2 accident-conditioned routing at the gate-logit level.
+
+        The final projection is zero-initialized so an ACDG model starts with
+        exactly the native gate.  The module is created after the native gate,
+        diffusion and inherent branches, preserving their initialization order.
+        """
+        if self.incident_condition is not None:
+            raise ValueError('Incident condition is already enabled')
+        self.incident_condition = ExplicitIncidentCondition(hidden_dim)
 
 
-    def forward(self, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat, history_data):
+    def forward(self, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat,
+                history_data, incident_inputs=None):
         batch_size, seq_length, _, _ = time_in_day_feat.shape
         estimation_gate_feat = torch.cat([time_in_day_feat, day_in_week_feat, node_embedding_u.unsqueeze(0).unsqueeze(0).expand(batch_size, seq_length,  -1, -1), node_embedding_d.unsqueeze(0).unsqueeze(0).expand(batch_size, seq_length,  -1, -1)], dim=-1)
         hidden = self.fully_connected_layer_1(estimation_gate_feat)
         hidden = self.activation(hidden)
 
-        estimation_gate = torch.sigmoid(self.fully_connected_layer_2(hidden))[:, -history_data.shape[1]:, :, :]
+        base_logits = self.fully_connected_layer_2(hidden)
+        base_logits = base_logits[:, -history_data.shape[1]:, :, :]
+        if self.incident_condition is not None and incident_inputs is not None:
+            base_logits = base_logits + self.incident_condition(history_data, incident_inputs)
+        estimation_gate = torch.sigmoid(base_logits)
         history_data = history_data * estimation_gate
         return history_data
+
+
+class ExplicitIncidentCondition(nn.Module):
+    """Build a node-local incident condition for P2 gate-logit routing.
+
+    The condition uses the same incident representation already produced by
+    ICSF, the existing incident-to-node relation vector, and the current
+    hidden state at each layer.  A support mask is applied after the residual
+    projection so disconnected nodes cannot receive an accident-conditioned
+    gate change, including after training when the MLP has non-zero biases.
+    """
+    def __init__(self, hidden_dim, condition_hidden=64):
+        super().__init__()
+        self.hidden_dim = int(hidden_dim)
+        self.condition_hidden = int(condition_hidden)
+        self.mlp = nn.Sequential(
+            nn.Linear(2 * self.hidden_dim + 3, self.condition_hidden),
+            nn.ReLU(),
+            nn.Linear(self.condition_hidden, 1),
+        )
+        # Keep the initial P2 model exactly at the native EstimationGate.
+        nn.init.zeros_(self.mlp[-1].weight)
+        nn.init.zeros_(self.mlp[-1].bias)
+
+    def forward(self, history_data, incident_inputs):
+        if not isinstance(incident_inputs, dict):
+            raise ValueError('Incident inputs must be a dictionary')
+        incident_embedding = incident_inputs.get('incident_embedding')
+        if incident_embedding is None:
+            # Backward-compatible fallback for callers that only expose the
+            # projected ICSF key.  The current IGSTGNN forward path supplies
+            # incident_embedding explicitly.
+            incident_embedding = incident_inputs.get('incident_key')
+        distances = incident_inputs.get('distances')
+        if incident_embedding is None or distances is None:
+            raise ValueError('P2 requires incident_embedding and distances')
+        if (history_data.ndim != 4 or incident_embedding.ndim != 2
+                or distances.ndim != 3 or distances.shape[-1] != 3):
+            raise ValueError('Invalid P2 incident-condition shapes')
+        batch_size, history_len, node_count, hidden_dim = history_data.shape
+        if (incident_embedding.shape != (batch_size, hidden_dim)
+                or distances.shape[:2] != (batch_size, node_count)):
+            raise ValueError('P2 incident-condition batch/node dimensions disagree')
+        if not torch.isfinite(incident_embedding).all() or not torch.isfinite(distances).all():
+            raise ValueError('P2 incident-condition inputs must be finite')
+
+        incident_embedding = incident_embedding.to(
+            device=history_data.device, dtype=history_data.dtype)
+        distances = distances.to(device=history_data.device, dtype=history_data.dtype)
+        incident_feature = incident_embedding[:, None, None, :].expand(
+            -1, history_len, node_count, -1)
+        distance_feature = distances[:, None, :, :].expand(-1, history_len, -1, -1)
+        condition_feature = torch.cat(
+            [history_data, incident_feature, distance_feature], dim=-1)
+        delta_logits = self.mlp(condition_feature)
+
+        connected = (distances.abs().sum(dim=-1) > 0).to(history_data.dtype)
+        return delta_logits * connected[:, None, :, None]
 
 
 class ResidualDecomp(nn.Module):

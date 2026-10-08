@@ -35,7 +35,7 @@ def parse_args(argv=None):
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--variant',
                         choices=('fixed', 'shared', 'conditioned', 'phase', 'phase_residual',
-                                 *CONTROL_VARIANTS),
+                                 'acdg', *CONTROL_VARIANTS),
                         required=True)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--seed', type=int, default=2025)
@@ -450,20 +450,25 @@ def atomic_npz(path, **arrays):
 
 def build_model(data_dir, node_count, device, variant, seed):
     set_seed(seed)
-    reference = make_model(data_dir, node_count, device, 'fixed')
+    reference = make_model(data_dir, node_count, device, 'fixed', incident_routing='none')
     reference._incident_control = 'true_incident'
     common = cpu_state(reference.state_dict())
     if variant == 'fixed':
         return reference, common, None
     set_seed(seed)
-    architecture_variant = 'fixed' if variant in CONTROL_VARIANTS else variant
-    model = make_model(data_dir, node_count, device, architecture_variant)
+    architecture_variant = 'fixed' if variant in CONTROL_VARIANTS or variant == 'acdg' else variant
+    incident_routing = 'acdg' if variant == 'acdg' else 'none'
+    model = make_model(data_dir, node_count, device, architecture_variant,
+                       incident_routing=incident_routing)
     model._incident_control = variant if variant in CONTROL_VARIANTS else 'true_incident'
     extras = set(model.state_dict()) - set(common)
     missing, unexpected = model.load_state_dict(copy.deepcopy(common), strict=False)
     if unexpected or set(missing) != extras or any(
-            not key.startswith('tiid_module.time_response.') for key in extras):
-        raise ValueError('Unexpected differences in common time-response state')
+            not (key.startswith('tiid_module.time_response.') or
+                 (key.startswith('layers.') and
+                  '.estimation_gate.incident_condition.' in key))
+            for key in extras):
+        raise ValueError('Unexpected differences in common or ACDG state')
     for key, value in common.items():
         if not torch.equal(model.state_dict()[key].cpu(), value):
             raise ValueError(f'Common initialization mismatch: {key}')
