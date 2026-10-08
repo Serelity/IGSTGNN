@@ -16,7 +16,30 @@ P2 保留 ICSF、动态图、扩散/固有解耦主干和 TIID。事故条件使
 
 条件分支最后一层零初始化，因此同一份原始主干权重下，P2 初始输出应与原始 `fixed` 模型一致。断开节点的事故条件增量在输出端乘支持掩码，训练后也保持为零。
 
-## 当前入口：完整初筛后的 CPU 诊断
+## 当前入口：最佳 checkpoint 的门控开启/关闭推理对照
+
+作业1163061已完成保存预测的CPU诊断：原指标复算一致，共同训练预算下ACDG仍落后，
+关联区域也没有平均净收益。用户已同意下一步固定现有最佳checkpoint，比较新增门控分支开启与关闭。
+
+先单独更新代码：
+
+```text
+git pull --ff-only origin research/chronological-tiid
+```
+
+在Slurm分配1张V100、3核CPU、32GB内存、30分钟时限，沿用 `igstgnn`，在仓库根目录运行：
+
+```bash
+bash experiments/chronological/probe_incident_routing_p2.sh contra_p2_first_epoch_20261008_172731_wNQWZK
+```
+
+本次仅做推理，不训练。先用ON模式复现原最佳预测，再将五层新增条件门控输出同时置零运行OFF，
+其余权重及模块保持不变。关闭后模型仍是ACDG训练过的主干，不能等同于原fixed模型。
+脚本内没有Git操作；新输出在 `gate_on_off_时间_随机后缀/`，不会覆盖原结果。
+成功状态 `P2_FIXED_CHECKPOINT_GATE_ON_OFF_COMPLETE`；主要指标 `off_minus_on_mae` 为正表示
+分支对当前权重有帮助，为负表示关闭后更好。详细约定、复现检查和门值统计见 [门控推理对照](incident_routing_p2_gate_probe.md)。
+
+## 已完成步骤：完整初筛后的 CPU 诊断
 
 Slurm 作业 `1162687` 已回传 `P2_PAIRED_SCREENING_COMPLETE`，退出码0。
 fixed在第100轮结束，最佳第99轮；ACDG在第89轮正常早停，最佳第69轮。
