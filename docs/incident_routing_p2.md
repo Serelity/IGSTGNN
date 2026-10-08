@@ -16,7 +16,38 @@ P2 保留 ICSF、动态图、扩散/固有解耦主干和 TIID。事故条件使
 
 条件分支最后一层零初始化，因此同一份原始主干权重下，P2 初始输出应与原始 `fixed` 模型一致。断开节点的事故条件增量在输出端乘支持掩码，训练后也保持为零。
 
-## 当前入口：从首轮 checkpoint 完成配对初筛
+## 当前入口：完整初筛后的 CPU 诊断
+
+Slurm 作业 `1162687` 已回传 `P2_PAIRED_SCREENING_COMPLETE`，退出码0。
+fixed在第100轮结束，最佳第99轮；ACDG在第89轮正常早停，最佳第69轮。
+最佳全节点MAE为22.686666 / 22.774736，ACDG高约0.3882%，本次未观察到预测增益。
+首轮优势没有维持到完整选模结果，详见 [完整初筛记录](incident_routing_p2_screening_results.md)。
+
+先单独更新仓库：
+
+```text
+git pull --ff-only origin research/chronological-tiid
+```
+
+本步骤无需GPU。在Slurm分配的CPU作业中使用已有 `igstgnn` 环境，建议3核CPU、8GB内存、
+30分钟时限（为I/O预留，不是实测耗时），在仓库根目录运行：
+
+```bash
+bash experiments/chronological/diagnose_incident_routing_p2.sh contra_p2_first_epoch_20261008_172731_wNQWZK
+```
+
+脚本内没有Git操作，不创建Slurm作业、不训练或运行模型推理，只读取两组已保存的预测和summary。
+它核验冻结源码/协议、两组身份及顺序、预测文件哈希和绑定的数据清单；然后复算原MAE，
+导出完整学习曲线、共同轮数内最好值、关联/非关联节点、逐时距、逐窗口和逐周误差。
+共同轮数结果为事后描述，不改动原来的最佳检查点选择。
+
+结果保存在原配对目录内新建的 `diagnostics_时间_随机后缀/`，其中 `run.log`、`exit_code`
+记录执行状态；`report/summary.json`、`learning_curves.csv`、`per_horizon.csv`、
+`per_window.csv`、`per_week.csv` 保存诊断结果。成功状态为
+`P2_SAVED_PREDICTION_DIAGNOSTICS_COMPLETE`。回传日志末尾汇总即可；需要细查曲线时再读取CSV。
+诊断已通过8项本地测试（含全尺寸合成预测），并完成Bash语法检查；真实服务器预测的复算尚待本步骤运行。
+
+## 已完成步骤：从首轮 checkpoint 完成配对初筛
 
 2026-10-08 收到 Slurm 作业 `1162626` 的首轮日志：三项 ACDG 测试通过，
 两臂各完成 76 次更新，`PAIR_IDENTITY_CHECK_PASS`，流程退出码为 0。
