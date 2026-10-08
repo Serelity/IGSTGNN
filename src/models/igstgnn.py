@@ -204,7 +204,18 @@ class IGSTGNN(BaseModel):
         gap = self._model_args['gap']
         step_hidden = forecast_hidden.repeat_interleave(gap, dim=1)[:, :self.horizon]
         if incident_inputs is not None:
-            step_hidden = self.tiid_module(step_hidden, **incident_inputs)
+            # ICSF exposes ``incident_embedding`` for P2 gate routing, but it
+            # is not a TIID input.  Pass the TIID contract explicitly so
+            # adding backbone consumers cannot leak unrelated keys into this
+            # module's call signature.
+            step_hidden = self.tiid_module(
+                step_hidden,
+                incident_key=incident_inputs['incident_key'],
+                sensor_features=incident_inputs['sensor_features'],
+                distances=incident_inputs['distances'],
+                history_state=incident_inputs.get('history_state'),
+                report_age_minutes=incident_inputs.get('report_age_minutes'),
+            )
         forecast = self.out_fc_2(F.relu(self.out_fc_1(F.relu(step_hidden))))
         channels = torch.arange(self.horizon, device=forecast.device) % gap
         channels = channels.view(1, -1, 1, 1).expand(forecast.shape[0], -1, self.node_num, 1)
