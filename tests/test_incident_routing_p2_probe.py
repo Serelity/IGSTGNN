@@ -14,10 +14,10 @@ from experiments.chronological import probe_incident_routing_p2 as probe
 from src.models.igstgnn import IGSTGNN
 
 
-def tiny_model(routing='acdg'):
+def tiny_model(routing='acdg', layers=2):
     model = IGSTGNN(
         model_args=dict(num_feat=1, num_hidden=8, node_hidden=4, time_emb_dim=4,
-                        layer=2, k_s=1, k_t=2, tpd=288, dropout=.1, gap=3,
+                        layer=layers, k_s=1, k_t=2, tpd=288, dropout=.1, gap=3,
                         sigma_t=1., lambda_incident=1., adjs=[torch.eye(3), torch.eye(3)],
                         incident_schema='report_location_v1', time_response='fixed',
                         incident_routing=routing),

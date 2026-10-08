@@ -1,6 +1,7 @@
 """Fixed-checkpoint inference with the five ACDG residual gates on versus off."""
 
 import argparse
+from dataclasses import dataclass
 import json
 import math
 import os
@@ -67,13 +68,19 @@ class GateIntervention:
     The original modules and state_dict are never edited. Hooks are removed even on failure.
     Off-mode proposed deltas are evaluated on off-mode hidden states; they are descriptive.
     """
-    def __init__(self, model, mode):
-        require(mode in ('on', 'off'), 'Only the prespecified on/off intervention is supported')
+    def __init__(self, model, mode, disabled_layer=None):
+        require(mode in ('on', 'off', 'layer_off'), 'Unknown gate intervention mode')
         require(not model.training, 'Inference probe requires model.eval()')
         self.mode = mode
         self.gates = {name: module for name, module in model.named_modules()
                       if name.endswith('estimation_gate') and module.incident_condition is not None}
         require(bool(self.gates), 'No ACDG gates found')
+        if mode == 'layer_off':
+            require(disabled_layer in self.gates, 'Select exactly one existing ACDG gate by module name')
+            self.disabled_gates = frozenset((disabled_layer,))
+        else:
+            require(disabled_layer is None, 'A selected layer is only valid in layer_off mode')
+            self.disabled_gates = frozenset(self.gates if mode == 'off' else ())
         self.handles, self.base = [], {}
         self.calls = {name: 0 for name in self.gates}
         self.samples = {name: 0 for name in self.gates}
@@ -95,15 +102,16 @@ class GateIntervention:
                     support = (incident['distances'].abs().sum(-1) > 0)[:, None, :, None].expand_as(output)
                     require(torch.count_nonzero(output[~support]).item() == 0,
                             'Conditional gate is nonzero outside its support')
-                    applied = output if self.mode == 'on' else torch.zeros_like(output)
+                    disabled = name in self.disabled_gates
+                    applied = torch.zeros_like(output) if disabled else output
                     native, actual = torch.sigmoid(base), torch.sigmoid(base + applied)
                     require(torch.isfinite(actual).all().item(), 'Nonfinite effective gate')
                     for region, mask in (('associated_nodes', support), ('nonassociated_nodes', ~support)):
                         self.stats[name][region].update(output, applied, native, actual, mask)
                     self.calls[name] += 1
                     self.samples[name] += history.shape[0]
-                    # None preserves the original tensor and forward path exactly in on mode.
-                    return None if self.mode == 'on' else applied
+                    # Untargeted branches preserve the original tensor and forward path.
+                    return applied if disabled else None
 
                 self.handles.append(gate.fully_connected_layer_2.register_forward_hook(capture_base))
                 self.handles.append(gate.incident_condition.register_forward_hook(intervene))
@@ -129,19 +137,21 @@ class GateIntervention:
                     f'Not all validation batches visited gate: {name}')
             for region, stats in self.stats[name].items():
                 rows.append({'mode': self.mode, 'layer': name, 'region': region,
+                             'branch_disabled': name in self.disabled_gates,
                              'batches': self.calls[name], 'samples': self.samples[name], **stats.result()})
         return rows
 
 
-def infer(model, dataset, batch_size, device, mode):
+def infer(model, dataset, batch_size, device, mode, disabled_layer=None):
     indices = [int(row['sample_index']) for row in dataset.rows]
     before = train.state_sha256(model.state_dict())
     started = time.perf_counter()
-    with GateIntervention(model, mode) as intervention:
+    with GateIntervention(model, mode, disabled_layer) as intervention:
         with torch.inference_mode():
             _, arrays = train.evaluate(model, dataset, indices, batch_size, device, dataset.scaler, collect=True)
         rows = intervention.results(len(indices), math.ceil(len(indices) / batch_size))
     require(train.state_sha256(model.state_dict()) == before, 'Inference changed model weights or buffers')
+    require(np.isfinite(arrays['prediction']).all(), 'Nonfinite inference predictions')
     arrays['sample_indices'] = np.asarray(indices, dtype=np.int64)
     arrays['station_ids'] = np.asarray(dataset.station_ids, dtype=np.int64)
     return arrays, rows, time.perf_counter() - started
@@ -195,8 +205,23 @@ def comparisons(reference, on, off):
     return result, rows
 
 
-def run_probe(root, data_dir, output):
-    require(not output.exists(), 'Use a new output directory')
+@dataclass
+class ProbeSource:
+    root: Path
+    data_dir: Path
+    summary: dict
+    dataset: object
+    device: torch.device
+    batch_size: int
+    package: dict
+    saved: dict
+    hashes: dict
+    weight_hash: str
+    model: torch.nn.Module
+
+
+def load_probe_source(root, data_dir):
+    """Validate the frozen experiment and load its selected weights without training."""
     summaries = load_summaries(root)
     validate_pair(summaries)
     curve_diagnostics(summaries)
@@ -248,6 +273,35 @@ def run_probe(root, data_dir, output):
     model.eval()
     require(train.state_sha256(model.state_dict()) == weight_hash, 'Loaded model state changed')
     require(len(GateIntervention(model, 'on').gates) == 5, 'Expected the original five ACDG gates')
+    return ProbeSource(root, data_dir, summary, dataset, device, batch_size, package,
+                       saved, hashes, weight_hash, model)
+
+
+def verify_probe_source(source):
+    require(train.state_sha256(source.model.state_dict()) == source.weight_hash, 'Final weights/buffers changed')
+    require(train.verify_package(source.data_dir) == source.package, 'Data package changed during the probe')
+    for path, expected in source.hashes.items():
+        require(digest(path) == expected, f'Input artifact changed during the probe: {path}')
+    validate_pair(load_summaries(source.root))
+
+
+def probe_environment(device):
+    return {
+        'python': sys.version, 'torch': str(torch.__version__), 'numpy': np.__version__,
+        'cuda': torch.version.cuda, 'gpu': torch.cuda.get_device_name(0), 'device': str(device),
+        'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
+        'threads': torch.get_num_threads(), 'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
+        'cudnn_deterministic': torch.backends.cudnn.deterministic,
+        'tf32': bool(torch.backends.cuda.matmul.allow_tf32 or torch.backends.cudnn.allow_tf32),
+    }
+
+
+def run_probe(root, data_dir, output):
+    require(not output.exists(), 'Use a new output directory')
+    source = load_probe_source(root, data_dir)
+    summary, dataset, device = source.summary, source.dataset, source.device
+    batch_size, saved, hashes = source.batch_size, source.saved, source.hashes
+    weight_hash, model = source.weight_hash, source.model
     output.mkdir(parents=True)
     config = {
         'probe': 'P2_BEST_CHECKPOINT_ALL_FIVE_GATE_RESIDUALS_ON_OFF', 'modes': ['on', 'off'],
@@ -262,12 +316,8 @@ def run_probe(root, data_dir, output):
                       'torch': torch.__version__, 'numpy': np.__version__, 'batch_size': batch_size}), flush=True)
     on, off, gate_stats, seconds, replay = inference_pair(
         model, dataset, batch_size, device, saved['acdg'], output)
-    require(train.state_sha256(model.state_dict()) == weight_hash, 'Final weights/buffers changed')
     regions, horizon_rows = comparisons(saved['fixed'], on, off)
-    require(train.verify_package(data_dir) == package, 'Data package changed during the probe')
-    for path, expected in hashes.items():
-        require(digest(path) == expected, f'Input artifact changed during the probe: {path}')
-    validate_pair(load_summaries(root))
+    verify_probe_source(source)
     train.atomic_npz(output / 'paired_predictions.npz',
                      prediction_on=on['prediction'], prediction_off=off['prediction'],
                      **{name: on[name] for name in ('target', 'valid', 'associated', 'sample_indices', 'station_ids')})
@@ -280,14 +330,7 @@ def run_probe(root, data_dir, output):
         'model_state_sha256': weight_hash, 'model_state_unchanged': True, 'input_files_unchanged': True,
         'optimizer_steps': 0, 'on_replay': replay, 'regions': regions,
         'gate_statistics': gate_stats, 'seconds': seconds,
-        'environment': {
-            'python': sys.version, 'torch': str(torch.__version__), 'numpy': np.__version__,
-            'cuda': torch.version.cuda, 'gpu': torch.cuda.get_device_name(0), 'device': str(device),
-            'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
-            'threads': torch.get_num_threads(), 'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
-            'cudnn_deterministic': torch.backends.cudnn.deterministic,
-            'tf32': bool(torch.backends.cuda.matmul.allow_tf32 or torch.backends.cudnn.allow_tf32),
-        },
+        'environment': probe_environment(device),
         'input_sha256': hashes,
         'analysis_source_sha256': {str(path.relative_to(REPO)): digest(path) for path in (
             Path(__file__), Path(__file__).with_name('continue_incident_routing_p2.py'),

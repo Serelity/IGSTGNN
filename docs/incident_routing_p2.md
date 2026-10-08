@@ -16,7 +16,31 @@ P2 保留 ICSF、动态图、扩散/固有解耦主干和 TIID。事故条件使
 
 条件分支最后一层零初始化，因此同一份原始主干权重下，P2 初始输出应与原始 `fixed` 模型一致。断开节点的事故条件增量在输出端乘支持掩码，训练后也保持为零。
 
-## 当前入口：最佳 checkpoint 的门控开启/关闭推理对照
+## 当前入口：五组固定权重逐层关闭
+
+作业1163180已完成五层同时ON/OFF：ON逐元素复现差为0，OFF−ON全节点MAE为-0.013984，
+关联为+0.016834、非关联为-0.016660。当前分支有小幅关联收益，同时存在非关联代价。
+下一步每次只关闭一个分解层的新增条件门控残差，其余四层保持开启，定位这种差异是否集中于特定层。
+
+先单独更新代码：
+
+```text
+git pull --ff-only origin research/chronological-tiid
+```
+
+沿用Slurm的1张V100、3核CPU、32GB内存和 `igstgnn` 环境，建议预留30分钟，在仓库根目录运行：
+
+```bash
+bash experiments/chronological/probe_incident_routing_p2_layers.sh contra_p2_first_epoch_20261008_172731_wNQWZK
+```
+
+使用同一个最佳第69轮检查点；五组独立关闭，加首尾全开核验，共七次推理，不训练。
+结果保存在新建 `gate_layerwise_时间_随机后缀/`，成功状态为
+`P2_FIXED_CHECKPOINT_LAYER_GATE_PROBE_COMPLETE`。差值 `layer_off_minus_all_on` 为正表示关闭后变差，
+为负表示关闭后改善。这是固定权重下的条件效应，不能相加或直接当作重训模型的表现。
+17项本地CPU测试已通过；脚本内无Git操作，详细约定见[逐层探针说明](incident_routing_p2_layer_probe.md)。
+
+## 已完成步骤：最佳 checkpoint 的门控开启/关闭推理对照
 
 作业1163061已完成保存预测的CPU诊断：原指标复算一致，共同训练预算下ACDG仍落后，
 关联区域也没有平均净收益。用户已同意下一步固定现有最佳checkpoint，比较新增门控分支开启与关闭。
@@ -68,7 +92,7 @@ bash experiments/chronological/diagnose_incident_routing_p2.sh contra_p2_first_e
 记录执行状态；`report/summary.json`、`learning_curves.csv`、`per_horizon.csv`、
 `per_window.csv`、`per_week.csv` 保存诊断结果。成功状态为
 `P2_SAVED_PREDICTION_DIAGNOSTICS_COMPLETE`。回传日志末尾汇总即可；需要细查曲线时再读取CSV。
-诊断已通过8项本地测试（含全尺寸合成预测），并完成Bash语法检查；真实服务器预测的复算尚待本步骤运行。
+诊断已通过8项本地测试（含全尺寸合成预测）及Bash语法检查，作业1163061已完成真实服务器预测复算。
 
 ## 已完成步骤：从首轮 checkpoint 完成配对初筛
 
