@@ -16,6 +16,31 @@ P2 保留 ICSF、动态图、扩散/固有解耦主干和 TIID。事故条件使
 
 条件分支最后一层零初始化，因此同一份原始主干权重下，P2 初始输出应与原始 `fixed` 模型一致。断开节点的事故条件增量在输出端乘支持掩码，训练后也保持为零。
 
+## 当前入口：配对首轮运行
+
+2026-10-08 已收到 `782f8e0` 的真实 V100 小包控制台结果：
+`ENGINEERING_CHECK_PASS`，初始预测差为 0，两次优化器更新，五层条件输出权重均从零发生变化。
+本次回传未包含 unittest 输出；不能据小包 MAE 判断预测增益。
+
+在 Slurm 平台选择已有 `igstgnn` 环境、1 张 V100、3 核 CPU、32GB 内存和 1 小时上限。
+更新仓库后，在仓库根目录运行：
+
+```bash
+bash experiments/chronological/run_incident_routing_p2.sh
+```
+
+脚本会先核对源码和 GPU、运行 P2 单测，再依次执行 fixed/acdg 各一个完整 epoch。
+两臂共用 seed2025、batch48、3604 训练/917 验证样本和原协议；每臂应完成76次更新。
+脚本为这次运行创建新的目录，保存 `run.log`、`exit_code`、`pair_report.json`，以及
+`fixed/`、`acdg/` 中的原始 summary 和 `last_checkpoint.pt`。
+`PAUSED_AT_EPOCH_BOUNDARY` 是预期结果；回传日志末尾的 `PAIR_IDENTITY_CHECK_PASS` 报告，
+再按实际耗时决定从这两个目录续跑。不要使用小包目录作为完整初筛的续训目录。
+
+默认数据目录为 `../data/chronological/Contra_Costa_v8_dev`，必要时通过 `P2_DATA_DIR` 指定。
+脚本只执行已分配资源中的任务，不自行调用 sbatch、更新代码或安装环境。
+它检查模型、训练入口和协议与已验证的 `782f8e0` 一致，允许新增启动脚本/文档的提交。
+启动后保持同一代码、协议和数据版本；如任一阶段失败，脚本立即停止并保留已写入的日志和 checkpoint。
+
 ## 本地验证边界
 
 本地当前系统 Python 没有安装 PyTorch，因此本机完成了 Python 编译、JSON 解析、`git diff --check` 和不依赖 PyTorch 的运行脚本回归；`tests/test_acdg.py` 需要在服务器 `igstgnn` 环境执行。工程验证不等于科学效果验证。
