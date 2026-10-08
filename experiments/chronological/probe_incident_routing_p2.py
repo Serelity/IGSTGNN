@@ -29,6 +29,20 @@ SATURATION_EDGE = .01  # Descriptive threshold, never a model-selection rule.
 REGIONS = ('all_nodes', 'associated_nodes', 'nonassociated_nodes')
 
 
+def diagnostic_gate_values(base, applied):
+    """Use the same layout-producing operation for both descriptive sigmoid calls.
+
+    The sliced base logit can be strided, whereas base + applied is materialized.
+    Some CPU kernels round their sigmoid results differently for those layouts,
+    even when applied is zero. The reference therefore follows the same zero-add
+    path as the model with its conditional residual disabled. This only affects
+    statistics; neither these logits nor gate values are returned to the model.
+    """
+    native_logits = base + torch.zeros_like(applied)
+    actual_logits = base + applied
+    return torch.sigmoid(native_logits), torch.sigmoid(actual_logits)
+
+
 class GateStats:
     def __init__(self):
         self.count = 0
@@ -104,7 +118,7 @@ class GateIntervention:
                             'Conditional gate is nonzero outside its support')
                     disabled = name in self.disabled_gates
                     applied = torch.zeros_like(output) if disabled else output
-                    native, actual = torch.sigmoid(base), torch.sigmoid(base + applied)
+                    native, actual = diagnostic_gate_values(base, applied)
                     require(torch.isfinite(actual).all().item(), 'Nonfinite effective gate')
                     for region, mask in (('associated_nodes', support), ('nonassociated_nodes', ~support)):
                         self.stats[name][region].update(output, applied, native, actual, mask)

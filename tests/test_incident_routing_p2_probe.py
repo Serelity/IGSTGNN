@@ -64,6 +64,27 @@ class GateInterventionTests(unittest.TestCase):
         with torch.inference_mode():
             return (model or self.model)(self.data.history, incident_data=self.data.incident)
 
+    def test_strided_base_gate_statistics_use_the_same_layout_and_keep_zero_changes_exact(self):
+        for batch_size in (1, 2, 3):
+            for steps in (12, 11, 9, 8, 7):
+                with self.subTest(batch_size=batch_size, steps=steps):
+                    full = torch.linspace(-5., 5., batch_size * 12 * 3).reshape(batch_size, 12, 3, 1)
+                    base = full[:, -steps:]
+                    before = full.clone()
+                    applied = torch.zeros(base.shape)
+                    applied[:, :, 0] = .8
+                    with patch.object(probe.torch, 'sigmoid', wraps=torch.sigmoid) as sigmoid:
+                        native, actual = probe.diagnostic_gate_values(base, applied)
+                    native_logits, actual_logits = [call.args[0] for call in sigmoid.call_args_list]
+                    self.assertTrue(native_logits.is_contiguous())
+                    self.assertEqual(native_logits.stride(), actual_logits.stride())
+                    self.assertEqual(native_logits.storage_offset(), actual_logits.storage_offset())
+                    torch.testing.assert_close(native[applied == 0], actual[applied == 0], rtol=0, atol=0)
+                    self.assertTrue(torch.all(actual[applied != 0] > native[applied != 0]).item())
+                    native, actual = probe.diagnostic_gate_values(base, torch.zeros_like(applied))
+                    torch.testing.assert_close(native, actual, rtol=0, atol=0)
+                    torch.testing.assert_close(full, before, rtol=0, atol=0)
+
     def test_on_preserves_original_and_off_matches_native_at_identical_common_weights(self):
         before = probe.train.state_sha256(self.model.state_dict())
         original = self.forward()

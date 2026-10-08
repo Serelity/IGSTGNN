@@ -167,6 +167,15 @@ class LayerGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Unexpected layer'):
             layers.verify_gate_statistics(rows, 'layers.0.estimation_gate')
 
+    def test_gate_audit_still_rejects_nonzero_change_and_reports_the_offending_row(self):
+        target = 'layers.3.estimation_gate'
+        _, rows, _ = probe.infer(self.model, self.data, 1, self.device, 'layer_off', disabled_layer=target)
+        for row in rows:
+            if row['layer'] == target and row['region'] == 'associated_nodes':
+                row['gate_change_abs_max'] = float(torch.finfo(torch.float32).eps)
+        with self.assertRaisesRegex(ValueError, r'layer=layers\.3\.estimation_gate, region=associated_nodes'):
+            layers.verify_gate_statistics(rows, target)
+
 
 if __name__ == '__main__':
     unittest.main()

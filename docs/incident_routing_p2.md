@@ -38,7 +38,9 @@ bash experiments/chronological/probe_incident_routing_p2_layers.sh contra_p2_fir
 结果保存在新建 `gate_layerwise_时间_随机后缀/`，成功状态为
 `P2_FIXED_CHECKPOINT_LAYER_GATE_PROBE_COMPLETE`。差值 `layer_off_minus_all_on` 为正表示关闭后变差，
 为负表示关闭后改善。这是固定权重下的条件效应，不能相加或直接当作重训模型的表现。
-17项本地CPU测试已通过；脚本内无Git操作，详细约定见[逐层探针说明](incident_routing_p2_layer_probe.md)。
+作业1163295在CPU启动单测的门值零变化检查处停止，正式推理未开始。
+已统一两侧门值统计的计算布局，19项本地CPU测试通过，等待服务器重跑确认；脚本内无Git操作。
+详细约定与修复记录见[逐层探针说明](incident_routing_p2_layer_probe.md)。
 
 ## 已完成步骤：最佳 checkpoint 的门控开启/关闭推理对照
 

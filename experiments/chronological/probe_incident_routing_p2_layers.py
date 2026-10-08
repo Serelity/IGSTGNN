@@ -43,7 +43,11 @@ def verify_gate_statistics(rows, disabled_layer):
             probe.require(row['applied_delta_abs_max'] == (0. if disabled else row['proposed_delta_abs_max']),
                           'An untargeted gate changed or the selected residual was not zeroed')
             if disabled or row['region'] == 'nonassociated_nodes':
-                probe.require(row['gate_change_abs_max'] == 0., 'Expected zero direct gate change')
+                probe.require(row['gate_change_abs_max'] == 0.,
+                              f"Expected zero direct gate change: layer={row['layer']}, "
+                              f"region={row['region']}, disabled={disabled}, "
+                              f"applied_delta_abs_max={row['applied_delta_abs_max']}, "
+                              f"gate_change_abs_max={row['gate_change_abs_max']}")
 
 
 def compare_case(reference, on, off, case):
