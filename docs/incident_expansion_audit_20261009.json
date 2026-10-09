@@ -1,0 +1,693 @@
+{
+  "status": "INCIDENT_EXPANSION_FEASIBILITY_AUDITED_NOT_A_NEW_DATASET",
+  "source_counts": {
+    "source_rows": 476768,
+    "training_time_eligible_rows": 318163,
+    "invalid_report_time_rows": 2
+  },
+  "candidate_conflicting_ids": 0,
+  "published_metadata_rows": 5585,
+  "published_spatial_status_counts": [
+    {
+      "spatial_roads": "[[160, 'N']]",
+      "status": "insufficient_spatial_signature",
+      "count": 79
+    },
+    {
+      "spatial_roads": "[[160, 'S']]",
+      "status": "insufficient_spatial_signature",
+      "count": 40
+    },
+    {
+      "spatial_roads": "[[24, 'E']]",
+      "status": "unique_metadata_candidate",
+      "count": 417
+    },
+    {
+      "spatial_roads": "[[24, 'W']]",
+      "status": "unique_metadata_candidate",
+      "count": 468
+    },
+    {
+      "spatial_roads": "[[242, 'N']]",
+      "status": "unique_metadata_candidate",
+      "count": 314
+    },
+    {
+      "spatial_roads": "[[242, 'S']]",
+      "status": "unique_metadata_candidate",
+      "count": 312
+    },
+    {
+      "spatial_roads": "[[4, 'E']]",
+      "status": "multiple_metadata_candidates",
+      "count": 4
+    },
+    {
+      "spatial_roads": "[[4, 'E']]",
+      "status": "unique_metadata_candidate",
+      "count": 1964
+    },
+    {
+      "spatial_roads": "[[4, 'W']]",
+      "status": "multiple_metadata_candidates",
+      "count": 10
+    },
+    {
+      "spatial_roads": "[[4, 'W']]",
+      "status": "unique_metadata_candidate",
+      "count": 1977
+    }
+  ],
+  "training_cache": [
+    {
+      "month": 1,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8928,
+      "source_row_bytes_verified": 53139456,
+      "manifest_sha256": "20e53438631a407f694098d22c87e2ddb201954e4c9fadc3203a34ed250ba805"
+    },
+    {
+      "month": 2,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8064,
+      "source_row_bytes_verified": 47996928,
+      "manifest_sha256": "b54d4887aa18a1ac904e959faa45908e3f6925062007b4bf3f94cebc66c046c0"
+    },
+    {
+      "month": 3,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8928,
+      "source_row_bytes_verified": 53139456,
+      "manifest_sha256": "d2abf635eddc314eedc8511e680629a027b492f417a89ae2c54c02389bdecb47"
+    },
+    {
+      "month": 4,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8640,
+      "source_row_bytes_verified": 51425280,
+      "manifest_sha256": "9aaac2cbe70739aabe83881821cf0d63e643dcf0c5caa794946c204ff2afffcf"
+    },
+    {
+      "month": 5,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8928,
+      "source_row_bytes_verified": 53139456,
+      "manifest_sha256": "f392c57fc29bfe8f0ab26014aeac9f2c13914bba151a6e9585d7a305dfc1ccb2"
+    },
+    {
+      "month": 6,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8640,
+      "source_row_bytes_verified": 51425280,
+      "manifest_sha256": "8b41876d9421e636b5eb147401dc0e4eb4935328c0802a7df017f42e84eb8eba"
+    },
+    {
+      "month": 7,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8928,
+      "source_row_bytes_verified": 53139456,
+      "manifest_sha256": "9518bce5423782a07e2798c54e056569afacb9b47cd46375a79f411700561232"
+    },
+    {
+      "month": 8,
+      "station_rows_verified": 496,
+      "nominal_slots_per_station": 8928,
+      "source_row_bytes_verified": 53139456,
+      "manifest_sha256": "dda27f7a46dcc309fb95e78824a992237d3a063cf00b359dd5129429ce5dafcc"
+    }
+  ],
+  "roads": [
+    {
+      "road": "SR4-E",
+      "direction": "E",
+      "station_count": 85,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1236,
+      "not_in_frozen_training": 64,
+      "nearest_station_count": 53,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR4-E",
+      "direction": "E",
+      "station_count": 85,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1282,
+      "not_in_frozen_training": 70,
+      "nearest_station_count": 54,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR4-E",
+      "direction": "E",
+      "station_count": 85,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1308,
+      "not_in_frozen_training": 71,
+      "nearest_station_count": 54,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR4-W",
+      "direction": "W",
+      "station_count": 86,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1328,
+      "not_in_frozen_training": 58,
+      "nearest_station_count": 56,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR4-W",
+      "direction": "W",
+      "station_count": 86,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1346,
+      "not_in_frozen_training": 59,
+      "nearest_station_count": 57,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR4-W",
+      "direction": "W",
+      "station_count": 86,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1368,
+      "not_in_frozen_training": 60,
+      "nearest_station_count": 57,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-E",
+      "direction": "E",
+      "station_count": 21,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 751,
+      "not_in_frozen_training": 462,
+      "nearest_station_count": 18,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-E",
+      "direction": "E",
+      "station_count": 21,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 958,
+      "not_in_frozen_training": 669,
+      "nearest_station_count": 18,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-E",
+      "direction": "E",
+      "station_count": 21,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1010,
+      "not_in_frozen_training": 720,
+      "nearest_station_count": 18,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-W",
+      "direction": "W",
+      "station_count": 21,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 500,
+      "not_in_frozen_training": 192,
+      "nearest_station_count": 16,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-W",
+      "direction": "W",
+      "station_count": 21,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 625,
+      "not_in_frozen_training": 316,
+      "nearest_station_count": 16,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR24-W",
+      "direction": "W",
+      "station_count": 21,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 678,
+      "not_in_frozen_training": 369,
+      "nearest_station_count": 16,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-E",
+      "direction": "E",
+      "station_count": 38,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1081,
+      "not_in_frozen_training": 1081,
+      "nearest_station_count": 28,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-E",
+      "direction": "E",
+      "station_count": 38,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1456,
+      "not_in_frozen_training": 1456,
+      "nearest_station_count": 28,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-E",
+      "direction": "E",
+      "station_count": 38,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1653,
+      "not_in_frozen_training": 1653,
+      "nearest_station_count": 28,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-W",
+      "direction": "W",
+      "station_count": 47,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1017,
+      "not_in_frozen_training": 1017,
+      "nearest_station_count": 33,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-W",
+      "direction": "W",
+      "station_count": 47,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1262,
+      "not_in_frozen_training": 1262,
+      "nearest_station_count": 33,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I80-W",
+      "direction": "W",
+      "station_count": 47,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1520,
+      "not_in_frozen_training": 1520,
+      "nearest_station_count": 33,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-N",
+      "direction": "N",
+      "station_count": 1,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 58,
+      "not_in_frozen_training": 58,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-N",
+      "direction": "N",
+      "station_count": 1,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 78,
+      "not_in_frozen_training": 78,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-N",
+      "direction": "N",
+      "station_count": 1,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 78,
+      "not_in_frozen_training": 78,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-S",
+      "direction": "S",
+      "station_count": 1,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 15,
+      "not_in_frozen_training": 15,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-S",
+      "direction": "S",
+      "station_count": 1,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 47,
+      "not_in_frozen_training": 47,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR160-S",
+      "direction": "S",
+      "station_count": 1,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 50,
+      "not_in_frozen_training": 50,
+      "nearest_station_count": 1,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-N",
+      "direction": "N",
+      "station_count": 9,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 216,
+      "not_in_frozen_training": 2,
+      "nearest_station_count": 6,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-N",
+      "direction": "N",
+      "station_count": 9,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 228,
+      "not_in_frozen_training": 14,
+      "nearest_station_count": 6,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-N",
+      "direction": "N",
+      "station_count": 9,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 228,
+      "not_in_frozen_training": 14,
+      "nearest_station_count": 6,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-S",
+      "direction": "S",
+      "station_count": 8,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 216,
+      "not_in_frozen_training": 4,
+      "nearest_station_count": 7,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-S",
+      "direction": "S",
+      "station_count": 8,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 218,
+      "not_in_frozen_training": 4,
+      "nearest_station_count": 7,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "SR242-S",
+      "direction": "S",
+      "station_count": 8,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 218,
+      "not_in_frozen_training": 4,
+      "nearest_station_count": 7,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-E",
+      "direction": "E",
+      "station_count": 12,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 305,
+      "not_in_frozen_training": 305,
+      "nearest_station_count": 10,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-E",
+      "direction": "E",
+      "station_count": 12,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 436,
+      "not_in_frozen_training": 436,
+      "nearest_station_count": 10,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-E",
+      "direction": "E",
+      "station_count": 12,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 499,
+      "not_in_frozen_training": 499,
+      "nearest_station_count": 10,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-W",
+      "direction": "W",
+      "station_count": 12,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 440,
+      "not_in_frozen_training": 440,
+      "nearest_station_count": 11,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-W",
+      "direction": "W",
+      "station_count": 12,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 574,
+      "not_in_frozen_training": 574,
+      "nearest_station_count": 11,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I580-W",
+      "direction": "W",
+      "station_count": 12,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 649,
+      "not_in_frozen_training": 649,
+      "nearest_station_count": 11,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-N",
+      "direction": "N",
+      "station_count": 74,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1520,
+      "not_in_frozen_training": 1520,
+      "nearest_station_count": 46,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-N",
+      "direction": "N",
+      "station_count": 74,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1633,
+      "not_in_frozen_training": 1633,
+      "nearest_station_count": 46,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-N",
+      "direction": "N",
+      "station_count": 74,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1763,
+      "not_in_frozen_training": 1763,
+      "nearest_station_count": 46,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-S",
+      "direction": "S",
+      "station_count": 81,
+      "radius_km": 1.0,
+      "candidate_distinct_events": 1260,
+      "not_in_frozen_training": 1260,
+      "nearest_station_count": 49,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-S",
+      "direction": "S",
+      "station_count": 81,
+      "radius_km": 3.0,
+      "candidate_distinct_events": 1307,
+      "not_in_frozen_training": 1307,
+      "nearest_station_count": 49,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    },
+    {
+      "road": "I680-S",
+      "direction": "S",
+      "station_count": 81,
+      "radius_km": 5.0,
+      "candidate_distinct_events": 1474,
+      "not_in_frozen_training": 1474,
+      "nearest_station_count": 49,
+      "months_with_candidates": 8,
+      "full_network_training_cache_available": true,
+      "mapping_and_numeric_quality_certified": false
+    }
+  ],
+  "policy": {
+    "geodesic_radii_km_sensitivity_only": [
+      1.0,
+      3.0,
+      5.0
+    ],
+    "source_postmile_tolerance": 10,
+    "training_months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "scope": "offline_conditional_metadata_candidates",
+    "traffic_values_decoded": false,
+    "validation_test_traffic_months_opened": false,
+    "identity_conflict_scope": "training_time_candidates_within_5km",
+    "duration_type_description_used": false,
+    "frozen_data_modified": false,
+    "training_performed": false,
+    "new_windows_materialized": false,
+    "earth_radius_km_convention": 6371.0088
+  },
+  "inputs_sha256": {
+    "data_summary": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+    "identity_sidecar": "8c184097984fad85734715c770c807788da6819053f0d3a39227c9184e5b2537",
+    "raw_events": "fd186c2b3334c332d2e70c7f8b2fd35b6bf990da2c4aa5c77517bf6361d97d05",
+    "auditor": "a7cab6f76e070c36af7811f6d42761ba6a997a27ad6ee80b1a17d84859b87388"
+  },
+  "outputs_sha256": {
+    "candidate_events.csv": "3a2b8fdffcf342a64c95024aa5e11a9b9417a91bce9b2998355a51811b36f5fe",
+    "road_expansion_coverage.csv": "f4e2cd93d3efbc5d47ee87346b44bec87b10d060b0673c9783748159c15c379f"
+  },
+  "validation": {
+    "tests_passed": 4,
+    "real_audit_exit_code": 0,
+    "independent_spherical_cosine_distance_max_error_km": 3.3534685953246456e-06,
+    "candidates_independently_checked": 12496
+  },
+  "aggregates_by_radius": [
+    {
+      "radius_km": 1.0,
+      "distinct_events": 9943,
+      "not_in_frozen_training": 6478,
+      "nearest_station_count": 335,
+      "road_groups_with_candidates": 14
+    },
+    {
+      "radius_km": 3.0,
+      "distinct_events": 11450,
+      "not_in_frozen_training": 7925,
+      "nearest_station_count": 337,
+      "road_groups_with_candidates": 14
+    },
+    {
+      "radius_km": 5.0,
+      "distinct_events": 12496,
+      "not_in_frozen_training": 8924,
+      "nearest_station_count": 337,
+      "road_groups_with_candidates": 14
+    }
+  ]
+}
