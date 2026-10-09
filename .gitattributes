@@ -1,1 +1,5 @@
 experiments/chronological/run_incident_physics_h1.sh text eol=lf
+experiments/chronological/run_incident_physics_evidence.sh text eol=lf
+experiments/chronological/physics_metadata/* text eol=lf
+# Trailing empty TSV fields preserve missing source coordinates.
+experiments/chronological/physics_metadata/source_sensor_subset.tsv whitespace=-blank-at-eol

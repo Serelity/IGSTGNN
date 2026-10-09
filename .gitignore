@@ -33,5 +33,7 @@ slurm-*.err
 *.tgz
 .kaggle_upload/
 experiments/chronological_runs/contra_physics_h1_*/
+experiments/chronological_runs/contra_physics_evidence_*/
+!experiments/chronological/physics_metadata/historical_lane_subset.csv
 data/xtraffic/*
 !data/xtraffic/check_overlap.py

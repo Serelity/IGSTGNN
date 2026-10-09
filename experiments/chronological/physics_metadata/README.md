@@ -1,0 +1,12 @@
+# Metadata excerpts for the Contra Costa physics evidence launcher
+
+These are attributed excerpts of public **station metadata**, not traffic or incident observations. They enable an offline CPU audit on the server. Both source datasets publish their data under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); these excerpts retain that license and are not covered by the repository's MIT code license. No endorsement by the source authors is implied.
+
+## Sources and changes
+
+- **TraffiDent / XTraffic**, Xiaochuan Gou et al., NeurIPS 2025, [paper](https://proceedings.neurips.cc/paper_files/paper/2025/file/7813e19a86fd73d40f7e811ab15f6d5f-Paper-Datasets_and_Benchmarks_Track.pdf), [authors' repository](https://github.com/XAITraffic/XTraffic), [Kaggle version 8](https://www.kaggle.com/datasets/gpxlcj/xtraffic/versions/8). Appendix A.2/A.3 states the dataset license. `source_sensor_subset.tsv` is an excerpt of `sensor_meta_feature.csv`: retain all Contra Costa stations and all other-county stations on the same road/direction groups as the 496 published model stations, then keep only the eight columns needed for this audit. All original field strings and row ordering are retained. **2,217 rows**, including ramps/connectors, preserve the full inputs to every candidate road/direction query; filtering only to the model's 496 mainline stations would be incorrect.
+- **LargeST**, Xu Liu et al., NeurIPS 2023, [authors' repository and license statement](https://github.com/liuxu77/LargeST), [Kaggle version 1](https://www.kaggle.com/datasets/liuxu77/largest/versions/1). `historical_lane_subset.csv` is an excerpt of `ca_meta.csv`: retain IDs present in the 496 published stations, then keep ID, road, direction, type, coordinates, and lanes. **488 rows**; all original field strings and row ordering are retained. The associated traffic period is 2017–2021. This does not certify lane counts for 2023.
+
+`manifest.json` records the selection, original file hashes, excerpt hashes, dataset versions, attribution links, and the exact published sensor-file hash. The launcher checks that identity and both excerpt hashes before using the bundle. The same hashes are preserved on Windows/Linux by the repository's LF attributes.
+
+No flow units, bottleneck boundaries, capacity, or queue scale are inferred from these excerpts. A station/coordinate match is a cross-check, not a historical road-change audit. The scientific experiment still uses the existing 2023 v8 incident/traffic package.

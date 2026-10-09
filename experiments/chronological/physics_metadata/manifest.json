@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "purpose": "Contra Costa metadata-only evidence; no traffic or incident records",
+  "published_sensors_sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+  "station_count": 496,
+  "selection": {
+    "source_sensor_subset.tsv": "All Contra Costa rows, plus all counties on every (Fwy Name, Direction) present in published sensors; only needed columns retained; original row order and field strings preserved.",
+    "historical_lane_subset.csv": "LargeST station IDs present in published sensors; only needed columns retained; original row order and field strings preserved."
+  },
+  "scope": {
+    "flow_unit_certified": false,
+    "lane_count_2023_certified": false,
+    "closed_boundary_certified": false
+  },
+  "files": {
+    "source_sensor_subset.tsv": {
+      "sha256": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+      "rows": 2217,
+      "source_file": "sensor_meta_feature.csv",
+      "source_sha256": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd",
+      "source_url": "https://www.kaggle.com/datasets/gpxlcj/xtraffic/versions/8",
+      "license": "CC BY-NC 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "historical_lane_subset.csv": {
+      "sha256": "df1489aabcc07c2e7bd0f7f57166f4c7259ab60e67fec166d6c1b12799920d94",
+      "rows": 488,
+      "source_file": "largest_ca_meta.csv",
+      "source_sha256": "57c5edb5e6f1d1802440426f2bd07f54d812859135989c740ab96b1448b087ee",
+      "source_url": "https://www.kaggle.com/datasets/liuxu77/largest/versions/1",
+      "license": "CC BY-NC 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  }
+}

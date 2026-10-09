@@ -221,9 +221,58 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def prepare(data_dir, published_path, raw_path, lane_path, output_dir, pems_path=None):
+def verify_metadata_bundle(root, published_path):
+    manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+    if manifest.get('schema_version') != 1 or manifest.get('published_sensors_sha256') != sha256(published_path):
+        raise ValueError('Metadata bundle does not match published sensors')
+    expected = {'source_sensor_subset.tsv', 'historical_lane_subset.csv'}
+    if set(manifest['files']) != expected:
+        raise ValueError('Unexpected metadata bundle files')
+    for name in expected:
+        if sha256(root / name) != manifest['files'][name]['sha256']:
+            raise ValueError('Metadata bundle hash mismatch: ' + name)
+    return manifest
+
+
+def source_record_request(labels, values, ids):
+    """Choose source-file dates by train-X coverage, never by model outcomes."""
+    days = labels.astype('datetime64[D]')
+    options = []
+    for day in np.unique(days):
+        selected = days == day
+        data = values[selected]
+        valid = np.isfinite(data) & (data >= 0)
+        times = labels[selected]
+        options.append({'date': str(day), 'unique_train_x_slots': int(selected.sum()),
+                        'valid_train_x_cells': int(valid.sum()),
+                        'nonzero_train_x_cells': int((valid & (data > 0)).sum()),
+                        'stations_with_valid_x': int(valid.any(axis=0).sum()),
+                        'first_x_label': str(times.min()), 'last_x_label': str(times.max())})
+    options.sort(key=lambda row: (-row['nonzero_train_x_cells'], -row['valid_train_x_cells'], row['date']))
+    return {'status': 'SOURCE_RECORD_REQUIRED',
+            'purpose': 'Verify v8 array conversion against official Station 5-Minute total-flow records',
+            'year': 2023, 'district': 4, 'product': 'Station 5-Minute',
+            'required_columns': ['Timestamp', 'Station', 'District', 'Lane Type', 'Total Flow', '% Observed'],
+            'match_keys': ['station_id', 'interval_start_label'],
+            'station_ids': [int(x) for x in ids], 'suggested_dates': options[:3],
+            'date_selection': 'Largest nonzero then valid unique training-X coverage; date breaks ties',
+            'request_scope': 'Start with one suggested date and retain all original columns; add another if coverage is insufficient or ambiguous',
+            'allowed_values': 'Only unique January-August training X; no validation, gap or Y calibration',
+            'capacity_scope': 'A source-unit match does not calibrate bottleneck capacity'}
+
+
+def prepare(data_dir, published_path, raw_path, lane_path, output_dir, pems_path=None, metadata_bundle=None):
     if output_dir.exists():
         raise FileExistsError('Use a fresh evidence directory')
+    bundle_manifest = None
+    if metadata_bundle:
+        if raw_path or lane_path:
+            raise ValueError('Choose bundled metadata or explicit metadata paths, not both')
+        bundle_manifest = verify_metadata_bundle(metadata_bundle, published_path)
+        raw_path = metadata_bundle / 'source_sensor_subset.tsv'
+        lane_path = metadata_bundle / 'historical_lane_subset.csv'
+    if raw_path is None:
+        raise ValueError('Supply --raw-sensors or --metadata-bundle')
     package = verify_package(data_dir)
     train = ChronologicalDataset(data_dir, 'train')
     check_manifest_timing(train.rows, 'start')
@@ -257,15 +306,12 @@ def prepare(data_dir, published_path, raw_path, lane_path, output_dir, pems_path
     write_csv(output_dir / 'bottleneck_candidate_inventory.csv', pairs)
     if lanes:
         write_csv(output_dir / 'historical_lane_crosscheck.csv', lanes)
-    spec = {'status': 'SOURCE_RECORD_REQUIRED', 'purpose': 'Verify v8 array conversion against official Station 5-Minute total-flow records',
-            'year': 2023, 'district': 4, 'required_columns': ['Timestamp', 'Station', 'Total Flow', '% Observed', 'Lane Type'],
-            'match_keys': ['station_id', 'interval_start_label'],
-            'allowed_values': 'Only unique January-August training X; no validation, gap or Y calibration',
-            'capacity_scope': 'A source-unit match does not calibrate bottleneck capacity'}
+    spec = source_record_request(labels, values, train.station_ids)
     valid = values[np.isfinite(values) & (values >= 0)]
     report = {'status': 'PHYSICS_EVIDENCE_PREPARATION_COMPLETE', 'training_started': False, 'main_training_ready': False,
               'readiness': 'PHYSICAL_CONTRACT_REQUIRED', 'physical_contract_exported': False,
               'package_sha256': package, 'source_sha256': source_records,
+              'metadata_bundle_manifest': bundle_manifest,
               'train_windows': len(train), 'stations': len(train.station_ids),
               'unique_train_x_nominal_slots': len(labels), 'train_window_x_slots': len(train) * 12,
               'duplicate_x_slots_removed': len(train) * 12 - len(labels),
@@ -294,12 +340,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-dir', type=Path, required=True)
     parser.add_argument('--published-sensors', type=Path, required=True)
-    parser.add_argument('--raw-sensors', type=Path, required=True)
+    parser.add_argument('--raw-sensors', type=Path)
     parser.add_argument('--historical-lanes', type=Path)
+    parser.add_argument('--metadata-bundle', type=Path, help='Use a hash-checked metadata subset with source attribution')
     parser.add_argument('--pems-5min', type=Path, help='Optional official raw CSV/txt or gzip export; compare train X only')
     parser.add_argument('--output-dir', type=Path, required=True)
     a = parser.parse_args()
-    print(json.dumps(prepare(a.data_dir, a.published_sensors, a.raw_sensors, a.historical_lanes, a.output_dir, a.pems_5min), ensure_ascii=False, indent=2))
+    print(json.dumps(prepare(a.data_dir, a.published_sensors, a.raw_sensors, a.historical_lanes, a.output_dir,
+                             a.pems_5min, a.metadata_bundle), ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

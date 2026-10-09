@@ -53,7 +53,7 @@ PeMS 官方历史档案入口要求账户。本次匿名公开访问未取得所
 
 ## 工具、产物及验证
 
-新增入口：`experiments/chronological/prepare_incident_physics_evidence.py`。必需参数为 `--data-dir`、`--published-sensors`、`--raw-sensors`、`--output-dir`，可选 `--historical-lanes`。
+Python 入口：`experiments/chronological/prepare_incident_physics_evidence.py`。必需参数为 `--data-dir`、`--published-sensors`、`--output-dir`；元数据选择 `--raw-sensors`（可搭配 `--historical-lanes`），或 `--metadata-bundle`。两种方式不能混用。服务器使用下述 Bash 即可。
 
 产物：
 
@@ -68,6 +68,51 @@ PeMS 官方历史档案入口要求账户。本次匿名公开访问未取得所
 9 项新增测试通过，覆盖 X 去重、重复冲突、未来槽隔离、缺失值、非训练期拒绝、匝道端点、重合主线点、历史元数据错位、计数/小时率区分和全零歧义。与既有 H1 测试一起运行，共 30 项通过、无跳过（Python 3.10.18、PyTorch 2.3.1 CPU）。已在本地真实 v8 数据上运行最终版准备器；可复核的计数与文件身份见[本次汇总](incident_physics_evidence_20261009.json)。官方源记录的比对目前只有合成测试，尚未进行真实 PeMS 文件比对。
 
 无需再提交 GPU 作业来重复这一步。模型与训练器没有修改，真实物理窗口更新尚未开始。后续顺序为：取得可验证的原记录或转换代码，核实流量单位与车道聚合；从候选表中核实少量路段的实际边界与观测时延；再做训练期容量/队列尺度校准，接入完整 fixed、同输入 GRU、点队列三臂对照。
+
+## 服务器入口（后续补充）
+
+用户要求服务器一键执行后，新增 `run_incident_physics_evidence.sh`，把上述准备和源记录比对接到同一个入口。它只使用 CPU，沿用已通过 H1 检查的 `igstgnn` 环境及原 v8 train/val 包。
+
+先在服务器仓库目录单独更新代码：
+
+```bash
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-code
+git switch research/chronological-tiid
+git pull --ff-only origin research/chronological-tiid
+```
+
+随后在已有 Slurm 资源分配中运行，或将原作业脚本中的执行命令替换为：
+
+```bash
+bash experiments/chronological/run_incident_physics_evidence.sh
+```
+
+脚本内部没有 Git、下载、安装或调度命令。建议 CPU 3 核、内存 8 GB、15 分钟作准备/I/O 预留，无需申请 GPU。默认路径沿用 H1 的 `../data/chronological/Contra_Costa_v8_dev` 与 `../data/xtraffic/Contra_Costa/sensors.csv`，可设置 `PHYSICS_DATA_DIR`、`PHYSICS_SENSORS`、`PHYSICS_PYTHON` 覆盖。
+
+必要元数据摘录已随代码附带：保留候选道路/方向所有县的源站点及 Contra Costa 全部站点（2217 行），以及匹配站号的历史车道表（488 行）。来源、摘录规则、原文件和摘录文件哈希、CC BY-NC 4.0 署名见 [physics_metadata/README](../experiments/chronological/physics_metadata/README.md)。这不是更换交通或事故数据，车道数也没有加入训练输入。
+
+新入口先跑 14 项证据/启动器测试，再核验元数据哈希、准备各表并输出源记录请求。完整 H1 相关测试当前共 35 项全部通过、无跳过。本地已完整执行 Bash，退出码 0；使用完整源表和随附摘录生成的三张结果 CSV 逐字节一致。尚未收到新入口的服务器运行结果，也尚未比对真实官方 PeMS 原文件。
+
+输出目录为 `experiments/chronological_runs/contra_physics_evidence_时间_随机后缀/`。请回传 `run.log` 末尾 JSON 或 `summary.json`。预期为：
+
+```text
+status: PHYSICS_EVIDENCE_PREPARATION_COMPLETE
+readiness: PHYSICAL_CONTRACT_REQUIRED
+unique_train_x_nominal_slots: 28320
+metadata_prefilter_pass_pairs: 217
+historical_lane_road_coordinate_matches: 487
+Workflow exit code: 0
+```
+
+`evidence/source_record_request.json` 现在列出具体日期、训练 X 时间范围、站号和匹配覆盖量。只按训练 X 非零/有效覆盖量排序；当前前三日为 **2023-07-10、2023-02-27、2023-06-29**。可先从有权访问的 PeMS 账户取得 District 4、2023-07-10 的 **Station 5-Minute 原始日文件**，保留全部原始列。其余日期是备选，不是要求一次下载三日。
+
+取得文件并放到服务器后，在相同目录执行：
+
+```bash
+bash experiments/chronological/run_incident_physics_evidence.sh /实际路径/官方原始日文件.txt.gz
+```
+
+支持未压缩 CSV/txt 或 gzip；不要求按示例重命名。新日志的 `optional_source_record_comparison` 报告匹配量及单位候选。脚本不会代登录 PeMS，也不会凭元数据或样例日期自动补齐单位。运行成功表示准备完成；即便单位匹配，真实边界、到达时延及容量/队列尺度仍须解决后才能推进训练。
 
 ## 原始来源
 

@@ -1,4 +1,5 @@
 import copy
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch, mock_open
@@ -8,6 +9,7 @@ import numpy as np
 
 from experiments.chronological.prepare_incident_physics_evidence import (
     unique_history, candidate_inventory, historical_lane_audit, check_source_metadata, compare_pems_records,
+    verify_metadata_bundle, source_record_request, sha256,
 )
 
 
@@ -124,6 +126,31 @@ class PhysicsEvidenceTests(unittest.TestCase):
     def test_conflicting_reference_duplicates_are_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Conflicting'):
             self.source_comparison(duplicate=True)
+
+    def test_bundled_sources_require_matching_sensor_identity_and_file_bytes(self):
+        bundle = Path(__file__).resolve().parents[1] / 'experiments/chronological/physics_metadata'
+        manifest = json.loads((bundle / 'manifest.json').read_text(encoding='utf-8'))
+        published = Path('published_fixture.csv')
+        module = 'experiments.chronological.prepare_incident_physics_evidence.sha256'
+        with patch(module, side_effect=lambda p: manifest['published_sensors_sha256'] if p == published else sha256(p)):
+            self.assertEqual(verify_metadata_bundle(bundle, published), manifest)
+        with patch(module, return_value='changed sensor bytes'):
+            with self.assertRaisesRegex(ValueError, 'published sensors'):
+                verify_metadata_bundle(bundle, published)
+        with patch(module, side_effect=lambda p: manifest['published_sensors_sha256'] if p == published else 'changed metadata bytes'):
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+                verify_metadata_bundle(bundle, published)
+
+    def test_source_date_request_prefers_nonzero_train_coverage_and_reports_missing(self):
+        labels = np.asarray(['2023-01-03T00:00', '2023-01-03T00:05',
+                             '2023-01-04T00:00', '2023-01-04T00:05'], dtype='datetime64[m]')
+        values = np.asarray([[0., 0.], [0., 0.], [5., np.nan], [6., 8.]])
+        result = source_record_request(labels, values, [10, 20])
+        self.assertEqual(result['station_ids'], [10, 20])
+        self.assertEqual([r['date'] for r in result['suggested_dates']], ['2023-01-04', '2023-01-03'])
+        self.assertEqual(result['suggested_dates'][0]['valid_train_x_cells'], 3)
+        self.assertEqual(result['suggested_dates'][0]['first_x_label'], '2023-01-04T00:00')
+        self.assertEqual(result['suggested_dates'][1]['valid_train_x_cells'], 4)
 
 
 if __name__ == '__main__':
