@@ -1,0 +1,15 @@
+road,direction,stations,common_input_presence_stations,all_history_slots_jointly_usable_stations,joint_usable_station_time_fraction,report_supported_train_windows,stations_with_any_report_support,candidate_postmile_pairs,metadata_prefilter_pass_pairs,pairs_with_known_nonmainline,physical_ready_pair_count_established
+I580-E,E,12,12,12,1.0,0,0,11,7,4,False
+I580-W,W,12,12,12,1.0,0,0,11,8,3,False
+I680-N,N,74,74,74,1.0,0,0,73,29,43,False
+I680-S,S,81,81,81,1.0,0,0,80,37,40,False
+I80-E,E,38,38,38,1.0,0,0,37,11,26,False
+I80-W,W,47,47,47,1.0,0,0,46,15,31,False
+SR160-N,N,1,1,1,1.0,0,0,0,0,0,False
+SR160-S,S,1,1,1,1.0,0,0,0,0,0,False
+SR24-E,E,21,21,21,1.0,290,21,20,18,2,False
+SR24-W,W,21,21,21,1.0,309,21,20,17,3,False
+SR242-N,N,9,9,9,1.0,214,9,8,3,5,False
+SR242-S,S,8,8,8,1.0,214,8,7,1,6,False
+SR4-E,E,85,85,85,1.0,1269,85,84,36,48,False
+SR4-W,W,86,86,86,1.0,1308,86,85,35,50,False

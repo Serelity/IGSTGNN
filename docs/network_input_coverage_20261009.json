@@ -1,0 +1,107 @@
+{
+  "stations": 496,
+  "road_direction_groups": 14,
+  "train_windows": 3604,
+  "unique_history_labels": 28320,
+  "numeric_channel_usable_cells": {
+    "flow": 14046720,
+    "occupancy": 14046720,
+    "speed": 14046720
+  },
+  "per_channel_station_time_denominator": 14046720,
+  "joint_three_channel_usable_station_time_cells": 14046720,
+  "common_input_presence_stations": 496,
+  "all_history_slots_jointly_usable_stations": 496,
+  "stations_with_any_report_support": 230,
+  "station_report_support_fraction": 0.4637096774193548,
+  "road_groups_with_any_report_support": 6,
+  "learning_graph_nonzero_entries": 13339,
+  "learning_graph_is_physical_connection_evidence": false,
+  "candidate_postmile_pairs": 482,
+  "metadata_prefilter_pass_pairs": 217,
+  "pairs_with_known_nonmainline": 261,
+  "road_groups_without_a_candidate_pair": 2,
+  "physical_equation_joint_coverage": null,
+  "physical_equation_joint_coverage_status": "NOT_ESTABLISHED_BY_EXISTING_EVIDENCE",
+  "semantic_or_physical_readiness_inferred_from_numeric_coverage": false,
+  "training_report_provenance": {
+    "training_rows_replayed": 3604,
+    "train_context_replay_exact": true,
+    "train_event_road_counts": {
+      "24-E": 290,
+      "24-W": 309,
+      "242-N": 214,
+      "242-S": 214,
+      "4-E": 1269,
+      "4-W": 1308
+    },
+    "scope": "selected_training_identity_metadata_only",
+    "interpretation": "Association scope already exists in frozen training identities; raw event coverage remains unestablished"
+  },
+  "status": "NETWORK_COMMON_INPUT_COVERAGE_AUDIT_COMPLETE",
+  "architecture_status": "PHYSICAL_ARCHITECTURE_NOT_YET_FROZEN",
+  "scope": "all_published_stations_train_history_only",
+  "majority_threshold": null,
+  "majority_threshold_status": "NOT_USER_SPECIFIED_NOT_INFERRED",
+  "main_training_ready": false,
+  "model_training_performed": false,
+  "raw_flow_gap_or_Y_file_opened": false,
+  "validation_array_opened": false,
+  "test_array_opened": false,
+  "incident_semantic_fields_used": false,
+  "identity_sidecar_opened": true,
+  "selection_40_station_filter_applied": false,
+  "channel_semantics": {
+    "source_order": [
+      "flow",
+      "occupancy",
+      "speed"
+    ],
+    "evidence_status": "inferred_from_publication_and_numeric_ranges_not_declared_by_source_matrix_metadata",
+    "flow_units": "source_units",
+    "occupancy_units": "unconfirmed_source_units",
+    "speed_units": "unconfirmed_source_units"
+  },
+  "inputs_sha256": {
+    "data/summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "data/context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+    "data/station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+    "data/train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+    "data/train_context.npz": "f7b9644110fb42893c46c4e9a405c00ababed5a46adbe4825fcb79f9740d5d74",
+    "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+    "metadata/manifest.json": "743be1502ba780e639735a6213cd6a31aa601e44f2c47fd49be96f81611aef28",
+    "metadata/source_sensor_subset.tsv": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+    "history/summary.json": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+    "history/train_history.npy": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+    "history/train_multichannel_scaler.json": "f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4",
+    "data/adjacency.npy": "8cedf3a01e4c5d228793ef1eafeb99d924126b207b55841b569265ac53b62beb",
+    "event_sidecar": "8c184097984fad85734715c770c807788da6819053f0d3a39227c9184e5b2537",
+    "identity": "f7d370dcd98375f42250c5d41d196b5b0dc7b6b7ec042e18f526081e1e6173d3",
+    "audit": "cbeeab8ea58f8cf36ddb231d3351f769712aaa6c17ca0aa1b3b79872290fb2ab",
+    "input_loader": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+    "pair_inventory": "296d3f29b2188af25ab6cff13c9999b74112b1d119bdef187bbd28440e6b8c16"
+  },
+  "metadata_source": {
+    "sha256": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+    "rows": 2217,
+    "source_file": "sensor_meta_feature.csv",
+    "source_sha256": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd",
+    "source_url": "https://www.kaggle.com/datasets/gpxlcj/xtraffic/versions/8",
+    "license": "CC BY-NC 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "value_mask_meaning": "finite_and_nonnegative_not_certified_sensor_observations",
+  "report_support_meaning": "original_conditional_report_location_association_not_true_impact",
+  "requirements_policy": "Mandatory inputs must be jointly supported on most of the network; minority-only evidence is auxiliary",
+  "outputs": {
+    "candidate_pair_evidence.csv": "68b3d3cdda6a7e85ae5f13578613bd349a4ff6427ac9332fa99b851aca61efb6",
+    "road_joint_coverage.csv": "53556beed04cbf9356c6854ccacb1846a69de43e2df978b3100ee82159b8c3c4",
+    "station_joint_coverage.csv": "66f87b58365d579de0ce385d0597b582f574890df4bee781c6e176d555271067"
+  },
+  "validation": {
+    "new_tests_passed": 7,
+    "real_all_network_audit_exit_code": 0,
+    "unique_channel_counts_match_existing_v11a_scaler": true,
+    "pair_counts_match_previous_full_network_evidence": true
+  }
+}
