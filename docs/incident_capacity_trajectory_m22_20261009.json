@@ -1,0 +1,244 @@
+{
+  "status": "M22_ENGINEERING_CHECK_PASS",
+  "tests": {
+    "executed": 26,
+    "passed": 26,
+    "skipped": 0,
+    "new_tests": 12,
+    "legacy_regression_tests": 14,
+    "cuda_tests_executed": 2
+  },
+  "final_full_gpu_bash_check": {
+    "schema": "incident_capacity_trajectory_m22_v1",
+    "status": "M22_ENGINEERING_CHECK_PASS",
+    "synthetic": {
+      "status": "PASS",
+      "cases": [
+        {
+          "elapsed_minutes": 0.0,
+          "pulse_retention": 0.800000011920929,
+          "mixture_retention": 0.800000011920929,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.800000011920929,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 5.0,
+          "pulse_retention": 0.6510655879974365,
+          "mixture_retention": 0.830703616142273,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.6510655879974365,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 15.0,
+          "pulse_retention": 0.46880829334259033,
+          "mixture_retention": 0.8786938786506653,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.46880829334259033,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 30.0,
+          "pulse_retention": 0.4005696177482605,
+          "mixture_retention": 0.9264240860939026,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.4005696177482605,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 60.0,
+          "pulse_retention": 0.5654992461204529,
+          "mixture_retention": 0.9729329347610474,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.5654992461204529,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 120.0,
+          "pulse_retention": 0.8832600712776184,
+          "mixture_retention": 0.9963368773460388,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.8832600712776184,
+          "downstream_limited_flow": 0.009999999776482582
+        },
+        {
+          "elapsed_minutes": 600.0,
+          "pulse_retention": 0.9999999403953552,
+          "mixture_retention": 1.0,
+          "low_demand_flow": 0.019999999552965164,
+          "high_demand_flow": 0.9999999403953552,
+          "downstream_limited_flow": 0.009999999776482582
+        }
+      ],
+      "arms": {
+        "pulse": {
+          "parameters": 1540,
+          "updates": [
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.1893450766801834,
+              "head_gradient_l1": [
+                0.16105565428733826,
+                0.010270358994603157,
+                0.14703381061553955,
+                0.007858948782086372
+              ]
+            },
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.1878557801246643,
+              "head_gradient_l1": [
+                0.1582697033882141,
+                0.010266207158565521,
+                0.14425790309906006,
+                0.007883560843765736
+              ]
+            }
+          ],
+          "checkpoint_replay_abs_max": 0.0,
+          "continuation_parameter_abs_max": 0.0
+        },
+        "mixture": {
+          "parameters": 1540,
+          "updates": [
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.21619687974452972,
+              "head_gradient_l1": [
+                0.198836088180542,
+                0.012538637034595013,
+                0.00391968060284853,
+                0.001417313003912568
+              ]
+            },
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.2150907665491104,
+              "head_gradient_l1": [
+                0.19231463968753815,
+                0.01242162100970745,
+                0.0039153387770056725,
+                0.0013686548918485641
+              ]
+            }
+          ],
+          "checkpoint_replay_abs_max": 0.0,
+          "continuation_parameter_abs_max": 0.0
+        },
+        "ordinary": {
+          "parameters": 1540,
+          "updates": [
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.26199474930763245,
+              "head_gradient_l1": [
+                1.6959208250045776,
+                0.7345301508903503,
+                1.249514102935791,
+                0.0024345912970602512
+              ]
+            },
+            {
+              "synthetic_loss_NOT_prediction_metric": 0.24571925401687622,
+              "head_gradient_l1": [
+                1.585099697113037,
+                0.681209921836853,
+                1.1594535112380981,
+                0.0006947623332962394
+              ]
+            }
+          ],
+          "checkpoint_replay_abs_max": 0.0,
+          "continuation_parameter_abs_max": 0.0
+        }
+      },
+      "legacy_parameters": 1506,
+      "known_nonidentifiability": [
+        "shape time is invisible when strength is zero",
+        "mixture weight is invisible when the two time scales coincide"
+      ]
+    },
+    "candidate": {
+      "status": "ALL_CANDIDATE_X_INTERFACE_PASS",
+      "events": 9943,
+      "stations": 496,
+      "road_direction_groups": 14,
+      "nodes_ever_supported": 496,
+      "real_optimizer_updates": 0,
+      "weights_unchanged": true,
+      "seconds": 14.977615299998433,
+      "candidate_summary_sha256": "7597717148fc55c6f4c7994ed81c0f374c19385459e74cb372cbf2f3f9eff908",
+      "initialization_only_NOT_mechanism_estimates": {
+        "exponential": {
+          "minimum": 0.8977481126785278,
+          "maximum": 1.0,
+          "worsening_supported_curves": 0,
+          "supported_curves": 387340,
+          "amplitude_saturated": null,
+          "strength_saturated": null
+        },
+        "pulse": {
+          "minimum": 0.8447461128234863,
+          "maximum": 1.0,
+          "worsening_supported_curves": 387340,
+          "supported_curves": 387340,
+          "amplitude_saturated": 0,
+          "strength_saturated": 0
+        },
+        "mixture": {
+          "minimum": 0.8977481126785278,
+          "maximum": 1.0,
+          "worsening_supported_curves": 0,
+          "supported_curves": 387340,
+          "amplitude_saturated": 0,
+          "strength_saturated": 0
+        },
+        "ordinary": {
+          "minimum": 0.991690456867218,
+          "maximum": 1.0378626585006714,
+          "worsening_supported_curves": 94639,
+          "supported_curves": 387340,
+          "amplitude_saturated": null,
+          "strength_saturated": null
+        }
+      }
+    },
+    "full_training_started": false,
+    "new_Y_or_validation_test_used": false,
+    "spatial_propagation_implemented": false,
+    "scientific_status": "NO_PREDICTIVE_GAIN_OR_IDENTIFIED_CAPACITY_CLAIM",
+    "environment": {
+      "python": "3.10.18",
+      "torch": "2.3.1",
+      "device": "cuda:0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU"
+    },
+    "source_sha256": {
+      "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+      "src/models/incident_capacity_trajectory.py": "a42ce9ee5618fdd625cadcbf3c7152e496896d4db600d9be75ac6f5122a1a969",
+      "src/utils/relative_capacity_inputs.py": "2d9fde1addbb62993b24352ce9f278f47a24c51e9419627618a0e9b0a96e8c8d",
+      "src/utils/incident_candidate_history.py": "d1664b89573508d6d1451b2104fee888db5a40a8f3b7ae9129fef2b4fd3f482a",
+      "experiments/chronological/check_incident_relative_capacity.py": "8f8c3daa22684f1d8240a570c7ee12c4461182825871a22358545ee1902dca23",
+      "experiments/chronological/check_incident_capacity_trajectory.py": "447abb1b4cac034fcfb1cb6bb83660aa6c2fb27c72df50865215c36f3864217f",
+      "experiments/chronological/run_incident_capacity_trajectory.sh": "5efa846cf72e38ae6026c3ec1d06deebeb7779e02b1c7da60484010b003e3460",
+      "tests/test_incident_relative_capacity.py": "4a7035a5d7b700ec9081565f05a9018305028a22142f56c1bb8933ddb101b9d5",
+      "tests/test_incident_capacity_trajectory.py": "0bd7bea7321042efd48a8e97fec40dc290f5ff656d677ea6c259c9a164b0043f",
+      "src/models/igstgnn.py": "3f5bdde8e1e33fd1164ebf2cd65fcc28235cba32be36b063de172580e02e56f4"
+    },
+    "outputs_sha256": {
+      "mixture_synthetic_only.pt": "fb3227ca071ea835bd89618f6bb26bbf204b439936a078dfb303d9d681391735",
+      "ordinary_synthetic_only.pt": "09e9d7c1dbdd2e21b68b47714155327d083505294fe232be1b46967c19a6165e",
+      "pulse_synthetic_only.pt": "2f8c5892bee927a7de474379a7f614795c35af380e7b35951ebc4da63eff731f",
+      "synthetic_trajectory_cases.csv": "bf0e6c46beb51c2e7fefc470d5c6fc3ce2aca3f89149c25bcbdd2cc5b38f7796"
+    }
+  },
+  "bash_exit_code": 0,
+  "final_output_directory": "experiments\\chronological_runs\\contra_capacity_m22_20261009_185415_ZlcSpb\\check",
+  "cpu_first_full_check": {
+    "status": "ALL_CANDIDATE_X_INTERFACE_PASS",
+    "events": 9943,
+    "stations": 496,
+    "seconds": 129.07338660000096,
+    "summary_sha256": "547b1159e9f41cae113037a83515ff9cebcd8d46d8a7aeadbd52eaa46f8a6631",
+    "source_file": "experiments\\chronological_runs\\contra_capacity_m22_20261009_v1\\summary.json",
+    "note": "Before reporting-only correction: saturation fields unavailable for legacy/ordinary are now null. Model unchanged; final full GPU run verifies final source."
+  },
+  "native_igstgnn_modified": false,
+  "source_hashes_match_final_files": true
+}

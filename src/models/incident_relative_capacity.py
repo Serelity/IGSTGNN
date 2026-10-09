@@ -97,9 +97,13 @@ class SharedIncidentState(nn.Module):
                            torch.log1p(report_age_minutes[:, None, None] / 60).expand(b, nodes, 1)], -1)
         raw = self.condition_head(torch.cat([hidden, event], -1))
         time = elapsed_minutes[None, :, None]
-        active = effective_support[:, None]
         result = {'history_state': hidden, 'history_available': available,
                   'report_support': support, 'effective_support': effective_support}
+        return self._decode_state(raw, time, effective_support, result)
+
+    def _decode_state(self, raw, time, effective_support, result):
+        """Separate time expansion so new curves retain the identical input path."""
+        active = effective_support[:, None]
         if self.mode == 'capacity':
             amplitude = (.10 + .20 * raw[..., 0]).clamp(0, .95)
             tau = 5 + 175 * torch.sigmoid(raw[..., 1])
