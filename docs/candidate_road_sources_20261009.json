@@ -1,0 +1,87 @@
+{
+  "public_caltrans_and_hpms_downloads": [
+    {
+      "file": "nhs_metadata.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/National_Highway_System/FeatureServer/0?f=pjson",
+      "bytes": 15665,
+      "retrieved_utc": "2026-10-09T07:28:40.387554+00:00",
+      "sha256": "3df5d920706399f81e50bf229ffe97f9620e62119ffff8cdedfe2dea7710fa9a"
+    },
+    {
+      "file": "odometer_metadata.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/SHN_Odometer/FeatureServer/0?f=pjson",
+      "bytes": 9533,
+      "retrieved_utc": "2026-10-09T07:28:41.952656+00:00",
+      "sha256": "4f81f5b391b401b8337ce8808b5b6e82f6abd55d660ba0e49ae14cb392740728"
+    },
+    {
+      "file": "postmile_item.json",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/c22341fec9c74c6b9488ee4da23dd967?f=pjson",
+      "bytes": 6660,
+      "retrieved_utc": "2026-10-09T07:28:43.287299+00:00",
+      "sha256": "788750c21a175a04801c2a0007df2b9d292e48b94a656263ff04979a58c0e90f"
+    },
+    {
+      "file": "postmile_metadata.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/SHN_Postmiles_Tenth/FeatureServer/0?f=pjson",
+      "bytes": 10086,
+      "retrieved_utc": "2026-10-09T07:29:17.477046+00:00",
+      "sha256": "8e483df1330ccfcfc665dff28dbd099907cfe1b6a216d9cabea94a1a6f63d2d1"
+    },
+    {
+      "file": "postmile_points.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/SHN_Postmiles_Tenth/FeatureServer/0/query?f=json&where=Route+IN+%284%2C24%2C242%29+AND+County%3D%27CC%27&outFields=%2A&returnGeometry=true&returnM=true&returnZ=false&outSR=3310&orderByFields=OBJECTID&resultRecordCount=2000",
+      "bytes": 490501,
+      "retrieved_utc": "2026-10-09T07:29:53.730335+00:00",
+      "sha256": "53dfb179c2e6080dd287e36bc720cc10bb32a173be27a9ce239fc8d83c1ebce9"
+    },
+    {
+      "file": "odometer_routes.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/SHN_Odometer/FeatureServer/0/query?f=json&where=RouteNum+IN+%28%27004%27%2C%27024%27%2C%27242%27%29&outFields=%2A&returnGeometry=true&returnM=true&returnZ=false&outSR=3310&orderByFields=OBJECTID&resultRecordCount=2000",
+      "bytes": 3827111,
+      "retrieved_utc": "2026-10-09T07:30:00.472799+00:00",
+      "sha256": "3d35ed8265fc7b336ac57dc1c0cf1a67cc7dd218ae82e2d94f05e2adf0586391"
+    },
+    {
+      "file": "nhs_routes.json",
+      "url": "https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway/National_Highway_System/FeatureServer/0/query?f=json&where=RouteID+IN+%28%27SHS_004._P%27%2C%27SHS_024._P%27%2C%27SHS_242._P%27%29&outFields=%2A&returnGeometry=true&returnM=true&returnZ=false&outSR=3310&orderByFields=OBJECTID&resultRecordCount=2000",
+      "bytes": 169638,
+      "retrieved_utc": "2026-10-09T07:30:03.411170+00:00",
+      "sha256": "48ad8596c355dbd61d677a3a5d9ca1937b3a6a5fc2f0bb30db57f37fadf99012"
+    },
+    {
+      "file": "hpms_small_context.json",
+      "url": "https://data.transportation.gov/resource/8gz6-23ex.json?%24where=stateid%3D6+AND+datayear%3D2023%0AAND+dataitem+IN+%28%27FACILITY_TYPE%27%2C%27DIR_THROUGH_LANES%27%2C%27PEAK_LANES%27%2C%27COUNTER_PEAK_LANES%27%29%0AAND+%28%28routeid%3D%27SHS_004._P%27+AND+beginpoint%3C19.6+AND+endpoint%3E19%29%0AOR+%28routeid%3D%27SHS_024._P%27+AND+beginpoint%3C8.9+AND+endpoint%3E8.5%29%0AOR+%28routeid%3D%27SHS_242._P%27+AND+beginpoint%3C1.3+AND+endpoint%3E0.7%29%29&%24limit=2000",
+      "bytes": 11935,
+      "retrieved_utc": "2026-10-09T07:32:18.937281+00:00",
+      "sha256": "d16424031ae7a9acc454f5bc3d3a4662ee181200400cef3962d5620ca3a5d20a"
+    }
+  ],
+  "prior_ramp_download": [
+    {
+      "file": "caltrans_2023_d4_ramp_adt.xlsx",
+      "url": "https://dot.ca.gov/-/media/dot-media/programs/traffic-operations/documents/census/2023/2023-d4-ramp-adt-a11y.xlsx",
+      "status_code": 200,
+      "content_type": "%0d%0a            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet%0d%0a          ",
+      "bytes": 451240,
+      "sha256": "6e5af6a148ddcd3e0b102641c1f4f284643fe062af0cf0f7c876049de6896e8a",
+      "saved": true
+    }
+  ],
+  "prior_hpms_lanes": {
+    "url": "https://data.transportation.gov/resource/8gz6-23ex.json?%24where=stateid%3D6+AND+datayear%3D2023+AND+dataitem%3D%27THROUGH_LANES%27+AND+routeid+in+%28%27SHS_004._P%27%2C%27SHS_024._P%27%2C%27SHS_080._P%27%2C%27SHS_242._P%27%2C%27SHS_580._P%27%2C%27SHS_680._P%27%29&%24limit=20000",
+    "row_count": 3322,
+    "limit": 20000,
+    "sha256": "fc2690db6627012a6a50afaf9dc4523a88925332ac3e95657e8f10938810866c"
+  },
+  "local_staging": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009",
+  "full_results": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009\\matched_final",
+  "source_station_metadata": {
+    "source_file": "sensor_meta_feature.csv",
+    "source_sha256": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd",
+    "source_url": "https://www.kaggle.com/datasets/gpxlcj/xtraffic/versions/8",
+    "license": "CC BY-NC 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "field_semantics": "https://www.fhwa.dot.gov/policyinformation/hpms/fieldmanual/page04.cfm"
+}

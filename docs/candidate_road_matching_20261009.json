@@ -1,0 +1,1332 @@
+{
+  "status": "THREE_ROAD_STATIC_MATCH_COMPLETE_NOT_PHYSICS_CERTIFIED",
+  "selection_rule": "One pair per numbered road: descending train report support, valid fraction, then ascending spacing and identifiers; top 3 roads.",
+  "inventory_rows": 482,
+  "prefilter_pass_rows": 217,
+  "selected_pairs": 3,
+  "matched_endpoints": 6,
+  "versions": {
+    "geopandas": "1.1.3",
+    "pandas": "2.0.3",
+    "shapely": "2.1.2",
+    "pyproj": "3.7.2",
+    "openpyxl": "3.1.2"
+  },
+  "source_hashes": [
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\物理数据契约核验_20261009\\prepared_03\\bottleneck_candidate_inventory.csv",
+      "sha256": "68b3d3cdda6a7e85ae5f13578613bd349a4ff6427ac9332fa99b851aca61efb6"
+    },
+    {
+      "path": "G:\\paper\\data\\raw\\traffident_v8\\sensor_meta_feature.csv",
+      "sha256": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009\\odometer_routes.json",
+      "sha256": "3d35ed8265fc7b336ac57dc1c0cf1a67cc7dd218ae82e2d94f05e2adf0586391"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009\\nhs_routes.json",
+      "sha256": "48ad8596c355dbd61d677a3a5d9ca1937b3a6a5fc2f0bb30db57f37fadf99012"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009\\postmile_points.json",
+      "sha256": "53dfb179c2e6080dd287e36bc720cc10bb32a173be27a9ce239fc8d83c1ebce9"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\候选道路匹配_20261009\\hpms_small_context.json",
+      "sha256": "d16424031ae7a9acc454f5bc3d3a4662ee181200400cef3962d5620ca3a5d20a"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\按缺口补数据_20261009\\hpms_2023_candidate_route_lanes.json",
+      "sha256": "fc2690db6627012a6a50afaf9dc4523a88925332ac3e95657e8f10938810866c"
+    },
+    {
+      "path": "G:\\paper\\IGSTGNN_open_source\\论文学习\\按缺口补数据_20261009\\caltrans_2023_d4_ramp_adt.xlsx",
+      "sha256": "6e5af6a148ddcd3e0b102641c1f4f284643fe062af0cf0f7c876049de6896e8a"
+    }
+  ],
+  "script_sha256": "e737ebb3f0f2079596dbf28ec256d6ed03bb4f7bf7adaf956778666b20dc9214",
+  "coordinate_policy": {
+    "station_crs_assumed": "EPSG:4326; undocumented source datum",
+    "output_crs": "EPSG:3310",
+    "always_xy": true,
+    "proj_network": false,
+    "geometry_repair": false,
+    "m_policy": "Original XYM retained; explicit per-edge interpolation; XY-only geometry for metric distance."
+  },
+  "source_vintages": {
+    "ramp_adt": 2023,
+    "hpms_events": 2023,
+    "nhs_lrs_export": "2023-07-18",
+    "postmile_geometry": "TSN extraction 2025-06-08 (not a 2023 snapshot)",
+    "odometer": "Retrieved live service, filter validity on 2023-07-10; edit timestamps are later."
+  },
+  "limits": [
+    "Road membership is supported; exact 2023 ramp merge/diverge locations remain unverified.",
+    "Ramp ADT inventory is not exhaustive and annual ADT is not five-minute ramp flow.",
+    "THROUGH_LANES is two-way here; peak/counterpeak does not identify compass direction.",
+    "No lane count division by two; no capacity or queue labels derived.",
+    "Training report support counts windows, not unique crashes or certified bottlenecks.",
+    "50 m guard is a sensitivity check, not source accuracy certification.",
+    "No X values, validation targets, or test targets loaded; no training performed."
+  ],
+  "geometry_audit": {
+    "odometer": {
+      "features": 15,
+      "xy_geometries": 59,
+      "null": 0,
+      "empty": 0,
+      "invalid": 0,
+      "m_vertices": 63920,
+      "types": {
+        "LineString": 59
+      },
+      "crs": "EPSG:3310"
+    },
+    "nhs": {
+      "features": 12,
+      "xy_geometries": 13,
+      "null": 0,
+      "empty": 0,
+      "invalid": 0,
+      "m_vertices": 2747,
+      "types": {
+        "LineString": 13
+      },
+      "crs": "EPSG:3310"
+    },
+    "postmile": {
+      "features": 1280,
+      "xy_geometries": 1280,
+      "null": 0,
+      "empty": 0,
+      "invalid": 0,
+      "m_vertices": 0,
+      "types": {
+        "Point": 1280
+      },
+      "crs": "EPSG:3310"
+    }
+  },
+  "matches": [
+    {
+      "pair_id": "SR4-W_404358_401526",
+      "road": "SR4-W",
+      "route_number": 4,
+      "train_report_supported_windows": 993,
+      "train_x_valid_fraction": 1.0,
+      "upstream_station": "401526",
+      "downstream_station": "404358",
+      "directional_geometry_length_m": 499.3825228298192,
+      "county_postmile_range": [
+        19.401642108085017,
+        19.713042421564317
+      ],
+      "county_postmile_prefix": "R",
+      "hpms_measure_range": [
+        19.127476622489528,
+        19.439294646400622
+      ],
+      "through_lanes_both_directions": [
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_004._P",
+          "beginpoint": "19.0824",
+          "endpoint": "19.1804",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.0980",
+          "valuenumeric": "6.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_004._P",
+          "clipped_begin": 19.127476622489528,
+          "clipped_end": 19.1804
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_004._P",
+          "beginpoint": "19.1804",
+          "endpoint": "19.3834",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.2030",
+          "valuenumeric": "6.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_004._P",
+          "clipped_begin": 19.1804,
+          "clipped_end": 19.3834
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_004._P",
+          "beginpoint": "19.3834",
+          "endpoint": "19.6044",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.2210",
+          "valuenumeric": "8.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_004._P",
+          "clipped_begin": 19.3834,
+          "clipped_end": 19.439294646400622
+        }
+      ],
+      "hpms_context": {
+        "FACILITY_TYPE": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.0824",
+            "endpoint": "19.1804",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.0980",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.127476622489528,
+            "clipped_end": 19.1804
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.1804",
+            "endpoint": "19.3834",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.2030",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.1804,
+            "clipped_end": 19.3834
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.3834",
+            "endpoint": "19.6044",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.2210",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.3834,
+            "clipped_end": 19.439294646400622
+          }
+        ],
+        "PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.0824",
+            "endpoint": "19.1804",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.0980",
+            "valuenumeric": "3.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.127476622489528,
+            "clipped_end": 19.1804
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.1804",
+            "endpoint": "19.3834",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.2030",
+            "valuenumeric": "3.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.1804,
+            "clipped_end": 19.3834
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.3834",
+            "endpoint": "19.6044",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.2210",
+            "valuenumeric": "4.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.3834,
+            "clipped_end": 19.439294646400622
+          }
+        ],
+        "COUNTER_PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.0824",
+            "endpoint": "19.1804",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.0980",
+            "valuenumeric": "3.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.127476622489528,
+            "clipped_end": 19.1804
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.1804",
+            "endpoint": "19.3834",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.2030",
+            "valuenumeric": "3.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.1804,
+            "clipped_end": 19.3834
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_004._P",
+            "beginpoint": "19.3834",
+            "endpoint": "19.6044",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.2210",
+            "valuenumeric": "4.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_004._P",
+            "clipped_begin": 19.3834,
+            "clipped_end": 19.439294646400622
+          }
+        ],
+        "DIR_THROUGH_LANES": []
+      },
+      "hpms_coverage": 1.0,
+      "lane_values_with_50m_measure_guard": [
+        6.0,
+        8.0
+      ],
+      "ramp_adt_same_direction_total": 50,
+      "ramp_adt_mapped_total": 47,
+      "ramp_adt_unmapped": [
+        {
+          "excel_row": 95,
+          "description": "004/WB ON FR WB BALFOUR RD",
+          "prefix": "R",
+          "postmile": 35.249,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": null,
+          "reason": "No local same-prefix bracket"
+        },
+        {
+          "excel_row": 98,
+          "description": "WB ON FR BALFOUR RD",
+          "prefix": "R",
+          "postmile": 35.65,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": null,
+          "reason": "No local same-prefix bracket"
+        },
+        {
+          "excel_row": 99,
+          "description": "WB OFF TO BALFOUR RD",
+          "prefix": "R",
+          "postmile": 35.8,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 1950,
+          "reason": "No local same-prefix bracket"
+        }
+      ],
+      "nearby_ramp_adt": [
+        {
+          "excel_row": 31,
+          "description": "WBONFR SB WILLOW PASSRD",
+          "prefix": "R",
+          "postmile": 18.571,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 9200,
+          "chainage_m": 29378.257251168274,
+          "anchor_ids": [
+            17766,
+            17765
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 1334.097095069479,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 33,
+          "description": "WBONFR NB WILLOW PASSRD",
+          "prefix": "R",
+          "postmile": 18.81,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 6900,
+          "chainage_m": 29763.554898017654,
+          "anchor_ids": [
+            17763,
+            17762
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 948.7994482200993,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 35,
+          "description": "WBOFF TO WILLOW PASS RD",
+          "prefix": "R",
+          "postmile": 19.001,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 5000,
+          "chainage_m": 30069.855183689575,
+          "anchor_ids": [
+            17852,
+            17760
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 642.499162548178,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 37,
+          "description": "WB ON FR BAILEY RD",
+          "prefix": "R",
+          "postmile": 19.95,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 9800,
+          "chainage_m": 31591.74034247477,
+          "anchor_ids": [
+            17752,
+            17751
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 380.00347340719964,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 38,
+          "description": "WB OFF TO SB BAILEY RD",
+          "prefix": "R",
+          "postmile": 20.066,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": null,
+          "chainage_m": 31777.76557775614,
+          "anchor_ids": [
+            17751,
+            20160
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 566.0287086885692,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 39,
+          "description": "WB OFF TO NB BAILEY RD",
+          "prefix": "R",
+          "postmile": 20.278,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": null,
+          "chainage_m": 32115.694038467645,
+          "anchor_ids": [
+            18916,
+            17749
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 903.9571694000733,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 40,
+          "description": "004/WB OFF TO BAILEY RD",
+          "prefix": "R",
+          "postmile": 20.28,
+          "suffix": "",
+          "direction": "WB",
+          "adt_2023": 4100,
+          "chainage_m": 32118.874264723887,
+          "anchor_ids": [
+            18916,
+            17749
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 907.1373956563148,
+          "within_50m_guard": false
+        }
+      ],
+      "ramp_adt_interior_count": 0,
+      "ramp_adt_guard_count": 0,
+      "full_source_nearby_nonmainline": [
+        {
+          "station_id": "406642",
+          "name": "Willow Pass Rd on diag (BP)",
+          "type": "On Ramp",
+          "abs_pm": "18.228"
+        },
+        {
+          "station_id": "406643",
+          "name": "Willow Pass Rd on (Bay Point)",
+          "type": "On Ramp",
+          "abs_pm": "18.458"
+        },
+        {
+          "station_id": "406644",
+          "name": "Willow Pass Rd off (Bay Point)",
+          "type": "Off Ramp",
+          "abs_pm": "18.618"
+        },
+        {
+          "station_id": "404361",
+          "name": "Bailey rd off diag",
+          "type": "Off Ramp",
+          "abs_pm": "19.728"
+        },
+        {
+          "station_id": "414044",
+          "name": "Bailey Rd off",
+          "type": "Off Ramp",
+          "abs_pm": "19.878"
+        },
+        {
+          "station_id": "407981",
+          "name": "Bailey Rd on",
+          "type": "On Ramp",
+          "abs_pm": "19.928"
+        },
+        {
+          "station_id": "407980",
+          "name": "Bailey Rd off loop",
+          "type": "Off Ramp",
+          "abs_pm": "19.928"
+        }
+      ],
+      "odometer_validity": {
+        "LRSFromDate": 1571011200000,
+        "LRSToDate": 1706745600000
+      },
+      "matching_status": "EXPLORATORY_SPATIAL_CROSSWALK_COMPLETE",
+      "closed_boundary_certified": false,
+      "directional_lanes_certified": false,
+      "physical_contract_ready": false
+    },
+    {
+      "pair_id": "SR24-W_401683_400800",
+      "road": "SR24-W",
+      "route_number": 24,
+      "train_report_supported_windows": 309,
+      "train_x_valid_fraction": 1.0,
+      "upstream_station": "400800",
+      "downstream_station": "401683",
+      "directional_geometry_length_m": 223.00778345189428,
+      "county_postmile_range": [
+        4.286179991404241,
+        4.4246289411370165
+      ],
+      "county_postmile_prefix": "R",
+      "hpms_measure_range": [
+        8.635559434207732,
+        8.774156756996401
+      ],
+      "through_lanes_both_directions": [
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_024._P",
+          "beginpoint": "8.1634",
+          "endpoint": "8.7718",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.6084",
+          "valuenumeric": "9.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_024._P",
+          "clipped_begin": 8.635559434207732,
+          "clipped_end": 8.7718
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_024._P",
+          "beginpoint": "8.7718",
+          "endpoint": "8.7868",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.0150",
+          "valuenumeric": "9.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_024._P",
+          "clipped_begin": 8.7718,
+          "clipped_end": 8.774156756996401
+        }
+      ],
+      "hpms_context": {
+        "FACILITY_TYPE": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.1634",
+            "endpoint": "8.7718",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.6084",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.635559434207732,
+            "clipped_end": 8.7718
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.7718",
+            "endpoint": "8.7868",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.0150",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.7718,
+            "clipped_end": 8.774156756996401
+          }
+        ],
+        "PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.1634",
+            "endpoint": "8.7718",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.6084",
+            "valuenumeric": "5.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.635559434207732,
+            "clipped_end": 8.7718
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.7718",
+            "endpoint": "8.7868",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.0150",
+            "valuenumeric": "5.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.7718,
+            "clipped_end": 8.774156756996401
+          }
+        ],
+        "COUNTER_PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.1634",
+            "endpoint": "8.7718",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.6084",
+            "valuenumeric": "4.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.635559434207732,
+            "clipped_end": 8.7718
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_024._P",
+            "beginpoint": "8.7718",
+            "endpoint": "8.7868",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.0150",
+            "valuenumeric": "4.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_024._P",
+            "clipped_begin": 8.7718,
+            "clipped_end": 8.774156756996401
+          }
+        ],
+        "DIR_THROUGH_LANES": []
+      },
+      "hpms_coverage": 1.0,
+      "lane_values_with_50m_measure_guard": [
+        9.0
+      ],
+      "ramp_adt_same_direction_total": 6,
+      "ramp_adt_mapped_total": 6,
+      "ramp_adt_unmapped": [],
+      "nearby_ramp_adt": [],
+      "ramp_adt_interior_count": 0,
+      "ramp_adt_guard_count": 0,
+      "full_source_nearby_nonmainline": [],
+      "odometer_validity": {
+        "LRSFromDate": 1571011200000,
+        "LRSToDate": null
+      },
+      "matching_status": "EXPLORATORY_SPATIAL_CROSSWALK_COMPLETE",
+      "closed_boundary_certified": false,
+      "directional_lanes_certified": false,
+      "physical_contract_ready": false
+    },
+    {
+      "pair_id": "SR242-N_401282_414248",
+      "road": "SR242-N",
+      "route_number": 242,
+      "train_report_supported_windows": 214,
+      "train_x_valid_fraction": 1.0,
+      "upstream_station": "401282",
+      "downstream_station": "414248",
+      "directional_geometry_length_m": 448.9644477159957,
+      "county_postmile_range": [
+        0.7851807734863842,
+        1.0690541497295452
+      ],
+      "county_postmile_prefix": "R",
+      "hpms_measure_range": [
+        0.844566106214785,
+        1.1235390882530414
+      ],
+      "through_lanes_both_directions": [
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_242._P",
+          "beginpoint": "0.8391",
+          "endpoint": "0.8685",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.0294",
+          "valuenumeric": "4.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_242._P",
+          "clipped_begin": 0.844566106214785,
+          "clipped_end": 0.8685
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_242._P",
+          "beginpoint": "0.8685",
+          "endpoint": "0.9253",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.0568",
+          "valuenumeric": "4.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_242._P",
+          "clipped_begin": 0.8685,
+          "clipped_end": 0.9253
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_242._P",
+          "beginpoint": "0.9253",
+          "endpoint": "0.9756",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.0503",
+          "valuenumeric": "4.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_242._P",
+          "clipped_begin": 0.9253,
+          "clipped_end": 0.9756
+        },
+        {
+          "datayear": "2023",
+          "stateid": "6",
+          "routeid": "SHS_242._P",
+          "beginpoint": "0.9756",
+          "endpoint": "1.5250",
+          "dataitem": "THROUGH_LANES",
+          "sectionlength": "0.5494",
+          "valuenumeric": "4.0000",
+          "valuetext": "NULL",
+          "valuedate": "2023-01-01T00:00:00.000",
+          "natroute_id": "N_6_SHS_242._P",
+          "clipped_begin": 0.9756,
+          "clipped_end": 1.1235390882530414
+        }
+      ],
+      "hpms_context": {
+        "FACILITY_TYPE": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8391",
+            "endpoint": "0.8685",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.0294",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.844566106214785,
+            "clipped_end": 0.8685
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8685",
+            "endpoint": "0.9253",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.0568",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.8685,
+            "clipped_end": 0.9253
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9253",
+            "endpoint": "0.9756",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.0503",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9253,
+            "clipped_end": 0.9756
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9756",
+            "endpoint": "1.5250",
+            "dataitem": "FACILITY_TYPE",
+            "sectionlength": "0.5494",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9756,
+            "clipped_end": 1.1235390882530414
+          }
+        ],
+        "PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8391",
+            "endpoint": "0.8685",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.0294",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.844566106214785,
+            "clipped_end": 0.8685
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8685",
+            "endpoint": "0.9253",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.0568",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.8685,
+            "clipped_end": 0.9253
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9253",
+            "endpoint": "0.9756",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.0503",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9253,
+            "clipped_end": 0.9756
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9756",
+            "endpoint": "1.5250",
+            "dataitem": "PEAK_LANES",
+            "sectionlength": "0.5494",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9756,
+            "clipped_end": 1.1235390882530414
+          }
+        ],
+        "COUNTER_PEAK_LANES": [
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8391",
+            "endpoint": "0.8685",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.0294",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.844566106214785,
+            "clipped_end": 0.8685
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.8685",
+            "endpoint": "0.9253",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.0568",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.8685,
+            "clipped_end": 0.9253
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9253",
+            "endpoint": "0.9756",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.0503",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9253,
+            "clipped_end": 0.9756
+          },
+          {
+            "datayear": "2023",
+            "stateid": "6",
+            "routeid": "SHS_242._P",
+            "beginpoint": "0.9756",
+            "endpoint": "1.5250",
+            "dataitem": "COUNTER_PEAK_LANES",
+            "sectionlength": "0.5494",
+            "valuenumeric": "2.0000",
+            "valuetext": "NULL",
+            "valuedate": "2023-01-01T00:00:00.000",
+            "natroute_id": "N_6_SHS_242._P",
+            "clipped_begin": 0.9756,
+            "clipped_end": 1.1235390882530414
+          }
+        ],
+        "DIR_THROUGH_LANES": []
+      },
+      "hpms_coverage": 1.0,
+      "lane_values_with_50m_measure_guard": [
+        4.0
+      ],
+      "ramp_adt_same_direction_total": 4,
+      "ramp_adt_mapped_total": 4,
+      "ramp_adt_unmapped": [],
+      "nearby_ramp_adt": [
+        {
+          "excel_row": 935,
+          "description": "NB OFF TO CLAYTON/MARKET",
+          "prefix": "R",
+          "postmile": 0.658,
+          "suffix": "",
+          "direction": "NB",
+          "adt_2023": null,
+          "chainage_m": 1154.302027934483,
+          "anchor_ids": [
+            274305,
+            277625
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 204.8980091472315,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 938,
+          "description": "NB ON FR EB CONCORD AVE",
+          "prefix": "R",
+          "postmile": 1.499,
+          "suffix": "",
+          "direction": "NB",
+          "adt_2023": 5100,
+          "chainage_m": 2503.030343172725,
+          "anchor_ids": [
+            274297,
+            274507
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 694.865858375015,
+          "within_50m_guard": false
+        },
+        {
+          "excel_row": 939,
+          "description": "NB ON FR CONCORD AVE",
+          "prefix": "R",
+          "postmile": 1.665,
+          "suffix": "",
+          "direction": "NB",
+          "adt_2023": 11900,
+          "chainage_m": 2766.8758783976214,
+          "anchor_ids": [
+            274296,
+            277475
+          ],
+          "relation": "outside",
+          "distance_to_pair_m": 958.7113935999112,
+          "within_50m_guard": false
+        }
+      ],
+      "ramp_adt_interior_count": 0,
+      "ramp_adt_guard_count": 0,
+      "full_source_nearby_nonmainline": [
+        {
+          "station_id": "417890",
+          "name": "Concord Ave on",
+          "type": "On Ramp",
+          "abs_pm": "1.719"
+        },
+        {
+          "station_id": "417123",
+          "name": "Concord Ave on",
+          "type": "On Ramp",
+          "abs_pm": "1.729"
+        },
+        {
+          "station_id": "409044",
+          "name": "Solano Way  off",
+          "type": "Off Ramp",
+          "abs_pm": "2.209"
+        }
+      ],
+      "odometer_validity": {
+        "LRSFromDate": 1571011200000,
+        "LRSToDate": null
+      },
+      "matching_status": "EXPLORATORY_SPATIAL_CROSSWALK_COMPLETE",
+      "closed_boundary_certified": false,
+      "directional_lanes_certified": false,
+      "physical_contract_ready": false
+    }
+  ],
+  "endpoints": [
+    {
+      "pair_id": "SR4-W_404358_401526",
+      "station_id": "404358",
+      "name": "oppo 2500' W of Bailey Rd",
+      "direction": "WB",
+      "lat": 38.020929,
+      "lon": -121.954613,
+      "pems_abs_pm": 19.058,
+      "road": 4,
+      "odometer_objectid": 7,
+      "odometer_route_id": "004._L",
+      "directional_projection": {
+        "distance_m": 0.26755816921195674,
+        "measure": 19.14064247995291,
+        "chainage_m": 30712.354346237753,
+        "path_index": 0,
+        "vertex_index": 487,
+        "x": -171355.60083893634,
+        "y": 2273.4842932140323
+      },
+      "county_postmile": {
+        "value": 19.401642108085017,
+        "anchor_ids": [
+          17757,
+          17755
+        ],
+        "pm_route_id": "CC.004.R.L",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 162,
+      "hpms_route_id": "SHS_004._P",
+      "nhs_projection": {
+        "distance_m": 21.105051744313513,
+        "measure": 19.127476622489528,
+        "chainage_m": 6089.058793416447,
+        "path_index": 0,
+        "vertex_index": 78,
+        "x": -171363.2882518612,
+        "y": 2254.11396211865
+      }
+    },
+    {
+      "pair_id": "SR4-W_404358_401526",
+      "station_id": "401526",
+      "name": "oppo W of Bailey Rd",
+      "direction": "WB",
+      "lat": 38.019378,
+      "lon": -121.949271,
+      "pems_abs_pm": 19.368,
+      "road": 4,
+      "odometer_objectid": 7,
+      "odometer_route_id": "004._L",
+      "directional_projection": {
+        "distance_m": 0.2561305900678731,
+        "measure": 19.45204187621418,
+        "chainage_m": 31211.736869067572,
+        "path_index": 0,
+        "vertex_index": 494,
+        "x": -170890.90305770573,
+        "y": 2091.4740347500438
+      },
+      "county_postmile": {
+        "value": 19.713042421564317,
+        "anchor_ids": [
+          17754,
+          20172
+        ],
+        "pm_route_id": "CC.004.R.L",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 162,
+      "hpms_route_id": "SHS_004._P",
+      "nhs_projection": {
+        "distance_m": 21.401093221644743,
+        "measure": 19.439294646400622,
+        "chainage_m": 6590.88226994875,
+        "path_index": 0,
+        "vertex_index": 82,
+        "x": -170896.17110529586,
+        "y": 2070.995628132837
+      }
+    },
+    {
+      "pair_id": "SR24-W_401683_400800",
+      "station_id": "401683",
+      "name": "100' E of Acalanes Rd UC",
+      "direction": "WB",
+      "lat": 37.892591,
+      "lon": -122.156901,
+      "pems_abs_pm": 8.648,
+      "road": 24,
+      "odometer_objectid": 55,
+      "odometer_route_id": "024._L",
+      "directional_projection": {
+        "distance_m": 0.3044427916940823,
+        "measure": 8.63417984559248,
+        "chainage_m": 13879.446413322883,
+        "path_index": 0,
+        "vertex_index": 298,
+        "x": -189411.26510876336,
+        "y": -11605.256512271666
+      },
+      "county_postmile": {
+        "value": 4.286179991404241,
+        "anchor_ids": [
+          69031,
+          70292
+        ],
+        "pm_route_id": "CC.024.R.L",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 236,
+      "hpms_route_id": "SHS_024._P",
+      "nhs_projection": {
+        "distance_m": 43.020577182732474,
+        "measure": 8.635559434207732,
+        "chainage_m": 13897.59404025628,
+        "path_index": 0,
+        "vertex_index": 283,
+        "x": -189420.25075078077,
+        "y": -11647.01686823048
+      }
+    },
+    {
+      "pair_id": "SR24-W_401683_400800",
+      "station_id": "400800",
+      "name": "100' E of Acalanes Rd UC",
+      "direction": "WB",
+      "lat": 37.892206,
+      "lon": -122.154409,
+      "pems_abs_pm": 8.788,
+      "road": 24,
+      "odometer_objectid": 55,
+      "odometer_route_id": "024._L",
+      "directional_projection": {
+        "distance_m": 0.4663822557633084,
+        "measure": 8.771993204803147,
+        "chainage_m": 14102.454196774777,
+        "path_index": 0,
+        "vertex_index": 302,
+        "x": -189193.27433806582,
+        "y": -11652.266971498362
+      },
+      "county_postmile": {
+        "value": 4.4246289411370165,
+        "anchor_ids": [
+          71051,
+          72109
+        ],
+        "pm_route_id": "CC.024.R.L",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 236,
+      "hpms_route_id": "SHS_024._P",
+      "nhs_projection": {
+        "distance_m": 42.15632554848116,
+        "measure": 8.774156756996401,
+        "chainage_m": 14120.644930482205,
+        "path_index": 0,
+        "vertex_index": 284,
+        "x": -189202.19264922108,
+        "y": -11693.946207260427
+      }
+    },
+    {
+      "pair_id": "SR242-N_401282_414248",
+      "station_id": "401282",
+      "name": "oppo Clayton rd rm-s-diag",
+      "direction": "NB",
+      "lat": 37.969613,
+      "lon": -122.04788,
+      "pems_abs_pm": 1.029,
+      "road": 242,
+      "odometer_objectid": 420,
+      "odometer_route_id": "242._R",
+      "directional_projection": {
+        "distance_m": 1.8520263947034383,
+        "measure": 1.0429258212787262,
+        "chainage_m": 1359.2000370817145,
+        "path_index": 0,
+        "vertex_index": 24,
+        "x": -179652.15461877143,
+        "y": -3257.3452123238667
+      },
+      "county_postmile": {
+        "value": 0.7851807734863842,
+        "anchor_ids": [
+          277625,
+          274303
+        ],
+        "pm_route_id": "CC.242.R.R",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 612,
+      "hpms_route_id": "SHS_242._P",
+      "nhs_projection": {
+        "distance_m": 1.8520263947034383,
+        "measure": 0.844566106214785,
+        "chainage_m": 1359.2000370817145,
+        "path_index": 0,
+        "vertex_index": 24,
+        "x": -179652.15461877143,
+        "y": -3257.3452123238667
+      }
+    },
+    {
+      "pair_id": "SR242-N_401282_414248",
+      "station_id": "414248",
+      "name": "oppo 0.42 mi S of Concord Ave",
+      "direction": "NB",
+      "lat": 37.973425,
+      "lon": -122.046244,
+      "pems_abs_pm": 1.309,
+      "road": 242,
+      "odometer_objectid": 420,
+      "odometer_route_id": "242._R",
+      "directional_projection": {
+        "distance_m": 0.7428449615095385,
+        "measure": 1.3280541407231383,
+        "chainage_m": 1808.1644847977102,
+        "path_index": 0,
+        "vertex_index": 36,
+        "x": -179500.63774987002,
+        "y": -2836.6810113506795
+      },
+      "county_postmile": {
+        "value": 1.0690541497295452,
+        "anchor_ids": [
+          277044,
+          274301
+        ],
+        "pm_route_id": "CC.242.R.R",
+        "prefix": "R",
+        "suffix": "",
+        "path_index": 0
+      },
+      "nhs_objectid": 612,
+      "hpms_route_id": "SHS_242._P",
+      "nhs_projection": {
+        "distance_m": 0.7428449615095385,
+        "measure": 1.1235390882530414,
+        "chainage_m": 1808.1644847977102,
+        "path_index": 0,
+        "vertex_index": 36,
+        "x": -179500.63774987002,
+        "y": -2836.6810113506795
+      }
+    }
+  ],
+  "independent_checks": {
+    "geos_projection_endpoints_passed": 6,
+    "geos_projection_tolerance_m": 1e-06,
+    "positive_overlap_full_coverage_no_lane_overlap": true
+  }
+}
