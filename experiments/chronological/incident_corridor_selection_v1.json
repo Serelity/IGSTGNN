@@ -1,0 +1,12 @@
+{
+  "schema": "incident_corridor_history_v1",
+  "selection_scope": "fixed_anchors_source_postmile_no_outcome_selection",
+  "data_summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+  "context_manifest_sha256": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+  "note": "Prospective expansion of the three previously selected anchors. Source postmile ordering is provisional and does not define physical cell lengths. No outcome-dependent trimming.",
+  "corridors": [
+    {"id": "sr4_w", "road": "SR4-W", "direction": "W", "anchor_station_ids": [401526, 404358], "candidate_travel_postmile_order": "descending", "extend_each_end_source_postmile": 3.0},
+    {"id": "sr24_w", "road": "SR24-W", "direction": "W", "anchor_station_ids": [400800, 401683], "candidate_travel_postmile_order": "descending", "extend_each_end_source_postmile": 3.0},
+    {"id": "sr242_n", "road": "SR242-N", "direction": "N", "anchor_station_ids": [401282, 414248], "candidate_travel_postmile_order": "ascending", "extend_each_end_source_postmile": 3.0}
+  ]
+}

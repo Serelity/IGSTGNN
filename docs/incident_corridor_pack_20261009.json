@@ -1,0 +1,1016 @@
+{
+  "summary": {
+    "schema": "incident_corridor_history_v1",
+    "status": "CORRIDOR_TRAIN_HISTORY_PACK_COMPLETE",
+    "scope": "candidate_corridors_training_history_only",
+    "main_training_ready": false,
+    "physics_ready": false,
+    "model_training_performed": false,
+    "raw_flow_gap_or_Y_file_opened": false,
+    "validation_array_opened": false,
+    "test_data_opened": false,
+    "incident_semantic_fields_opened": false,
+    "network_access_performed": false,
+    "samples": 3604,
+    "packed_stations": 40,
+    "history_shape": [
+      3604,
+      12,
+      40,
+      3
+    ],
+    "axis_order": [
+      "sample",
+      "history_step",
+      "packed_node",
+      "channel"
+    ],
+    "channel_semantics": {
+      "source_order": [
+        "flow",
+        "occupancy",
+        "speed"
+      ],
+      "evidence_status": "inferred_from_publication_and_numeric_ranges_not_declared_by_source_matrix_metadata",
+      "flow_units": "source_units",
+      "occupancy_units": "unconfirmed_source_units",
+      "speed_units": "unconfirmed_source_units"
+    },
+    "history_diagnostics": {
+      "unique_train_history_labels": 28320,
+      "first_label": "2023-01-03T14:20",
+      "last_label": "2023-08-31T20:25",
+      "channel_statistics": {
+        "flow": {
+          "unique_cells": 1132800,
+          "usable_cells": 1132800,
+          "zero_cells": 2730,
+          "negative_cells": 0,
+          "nonfinite_cells": 0,
+          "stations_with_no_usable_history": 0
+        },
+        "occupancy": {
+          "unique_cells": 1132800,
+          "usable_cells": 1132800,
+          "zero_cells": 2730,
+          "negative_cells": 0,
+          "nonfinite_cells": 0,
+          "stations_with_no_usable_history": 0
+        },
+        "speed": {
+          "unique_cells": 1132800,
+          "usable_cells": 1132800,
+          "zero_cells": 0,
+          "negative_cells": 0,
+          "nonfinite_cells": 0,
+          "stations_with_no_usable_history": 0
+        }
+      },
+      "overlap_consistency_checked": true
+    },
+    "mask_definition": "finite_and_nonnegative_zero_retained_not_certified_observation_mask",
+    "imputation_performed": false,
+    "normalization_performed": false,
+    "report_support_meaning": "original_report_location_v1_candidate_association_not_true_impact",
+    "time_contract": {
+      "interval_minutes": 5,
+      "history_steps": 12,
+      "x_label_offsets_from_t0_minutes": [
+        -65,
+        -10
+      ],
+      "interval_label": "start_per_publisher",
+      "gap_minutes": 10,
+      "forecast_steps": 12,
+      "report_available_at": "t0",
+      "source_snapshot_is_initial_report_certified": false,
+      "online_semantics_certified": false
+    },
+    "remaining_physical_mapping": [
+      "flow_units_and_lane_aggregation",
+      "occupancy_speed_semantics_and_observation_operator",
+      "directed_connections_and_physical_cell_lengths",
+      "ramp_boundary_observations_or_bounded_model",
+      "training_only_parameter_calibration"
+    ],
+    "corridors": [
+      {
+        "id": "sr4_w",
+        "stations": 16,
+        "candidate_segments": 15,
+        "covered_source_postmile_span": 5.526,
+        "report_supported_train_windows": 1116,
+        "report_supported_distinct_incident_ids": 1116,
+        "segments_with_known_nonmainline": 9,
+        "segments_with_coincident_postmile": 0,
+        "window_weighted_usable_fraction_by_channel": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "physics_ready": false
+      },
+      {
+        "id": "sr24_w",
+        "stations": 15,
+        "candidate_segments": 14,
+        "covered_source_postmile_span": 5.249999999999999,
+        "report_supported_train_windows": 309,
+        "report_supported_distinct_incident_ids": 309,
+        "segments_with_known_nonmainline": 2,
+        "segments_with_coincident_postmile": 0,
+        "window_weighted_usable_fraction_by_channel": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "physics_ready": false
+      },
+      {
+        "id": "sr242_n",
+        "stations": 9,
+        "candidate_segments": 8,
+        "covered_source_postmile_span": 2.48,
+        "report_supported_train_windows": 214,
+        "report_supported_distinct_incident_ids": 214,
+        "segments_with_known_nonmainline": 5,
+        "segments_with_coincident_postmile": 1,
+        "window_weighted_usable_fraction_by_channel": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "physics_ready": false
+      }
+    ],
+    "inputs_sha256": {
+      "data/summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+      "data/context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+      "data/station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+      "data/train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+      "data/train_context.npz": "f7b9644110fb42893c46c4e9a405c00ababed5a46adbe4825fcb79f9740d5d74",
+      "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+      "metadata/manifest.json": "743be1502ba780e639735a6213cd6a31aa601e44f2c47fd49be96f81611aef28",
+      "metadata/source_sensor_subset.tsv": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+      "history/summary.json": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+      "history/train_history.npy": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+      "history/train_multichannel_scaler.json": "f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4",
+      "selection": "f7d370dcd98375f42250c5d41d196b5b0dc7b6b7ec042e18f526081e1e6173d3",
+      "builder": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+      "reader": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
+    },
+    "metadata_source": {
+      "sha256": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+      "rows": 2217,
+      "source_file": "sensor_meta_feature.csv",
+      "source_sha256": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd",
+      "source_url": "https://www.kaggle.com/datasets/gpxlcj/xtraffic/versions/8",
+      "license": "CC BY-NC 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "outputs": {
+      "corridors.json": "a6ff90d68bbefb22f7e425af2b44ce3e8028875c64b449db440b658e0061293a",
+      "selection.json": "38d6594485c8b15f9f95f9ddc7128062fda985dba9bcdb4ed267d49884ab12ff",
+      "stations.csv": "03b4ca55f3bd987fd42d99b3365827a68a85e963b46756d874c2a013c0657e30",
+      "train_history.npy": "ae6c0135368239d9c1b7df56165fd4e5edd71121e2cbcc00cedd6eafe54731b9",
+      "train_report.npz": "f85499cd21f7e3be1365ba6a8d116913448bc8a1e7faae07c1fdf53bdecc16fa",
+      "train_rows.csv": "9bf1043df8eba5c7f75f0d8581479cacd1791238407ab811b186cd10cb82d73f",
+      "train_value_usable.npy": "2e8efb142a9bffae825346cf27d75e9f29b35c88db03f8e9fb4a8389353dbd59"
+    }
+  },
+  "corridors": [
+    {
+      "id": "sr4_w",
+      "road": "SR4-W",
+      "direction": "W",
+      "anchor_station_ids": [
+        401526,
+        404358
+      ],
+      "candidate_travel_postmile_order": "descending",
+      "direction_order_certified": false,
+      "requested_source_postmile_bounds": [
+        16.058,
+        22.368
+      ],
+      "covered_source_postmile_bounds": [
+        16.438,
+        21.964
+      ],
+      "station_ids": [
+        401825,
+        414057,
+        404877,
+        414043,
+        404360,
+        401526,
+        404358,
+        402504,
+        405275,
+        405276,
+        405274,
+        406064,
+        407238,
+        406063,
+        400993,
+        401476
+      ],
+      "package_node_indices": [
+        410,
+        189,
+        228,
+        117,
+        242,
+        6,
+        151,
+        257,
+        214,
+        362,
+        273,
+        85,
+        71,
+        479,
+        241,
+        154
+      ],
+      "source_postmiles": [
+        21.964,
+        20.704,
+        19.928,
+        19.908,
+        19.728,
+        19.368,
+        19.058,
+        18.768,
+        18.608,
+        18.448,
+        18.228,
+        17.938,
+        17.518,
+        17.158,
+        16.828,
+        16.438
+      ],
+      "candidate_segments": [
+        {
+          "candidate_from_station_id": 401825,
+          "candidate_to_station_id": 414057,
+          "source_postmile_difference": 1.259999999999998,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 414057,
+          "candidate_to_station_id": 404877,
+          "source_postmile_difference": 0.7759999999999998,
+          "known_nonmainline": [
+            {
+              "station_id": 407981,
+              "type": "On Ramp",
+              "source_postmile": 19.928
+            },
+            {
+              "station_id": 407980,
+              "type": "Off Ramp",
+              "source_postmile": 19.928
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 404877,
+          "candidate_to_station_id": 414043,
+          "source_postmile_difference": 0.019999999999999574,
+          "known_nonmainline": [
+            {
+              "station_id": 407981,
+              "type": "On Ramp",
+              "source_postmile": 19.928
+            },
+            {
+              "station_id": 407980,
+              "type": "Off Ramp",
+              "source_postmile": 19.928
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 414043,
+          "candidate_to_station_id": 404360,
+          "source_postmile_difference": 0.17999999999999972,
+          "known_nonmainline": [
+            {
+              "station_id": 404361,
+              "type": "Off Ramp",
+              "source_postmile": 19.728
+            },
+            {
+              "station_id": 414044,
+              "type": "Off Ramp",
+              "source_postmile": 19.878
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 404360,
+          "candidate_to_station_id": 401526,
+          "source_postmile_difference": 0.360000000000003,
+          "known_nonmainline": [
+            {
+              "station_id": 404361,
+              "type": "Off Ramp",
+              "source_postmile": 19.728
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401526,
+          "candidate_to_station_id": 404358,
+          "source_postmile_difference": 0.3099999999999987,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 404358,
+          "candidate_to_station_id": 402504,
+          "source_postmile_difference": 0.28999999999999915,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 402504,
+          "candidate_to_station_id": 405275,
+          "source_postmile_difference": 0.16000000000000014,
+          "known_nonmainline": [
+            {
+              "station_id": 406644,
+              "type": "Off Ramp",
+              "source_postmile": 18.618
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 405275,
+          "candidate_to_station_id": 405276,
+          "source_postmile_difference": 0.16000000000000014,
+          "known_nonmainline": [
+            {
+              "station_id": 406643,
+              "type": "On Ramp",
+              "source_postmile": 18.458
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 405276,
+          "candidate_to_station_id": 405274,
+          "source_postmile_difference": 0.21999999999999886,
+          "known_nonmainline": [
+            {
+              "station_id": 406642,
+              "type": "On Ramp",
+              "source_postmile": 18.228
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 405274,
+          "candidate_to_station_id": 406064,
+          "source_postmile_difference": 0.2900000000000027,
+          "known_nonmainline": [
+            {
+              "station_id": 406642,
+              "type": "On Ramp",
+              "source_postmile": 18.228
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 406064,
+          "candidate_to_station_id": 407238,
+          "source_postmile_difference": 0.41999999999999815,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 407238,
+          "candidate_to_station_id": 406063,
+          "source_postmile_difference": 0.35999999999999943,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 406063,
+          "candidate_to_station_id": 400993,
+          "source_postmile_difference": 0.33000000000000185,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400993,
+          "candidate_to_station_id": 401476,
+          "source_postmile_difference": 0.39000000000000057,
+          "known_nonmainline": [
+            {
+              "station_id": 414488,
+              "type": "On Ramp",
+              "source_postmile": 16.438
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        }
+      ],
+      "physics_ready": false,
+      "packed_node_indices": [
+        36,
+        19,
+        25,
+        12,
+        27,
+        0,
+        15,
+        28,
+        22,
+        34,
+        29,
+        10,
+        8,
+        39,
+        26,
+        16
+      ]
+    },
+    {
+      "id": "sr24_w",
+      "road": "SR24-W",
+      "direction": "W",
+      "anchor_station_ids": [
+        400800,
+        401683
+      ],
+      "candidate_travel_postmile_order": "descending",
+      "direction_order_certified": false,
+      "requested_source_postmile_bounds": [
+        5.648,
+        11.788
+      ],
+      "covered_source_postmile_bounds": [
+        6.158,
+        11.408
+      ],
+      "station_ids": [
+        400289,
+        400878,
+        400550,
+        401423,
+        400619,
+        400616,
+        400600,
+        400800,
+        401683,
+        400354,
+        400747,
+        401689,
+        400413,
+        400617,
+        400101
+      ],
+      "package_node_indices": [
+        286,
+        58,
+        45,
+        204,
+        160,
+        454,
+        21,
+        27,
+        296,
+        388,
+        217,
+        77,
+        221,
+        339,
+        144
+      ],
+      "source_postmiles": [
+        11.408,
+        11.188,
+        10.798,
+        10.398,
+        10.018,
+        9.448,
+        9.038,
+        8.788,
+        8.648,
+        8.108,
+        7.738,
+        7.418,
+        6.918,
+        6.628,
+        6.158
+      ],
+      "candidate_segments": [
+        {
+          "candidate_from_station_id": 400289,
+          "candidate_to_station_id": 400878,
+          "source_postmile_difference": 0.21999999999999886,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400878,
+          "candidate_to_station_id": 400550,
+          "source_postmile_difference": 0.39000000000000057,
+          "known_nonmainline": [
+            {
+              "station_id": 417712,
+              "type": "On Ramp",
+              "source_postmile": 10.798
+            },
+            {
+              "station_id": 417711,
+              "type": "Off Ramp",
+              "source_postmile": 10.868
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400550,
+          "candidate_to_station_id": 401423,
+          "source_postmile_difference": 0.40000000000000036,
+          "known_nonmainline": [
+            {
+              "station_id": 417712,
+              "type": "On Ramp",
+              "source_postmile": 10.798
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401423,
+          "candidate_to_station_id": 400619,
+          "source_postmile_difference": 0.379999999999999,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400619,
+          "candidate_to_station_id": 400616,
+          "source_postmile_difference": 0.5700000000000003,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400616,
+          "candidate_to_station_id": 400600,
+          "source_postmile_difference": 0.41000000000000014,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400600,
+          "candidate_to_station_id": 400800,
+          "source_postmile_difference": 0.25,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400800,
+          "candidate_to_station_id": 401683,
+          "source_postmile_difference": 0.14000000000000057,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401683,
+          "candidate_to_station_id": 400354,
+          "source_postmile_difference": 0.5399999999999991,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400354,
+          "candidate_to_station_id": 400747,
+          "source_postmile_difference": 0.3700000000000001,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400747,
+          "candidate_to_station_id": 401689,
+          "source_postmile_difference": 0.3200000000000003,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401689,
+          "candidate_to_station_id": 400413,
+          "source_postmile_difference": 0.5,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400413,
+          "candidate_to_station_id": 400617,
+          "source_postmile_difference": 0.29000000000000004,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400617,
+          "candidate_to_station_id": 400101,
+          "source_postmile_difference": 0.46999999999999975,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        }
+      ],
+      "physics_ready": false,
+      "packed_node_indices": [
+        30,
+        6,
+        4,
+        21,
+        17,
+        38,
+        2,
+        3,
+        31,
+        35,
+        23,
+        9,
+        24,
+        32,
+        14
+      ]
+    },
+    {
+      "id": "sr242_n",
+      "road": "SR242-N",
+      "direction": "N",
+      "anchor_station_ids": [
+        401282,
+        414248
+      ],
+      "candidate_travel_postmile_order": "ascending",
+      "direction_order_certified": false,
+      "requested_source_postmile_bounds": [
+        -1.971,
+        4.309
+      ],
+      "covered_source_postmile_bounds": [
+        0.589,
+        3.069
+      ],
+      "station_ids": [
+        414247,
+        401282,
+        414248,
+        401393,
+        401401,
+        400521,
+        401537,
+        414249,
+        400112
+      ],
+      "package_node_indices": [
+        16,
+        427,
+        192,
+        62,
+        167,
+        135,
+        359,
+        105,
+        55
+      ],
+      "source_postmiles": [
+        0.589,
+        1.029,
+        1.309,
+        1.729,
+        1.729,
+        2.329,
+        2.369,
+        2.699,
+        3.069
+      ],
+      "candidate_segments": [
+        {
+          "candidate_from_station_id": 414247,
+          "candidate_to_station_id": 401282,
+          "source_postmile_difference": 0.43999999999999995,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401282,
+          "candidate_to_station_id": 414248,
+          "source_postmile_difference": 0.28,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 414248,
+          "candidate_to_station_id": 401393,
+          "source_postmile_difference": 0.42000000000000015,
+          "known_nonmainline": [
+            {
+              "station_id": 417890,
+              "type": "On Ramp",
+              "source_postmile": 1.719
+            },
+            {
+              "station_id": 417123,
+              "type": "On Ramp",
+              "source_postmile": 1.729
+            }
+          ],
+          "additional_source_mainline_ids": [
+            401401
+          ],
+          "metadata_flags": [
+            "known_ramp_or_connector",
+            "additional_source_mainline"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401393,
+          "candidate_to_station_id": 401401,
+          "source_postmile_difference": 0.0,
+          "known_nonmainline": [
+            {
+              "station_id": 417123,
+              "type": "On Ramp",
+              "source_postmile": 1.729
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "coincident_postmile",
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401401,
+          "candidate_to_station_id": 400521,
+          "source_postmile_difference": 0.6000000000000001,
+          "known_nonmainline": [
+            {
+              "station_id": 417123,
+              "type": "On Ramp",
+              "source_postmile": 1.729
+            },
+            {
+              "station_id": 409044,
+              "type": "Off Ramp",
+              "source_postmile": 2.209
+            }
+          ],
+          "additional_source_mainline_ids": [
+            401393
+          ],
+          "metadata_flags": [
+            "known_ramp_or_connector",
+            "additional_source_mainline"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 400521,
+          "candidate_to_station_id": 401537,
+          "source_postmile_difference": 0.040000000000000036,
+          "known_nonmainline": [
+            {
+              "station_id": 418255,
+              "type": "On Ramp",
+              "source_postmile": 2.369
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 401537,
+          "candidate_to_station_id": 414249,
+          "source_postmile_difference": 0.3299999999999996,
+          "known_nonmainline": [
+            {
+              "station_id": 418255,
+              "type": "On Ramp",
+              "source_postmile": 2.369
+            }
+          ],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [
+            "known_ramp_or_connector"
+          ],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        },
+        {
+          "candidate_from_station_id": 414249,
+          "candidate_to_station_id": 400112,
+          "source_postmile_difference": 0.3700000000000001,
+          "known_nonmainline": [],
+          "additional_source_mainline_ids": [],
+          "metadata_flags": [],
+          "direct_connection_certified": false,
+          "physical_length_km": null,
+          "exchange_observation_available": false
+        }
+      ],
+      "physics_ready": false,
+      "packed_node_indices": [
+        1,
+        37,
+        20,
+        7,
+        18,
+        13,
+        33,
+        11,
+        5
+      ]
+    }
+  ],
+  "independent_readback": {
+    "all_station_time_channel_values_and_masks_match_source": true,
+    "checked_cells": 5189760,
+    "builder_and_reader_hashes_match": true
+  },
+  "validation": {
+    "new_tests_passed": 14,
+    "bash_end_to_end_exit_code": 0,
+    "history_reused": true,
+    "fallback_materialization_executed": false
+  }
+}
