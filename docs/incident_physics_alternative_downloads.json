@@ -1,0 +1,59 @@
+{
+  "retrieval_date": "2026-10-09",
+  "files": [
+    {
+      "dataset": "pems_crash_risk_2020",
+      "file": "the matched sample dataset.xlsx",
+      "url": "https://ndownloader.figshare.com/files/20077526",
+      "bytes": 873593,
+      "md5": "659319e466092dd489305bae3ea94094",
+      "md5_matches_publisher": true,
+      "sha256": "58ca1d5c1f43b0899a7815f82e9a2ccfc0ec2e15a4de3234504921e8b36f71bb"
+    },
+    {
+      "dataset": "pems_crash_risk_2020",
+      "file": "detector dataset.xlsx",
+      "url": "https://ndownloader.figshare.com/files/20200263",
+      "bytes": 109130,
+      "md5": "8d5e3f9fb74a9a35eca30cf2a756b3f6",
+      "md5_matches_publisher": true,
+      "sha256": "398a353c5f0c37a95284016eca7bdd2ab81c4b990cbb254f34deefcff4e8c11f"
+    },
+    {
+      "dataset": "pems_crash_risk_2020",
+      "file": "crash dataset.xlsx",
+      "url": "https://ndownloader.figshare.com/files/20200329",
+      "bytes": 5561864,
+      "md5": "52d88f7af890258b6737a5bc6187eb16",
+      "md5_matches_publisher": true,
+      "sha256": "155afcaa9079adfafadcad4b2d93a02d36c26f5ab5556ec87a89170beb9b262a"
+    },
+    {
+      "dataset": "pems_crash_risk_2020",
+      "file": "traffic flow dataset.gz",
+      "url": "https://ndownloader.figshare.com/files/20200347",
+      "bytes": 7626405,
+      "md5": "b8290dd4bde78e238658a7b0e31fd59b",
+      "md5_matches_publisher": true,
+      "sha256": "f0cf2f124f10568ab50bb9a4be08adce4846ee69fa579bc8e9ca0f598ab164fc"
+    },
+    {
+      "dataset": "chattanooga_2024",
+      "file": "metaData.zip",
+      "url": "https://zenodo.org/api/records/7964288/files/metaData.zip/content",
+      "bytes": 1489338,
+      "md5": "394d6c5615fc96c5f2ef979d2cf7275d",
+      "md5_matches_publisher": true,
+      "sha256": "954cbe4fa01a6be2ded9f335d415966cc2de3b828424286164a12fc7645ac2d3"
+    },
+    {
+      "dataset": "chattanooga_2024",
+      "file": "annotatedData.zip",
+      "url": "https://zenodo.org/api/records/7964288/files/annotatedData.zip/content",
+      "bytes": 107669344,
+      "md5": "9ba05b3ad4fe358998f6c17fd882a79a",
+      "md5_matches_publisher": true,
+      "sha256": "79989452d1c74a05d9c93454d73cfc57643fe9c2e642e9e3826b46f0d73b83e4"
+    }
+  ]
+}
