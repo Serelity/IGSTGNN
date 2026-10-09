@@ -1,0 +1,10 @@
+{
+  "scope": "Every bestData accident CSV, independent csv.DictReader + Decimal; raw files unchanged",
+  "files": 361,
+  "volume_cells": 214293,
+  "volume_gt_1000": 21087,
+  "volume_gt_1million": 2626,
+  "occupancy_gt_100": 31639,
+  "volume_max_decimal": "812612121161179125",
+  "occupancy_max_decimal": "1.0224886583081654E+22"
+}

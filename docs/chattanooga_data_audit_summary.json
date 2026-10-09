@@ -1,0 +1,1151 @@
+{
+  "status": "DATA_AUDIT_COMPLETE_NOT_TRAINING_READY",
+  "sources": {
+    "annotatedData.zip": {
+      "bytes": 107669344,
+      "sha256": "79989452d1c74a05d9c93454d73cfc57643fe9c2e642e9e3826b46f0d73b83e4"
+    },
+    "metaData.zip": {
+      "bytes": 1489338,
+      "sha256": "954cbe4fa01a6be2ded9f335d415966cc2de3b828424286164a12fc7645ac2d3"
+    }
+  },
+  "runtime": {
+    "python": "3.10.18",
+    "numpy": "1.22.4",
+    "script_sha256": "8e1eb4e7ab959923b3b53587c33510f4e0031f2e8762f4c7aff8dd70ccff9a46"
+  },
+  "scope": {
+    "allData_scanned": 18059,
+    "bestData_compared": 9329,
+    "traffic_truncated": false,
+    "imputation": false,
+    "training": false,
+    "distribution_sampling": "only robust quantiles/MAD/IQR sample every 19th value per window/hop-flattened metric; counts/mean/SD exact"
+  },
+  "metadata": {
+    "accident_records": 1593,
+    "topology_rows": 181,
+    "topology_flags": {
+      "Previous_nonreciprocal": 0,
+      "Previous_road_or_heading_change": 0,
+      "nonpositive_directed_distance": 0,
+      "Next_not_in_topology": 12,
+      "Next_empty_endpoint": 10,
+      "neighbourhood_repeats_sensor": 0,
+      "Next_nonreciprocal": 0,
+      "Next_road_or_heading_change": 0,
+      "Previous_not_in_topology": 12,
+      "Previous_dangling_nonempty_reference": 2,
+      "Next_dangling_nonempty_reference": 2,
+      "Previous_empty_endpoint": 10
+    },
+    "directed_distance_raw": {
+      "n": 338,
+      "min_p01_p25_median_p75_p99_max": [
+        0.1,
+        0.2,
+        0.4,
+        0.5,
+        0.7,
+        2.151999999999998,
+        2.5
+      ],
+      "mean": 0.616568047337278,
+      "std_population": 0.3666061320006083,
+      "mad": 0.19999999999999996,
+      "outside_1_5_iqr_fraction": 0.08284023668639054,
+      "mean_within_p01_p99": 0.5981927710843373
+    },
+    "distance_minus_absolute_mile_difference": {
+      "n": 338,
+      "min_p01_p25_median_p75_p99_max": [
+        0.0,
+        0.0,
+        1.1102230246251565e-16,
+        3.3306690738754696e-16,
+        5.662137425588298e-15,
+        2.275957200481571e-14,
+        2.275957200481571e-14
+      ],
+      "mean": 3.150504183636742e-15,
+      "std_population": 5.393372128058606e-15,
+      "mad": 3.3306690738754696e-16,
+      "outside_1_5_iqr_fraction": 0.07692307692307693,
+      "mean_within_p01_p99": 3.150504183636742e-15
+    },
+    "accident_field_empty_counts": {
+      "County": 0,
+      "Route": 0,
+      "Year Of Crash": 0,
+      "Date of Crash": 0,
+      "Time of Crash": 0,
+      "Type of Crash": 0,
+      "Relation to First Junction": 0,
+      "Relation to First Roadway": 0,
+      "Total Killed": 0,
+      "Total Inj": 0,
+      "Total Incap Injuries": 0,
+      "Total Other Injuries": 0,
+      "Total Veh": 0,
+      "First Harmful Event": 0,
+      "Manner of First Collision": 0,
+      "Weather Cond": 0,
+      "Light Conditions": 0,
+      "Locate Type": 0,
+      "Latitude": 0,
+      "Longitude": 0,
+      "HAZMAT Involved": 0,
+      "Hit and Run": 0,
+      "Hwy Const Zone": 0,
+      "Year": 0,
+      "Month": 0,
+      "Day": 0,
+      "Date": 0,
+      "Hour": 0,
+      "Minute": 0,
+      "Time_orig": 0,
+      "Time_fixed": 0,
+      "Light_orig_simple": 0,
+      "Light_synth": 0,
+      "Light_fixed": 0,
+      "Weather_orig_simple": 0,
+      "Weather_fixed": 0
+    },
+    "corrected_report_clock_changes": 907,
+    "report_clock_adjustment_seconds": {
+      "43200": 907,
+      "0": 686
+    }
+  },
+  "subset": {
+    "best_not_in_all": 0,
+    "byte_identical_best_to_all": 9329
+  },
+  "window_rows_histogram": {
+    "62": 18059
+  },
+  "window_offsets_histogram": {
+    "-900:930": 18059
+  },
+  "time_steps_histogram_seconds": {
+    "30": 1101599
+  },
+  "schema_hash_counts": {
+    "c3a4f78104cab8e3485e565e7ae47b23dc35a14f092ba1929581bcc772e3472b": 18059
+  },
+  "nonnumeric_token_hash_counts": {},
+  "flags": {
+    "windows_with_nonfinite": 17672,
+    "windows_non_30s_steps": 0,
+    "windows_repeated_times": 0,
+    "windows_nonmonotonic": 0,
+    "windows_cross_midnight": 474,
+    "center_not_in_topology": 0,
+    "filename_date_differs_from_row": 17357,
+    "filename_report_time_differs_from_row": 0,
+    "label_differs_from_folder": 0,
+    "filename_road_mile_differs_from_row": 0,
+    "speed_missing_volume_zero_cells": 471128,
+    "speed_missing_volume_positive_cells": 0,
+    "all_three_missing_cells": 3458266,
+    "occupancy_gt_100_cells": 1352385,
+    "volume_gt_1000_cells": 942359,
+    "volume_gt_1million_cells": 132387,
+    "windows_occupancy_gt_100": 4222,
+    "windows_volume_gt_1000": 4222,
+    "speed_gt_120_mph_cells": 14,
+    "noninteger_volume_cells": 0,
+    "mapped_neighbour_duplicate": 0
+  },
+  "filename_date_minus_row_date_days_histogram": {
+    "0": 702,
+    "-70": 442,
+    "-49": 509,
+    "-91": 376,
+    "-175": 17,
+    "-14": 626,
+    "-140": 177,
+    "-98": 355,
+    "-147": 153,
+    "-161": 82,
+    "-42": 541,
+    "-63": 468,
+    "-56": 489,
+    "-126": 232,
+    "-28": 582,
+    "-154": 119,
+    "-7": 678,
+    "-84": 396,
+    "-119": 272,
+    "-133": 211,
+    "-112": 301,
+    "-21": 611,
+    "-168": 48,
+    "-105": 324,
+    "-77": 417,
+    "-35": 552,
+    "7": 680,
+    "14": 642,
+    "21": 607,
+    "28": 566,
+    "35": 545,
+    "42": 516,
+    "49": 483,
+    "56": 449,
+    "63": 424,
+    "70": 395,
+    "77": 371,
+    "84": 349,
+    "91": 321,
+    "98": 299,
+    "105": 277,
+    "112": 255,
+    "119": 230,
+    "126": 218,
+    "133": 182,
+    "140": 160,
+    "147": 145,
+    "154": 117,
+    "161": 81,
+    "168": 53,
+    "175": 14
+  },
+  "parent_link_from_row_date": {
+    "parent_groups": 715,
+    "control_windows_with_exactly_one_published_accident_parent": 17042,
+    "control_windows_without_published_accident_parent": 315,
+    "groups_with_multiple_accident_parents": 0
+  },
+  "profiles": {
+    "all_accident": {
+      "windows": 702,
+      "rows": 43524,
+      "flags": {
+        "windows_with_nonfinite": 685,
+        "windows_non_30s_steps": 0,
+        "windows_repeated_times": 0,
+        "windows_nonmonotonic": 0,
+        "windows_cross_midnight": 19,
+        "center_not_in_topology": 0,
+        "filename_date_differs_from_row": 0,
+        "filename_report_time_differs_from_row": 0,
+        "label_differs_from_folder": 0,
+        "filename_road_mile_differs_from_row": 0,
+        "speed_missing_volume_zero_cells": 19485,
+        "speed_missing_volume_positive_cells": 0,
+        "all_three_missing_cells": 132509,
+        "occupancy_gt_100_cells": 51946,
+        "volume_gt_1000_cells": 33883,
+        "volume_gt_1million_cells": 4323,
+        "windows_occupancy_gt_100": 163,
+        "windows_volume_gt_1000": 157,
+        "speed_gt_120_mph_cells": 1,
+        "noninteger_volume_cells": 0,
+        "mapped_neighbour_duplicate": 0
+      },
+      "missing_on_unmapped_hops_cells": 218555,
+      "missing_on_mapped_hops_cells": 198458,
+      "hop_order": [
+        -5,
+        -4,
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "metrics": {
+        "speed": {
+          "finite": 326770,
+          "total": 478764,
+          "nonfinite": 151994,
+          "empty": 151994,
+          "negative": 0,
+          "zero": 124,
+          "nonfinite_by_hop": [
+            18565,
+            17354,
+            13829,
+            12383,
+            12193,
+            8403,
+            11687,
+            11793,
+            13922,
+            16469,
+            15396
+          ],
+          "exact_mean": 57.92071926834614,
+          "exact_min_max": [
+            0.0,
+            136.0
+          ],
+          "exact_std_population": 13.869287356661824,
+          "systematic_every_19th_per_window_sample": {
+            "n": 17247,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              7.0,
+              55.0,
+              62.0,
+              66.0,
+              75.5,
+              112.5
+            ],
+            "mean": 57.88289447164035,
+            "std_population": 13.9551900988736,
+            "mad": 5.0,
+            "outside_1_5_iqr_fraction": 0.09879979126804661,
+            "mean_within_p01_p99": 58.14504714060565
+          }
+        },
+        "volume": {
+          "finite": 346255,
+          "total": 478764,
+          "nonfinite": 132509,
+          "empty": 132509,
+          "negative": 0,
+          "zero": 19485,
+          "nonfinite_by_hop": [
+            16866,
+            15039,
+            12117,
+            10817,
+            10831,
+            6480,
+            8609,
+            10790,
+            12394,
+            14910,
+            13656
+          ],
+          "exact_mean": 2347308112905.4126,
+          "exact_min_max": [
+            0.0,
+            8.126121211611791e+17
+          ],
+          "exact_std_population": 1380971270965526.0,
+          "systematic_every_19th_per_window_sample": {
+            "n": 18276,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              6.0,
+              14.0,
+              29.0,
+              4463775.0,
+              81010134795.0
+            ],
+            "mean": 9520610.881757496,
+            "std_population": 621251257.7435756,
+            "mad": 9.0,
+            "outside_1_5_iqr_fraction": 0.16283650689428758,
+            "mean_within_p01_p99": 12488.105289338419
+          }
+        },
+        "occupancy": {
+          "finite": 346254,
+          "total": 478764,
+          "nonfinite": 132510,
+          "empty": 132510,
+          "negative": 0,
+          "zero": 18540,
+          "nonfinite_by_hop": [
+            16867,
+            15039,
+            12117,
+            10817,
+            10831,
+            6480,
+            8609,
+            10790,
+            12394,
+            14910,
+            13656
+          ],
+          "exact_mean": 2.9530074597331576e+16,
+          "exact_min_max": [
+            0.0,
+            1.0224886583081654e+22
+          ],
+          "exact_std_population": 1.7376426700082713e+19,
+          "systematic_every_19th_per_window_sample": {
+            "n": 18276,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              2.6,
+              6.0,
+              21.333333333333332,
+              8408239.5,
+              5439017651391.0
+            ],
+            "mean": 637825525.9855605,
+            "std_population": 55113053871.50446,
+            "mad": 4.5,
+            "outside_1_5_iqr_fraction": 0.17821186255198074,
+            "mean_within_p01_p99": 28497.566955649778
+          }
+        }
+      }
+    },
+    "all_control": {
+      "windows": 17357,
+      "rows": 1076134,
+      "flags": {
+        "windows_with_nonfinite": 16987,
+        "windows_non_30s_steps": 0,
+        "windows_repeated_times": 0,
+        "windows_nonmonotonic": 0,
+        "windows_cross_midnight": 455,
+        "center_not_in_topology": 0,
+        "filename_date_differs_from_row": 17357,
+        "filename_report_time_differs_from_row": 0,
+        "label_differs_from_folder": 0,
+        "filename_road_mile_differs_from_row": 0,
+        "speed_missing_volume_zero_cells": 451643,
+        "speed_missing_volume_positive_cells": 0,
+        "all_three_missing_cells": 3325757,
+        "occupancy_gt_100_cells": 1300439,
+        "volume_gt_1000_cells": 908476,
+        "volume_gt_1million_cells": 128064,
+        "windows_occupancy_gt_100": 4059,
+        "windows_volume_gt_1000": 4065,
+        "speed_gt_120_mph_cells": 13,
+        "noninteger_volume_cells": 0,
+        "mapped_neighbour_duplicate": 0
+      },
+      "missing_on_unmapped_hops_cells": 5351819,
+      "missing_on_mapped_hops_cells": 5077110,
+      "hop_order": [
+        -5,
+        -4,
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "metrics": {
+        "speed": {
+          "finite": 8060073,
+          "total": 11837474,
+          "nonfinite": 3777401,
+          "empty": 3777401,
+          "negative": 0,
+          "zero": 1421,
+          "nonfinite_by_hop": [
+            468347,
+            429551,
+            349000,
+            298072,
+            306540,
+            209211,
+            284857,
+            304304,
+            339474,
+            410421,
+            377624
+          ],
+          "exact_mean": 60.53955577010106,
+          "exact_min_max": [
+            0.0,
+            152.33333333333334
+          ],
+          "exact_std_population": 10.791665166753297,
+          "systematic_every_19th_per_window_sample": {
+            "n": 425864,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              16.0,
+              57.666666666666664,
+              62.857142857142854,
+              66.66666666666667,
+              75.25,
+              136.0
+            ],
+            "mean": 60.5172494026206,
+            "std_population": 10.846331251730943,
+            "mad": 4.357142857142854,
+            "outside_1_5_iqr_fraction": 0.07001531005203539,
+            "mean_within_p01_p99": 60.77875541438747
+          }
+        },
+        "volume": {
+          "finite": 8511716,
+          "total": 11837474,
+          "nonfinite": 3325758,
+          "empty": 3325758,
+          "negative": 0,
+          "zero": 451643,
+          "nonfinite_by_hop": [
+            427780,
+            371097,
+            311494,
+            258985,
+            276082,
+            168079,
+            210299,
+            278069,
+            306645,
+            377686,
+            339542
+          ],
+          "exact_mean": 79922436980737.64,
+          "exact_min_max": [
+            0.0,
+            5.3003101610215054e+20
+          ],
+          "exact_std_population": 1.8338992250115674e+17,
+          "systematic_every_19th_per_window_sample": {
+            "n": 449358,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              7.0,
+              15.0,
+              31.0,
+              11000205.44,
+              4.7613968114103155e+17
+            ],
+            "mean": 1377929221045.2786,
+            "std_population": 727765981484482.8,
+            "mad": 10.0,
+            "outside_1_5_iqr_fraction": 0.17104847360011394,
+            "mean_within_p01_p99": 29450.677027136382
+          }
+        },
+        "occupancy": {
+          "finite": 8511704,
+          "total": 11837474,
+          "nonfinite": 3325770,
+          "empty": 3325770,
+          "negative": 0,
+          "zero": 431955,
+          "nonfinite_by_hop": [
+            427786,
+            371098,
+            311496,
+            258985,
+            276082,
+            168079,
+            210300,
+            278069,
+            306645,
+            377687,
+            339543
+          ],
+          "exact_mean": 6.247156478761357e+18,
+          "exact_min_max": [
+            0.0,
+            4.786224329104767e+25
+          ],
+          "exact_std_population": 1.6419204274039921e+22,
+          "systematic_every_19th_per_window_sample": {
+            "n": 449357,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              2.5,
+              5.75,
+              16.666666666666668,
+              10417345.575000018,
+              8.011515083150869e+21
+            ],
+            "mean": 1.8905028367359828e+16,
+            "std_population": 1.195421260714797e+19,
+            "mad": 4.25,
+            "outside_1_5_iqr_fraction": 0.18502215387765183,
+            "mean_within_p01_p99": 35403.615793695935
+          }
+        }
+      }
+    },
+    "best_accident": {
+      "windows": 361,
+      "rows": 22382,
+      "flags": {
+        "windows_with_nonfinite": 344,
+        "windows_non_30s_steps": 0,
+        "windows_repeated_times": 0,
+        "windows_nonmonotonic": 0,
+        "windows_cross_midnight": 13,
+        "center_not_in_topology": 0,
+        "filename_date_differs_from_row": 0,
+        "filename_report_time_differs_from_row": 0,
+        "label_differs_from_folder": 0,
+        "filename_road_mile_differs_from_row": 0,
+        "speed_missing_volume_zero_cells": 9848,
+        "speed_missing_volume_positive_cells": 0,
+        "all_three_missing_cells": 31909,
+        "occupancy_gt_100_cells": 31639,
+        "volume_gt_1000_cells": 21087,
+        "volume_gt_1million_cells": 2626,
+        "windows_occupancy_gt_100": 85,
+        "windows_volume_gt_1000": 80,
+        "speed_gt_120_mph_cells": 1,
+        "noninteger_volume_cells": 0,
+        "mapped_neighbour_duplicate": 0
+      },
+      "missing_on_unmapped_hops_cells": 2609,
+      "missing_on_mapped_hops_cells": 102966,
+      "hop_order": [
+        -5,
+        -4,
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "metrics": {
+        "speed": {
+          "finite": 204445,
+          "total": 246202,
+          "nonfinite": 41757,
+          "empty": 41757,
+          "negative": 0,
+          "zero": 63,
+          "nonfinite_by_hop": [
+            5265,
+            4927,
+            2930,
+            3107,
+            2993,
+            2818,
+            2983,
+            4183,
+            2581,
+            5517,
+            4453
+          ],
+          "exact_mean": 57.966957836294704,
+          "exact_min_max": [
+            0.0,
+            136.0
+          ],
+          "exact_std_population": 13.645366005639131,
+          "systematic_every_19th_per_window_sample": {
+            "n": 10805,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              8.680000000000001,
+              55.0,
+              61.75,
+              66.0,
+              76.0,
+              112.5
+            ],
+            "mean": 57.984879024261254,
+            "std_population": 13.710008672671858,
+            "mad": 5.25,
+            "outside_1_5_iqr_fraction": 0.09680703378065711,
+            "mean_within_p01_p99": 58.261919247042336
+          }
+        },
+        "volume": {
+          "finite": 214293,
+          "total": 246202,
+          "nonfinite": 31909,
+          "empty": 31909,
+          "negative": 0,
+          "zero": 9848,
+          "nonfinite_by_hop": [
+            4735,
+            3176,
+            2284,
+            2439,
+            2269,
+            2122,
+            2281,
+            3515,
+            1521,
+            4529,
+            3038
+          ],
+          "exact_mean": 3792417783353.161,
+          "exact_min_max": [
+            0.0,
+            8.126121211611791e+17
+          ],
+          "exact_std_population": 1755408879714249.0,
+          "systematic_every_19th_per_window_sample": {
+            "n": 11311,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              7.0,
+              15.0,
+              30.0,
+              3758500.1999999536,
+              9641041030.0
+            ],
+            "mean": 3690934.730616214,
+            "std_population": 134346012.2728329,
+            "mad": 10.0,
+            "outside_1_5_iqr_fraction": 0.15392096189549995,
+            "mean_within_p01_p99": 13018.324104670894
+          }
+        },
+        "occupancy": {
+          "finite": 214293,
+          "total": 246202,
+          "nonfinite": 31909,
+          "empty": 31909,
+          "negative": 0,
+          "zero": 9304,
+          "nonfinite_by_hop": [
+            4735,
+            3176,
+            2284,
+            2439,
+            2269,
+            2122,
+            2281,
+            3515,
+            1521,
+            4529,
+            3038
+          ],
+          "exact_mean": 4.771460210384266e+16,
+          "exact_min_max": [
+            0.0,
+            1.0224886583081654e+22
+          ],
+          "exact_std_population": 2.2087852510424134e+19,
+          "systematic_every_19th_per_window_sample": {
+            "n": 11311,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              2.8,
+              6.25,
+              21.0,
+              9211728.960714005,
+              223262457472.85715
+            ],
+            "mean": 60858718.32202165,
+            "std_population": 2697555135.104935,
+            "mad": 4.75,
+            "outside_1_5_iqr_fraction": 0.17628856864998674,
+            "mean_within_p01_p99": 32451.192764962558
+          }
+        }
+      }
+    },
+    "best_control": {
+      "windows": 8968,
+      "rows": 556016,
+      "flags": {
+        "windows_with_nonfinite": 8598,
+        "windows_non_30s_steps": 0,
+        "windows_repeated_times": 0,
+        "windows_nonmonotonic": 0,
+        "windows_cross_midnight": 309,
+        "center_not_in_topology": 0,
+        "filename_date_differs_from_row": 8968,
+        "filename_report_time_differs_from_row": 0,
+        "label_differs_from_folder": 0,
+        "filename_road_mile_differs_from_row": 0,
+        "speed_missing_volume_zero_cells": 218043,
+        "speed_missing_volume_positive_cells": 0,
+        "all_three_missing_cells": 858357,
+        "occupancy_gt_100_cells": 798193,
+        "volume_gt_1000_cells": 575874,
+        "volume_gt_1million_cells": 84387,
+        "windows_occupancy_gt_100": 2093,
+        "windows_volume_gt_1000": 2117,
+        "speed_gt_120_mph_cells": 9,
+        "noninteger_volume_cells": 0,
+        "mapped_neighbour_duplicate": 0
+      },
+      "missing_on_unmapped_hops_cells": 69233,
+      "missing_on_mapped_hops_cells": 2723884,
+      "hop_order": [
+        -5,
+        -4,
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "metrics": {
+        "speed": {
+          "finite": 5039776,
+          "total": 6116176,
+          "nonfinite": 1076400,
+          "empty": 1076400,
+          "negative": 0,
+          "zero": 681,
+          "nonfinite_by_hop": [
+            141459,
+            122985,
+            79233,
+            76468,
+            81528,
+            73585,
+            72543,
+            112601,
+            68102,
+            138877,
+            109019
+          ],
+          "exact_mean": 60.50322454489217,
+          "exact_min_max": [
+            0.0,
+            151.0
+          ],
+          "exact_std_population": 10.931424834096306,
+          "systematic_every_19th_per_window_sample": {
+            "n": 266364,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              16.0,
+              57.75,
+              62.75,
+              66.5,
+              75.5,
+              136.0
+            ],
+            "mean": 60.503935187602195,
+            "std_population": 10.949837293955007,
+            "mad": 4.25,
+            "outside_1_5_iqr_fraction": 0.07471354987911279,
+            "mean_within_p01_p99": 60.734204476544974
+          }
+        },
+        "volume": {
+          "finite": 5257819,
+          "total": 6116176,
+          "nonfinite": 858357,
+          "empty": 858357,
+          "negative": 0,
+          "zero": 218043,
+          "nonfinite_by_hop": [
+            129813,
+            80089,
+            64716,
+            60969,
+            66384,
+            60343,
+            56812,
+            96429,
+            47118,
+            118423,
+            77261
+          ],
+          "exact_mean": 19246589191859.086,
+          "exact_min_max": [
+            0.0,
+            5.911141159591114e+19
+          ],
+          "exact_std_population": 2.867845499370057e+16,
+          "systematic_every_19th_per_window_sample": {
+            "n": 277475,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              7.0,
+              15.0,
+              32.0,
+              8827297.520000197,
+              6563876265638762.0
+            ],
+            "mean": 98802643009.7589,
+            "std_population": 21527847208092.727,
+            "mad": 10.0,
+            "outside_1_5_iqr_fraction": 0.16653031804667087,
+            "mean_within_p01_p99": 33284.15705496906
+          }
+        },
+        "occupancy": {
+          "finite": 5257816,
+          "total": 6116176,
+          "nonfinite": 858360,
+          "empty": 858360,
+          "negative": 0,
+          "zero": 206507,
+          "nonfinite_by_hop": [
+            129813,
+            80089,
+            64716,
+            60969,
+            66384,
+            60343,
+            56813,
+            96429,
+            47118,
+            118424,
+            77262
+          ],
+          "exact_mean": 7.306099018652909e+17,
+          "exact_min_max": [
+            0.0,
+            8.438652730157986e+23
+          ],
+          "exact_std_population": 7.342971526544023e+20,
+          "systematic_every_19th_per_window_sample": {
+            "n": 277475,
+            "min_p01_p25_median_p75_p99_max": [
+              0.0,
+              0.0,
+              2.75,
+              6.0,
+              17.0,
+              16881392.437142868,
+              8.011515083150869e+21
+            ],
+            "mean": 3.048237577011603e+16,
+            "std_population": 1.5212484980605401e+19,
+            "mad": 4.25,
+            "outside_1_5_iqr_fraction": 0.18440940625281557,
+            "mean_within_p01_p99": 63561.71137275944
+          }
+        }
+      }
+    }
+  },
+  "coverage": {
+    "all_accident": {
+      "all_11_volume_complete_windows": 48,
+      "all_11_triplets_complete_windows": 17,
+      "center_volume_complete_windows": 563,
+      "month_counts": {
+        "2020-11": 136,
+        "2020-12": 93,
+        "2021-01": 99,
+        "2021-02": 106,
+        "2021-03": 135,
+        "2021-04": 133
+      },
+      "candidate_calendar_counts": {
+        "train_before_march": 434,
+        "validation_march": 135,
+        "test_april": 133
+      },
+      "history_rows_distribution": {
+        "30": 702
+      },
+      "positive_offset_rows_distribution": {
+        "31": 702
+      },
+      "screened_window_counts_not_cleaned_data": {
+        "center_volume_screen_5min": 494,
+        "central3_volume_screen_5min": 280,
+        "center_three_metric_screen_5min": 448,
+        "central3_three_metric_screen_5min": 256,
+        "center_volume_screen_10min": 486,
+        "central3_volume_screen_10min": 273,
+        "center_three_metric_screen_10min": 441,
+        "central3_three_metric_screen_10min": 249,
+        "center_volume_screen_15min": 479,
+        "central3_volume_screen_15min": 269,
+        "center_three_metric_screen_15min": 433,
+        "central3_three_metric_screen_15min": 247
+      },
+      "screened_calendar_15min_central3_triplets": {
+        "train_before_march": 148,
+        "validation_march": 39,
+        "test_april": 60
+      },
+      "dst_ambiguous_windows": 0,
+      "dst_nonexistent_windows": 0
+    },
+    "all_control": {
+      "all_11_volume_complete_windows": 1103,
+      "all_11_triplets_complete_windows": 370,
+      "center_volume_complete_windows": 13948,
+      "month_counts": {
+        "2020-11": 2894,
+        "2020-12": 2932,
+        "2021-01": 3044,
+        "2021-02": 2754,
+        "2021-03": 2966,
+        "2021-04": 2767
+      },
+      "candidate_calendar_counts": {
+        "train_before_march": 11624,
+        "validation_march": 2966,
+        "test_april": 2767
+      },
+      "history_rows_distribution": {
+        "30": 17357
+      },
+      "positive_offset_rows_distribution": {
+        "31": 17357
+      },
+      "screened_window_counts_not_cleaned_data": {
+        "center_volume_screen_5min": 11787,
+        "central3_volume_screen_5min": 6427,
+        "center_three_metric_screen_5min": 10781,
+        "central3_three_metric_screen_5min": 5980,
+        "center_volume_screen_10min": 11677,
+        "central3_volume_screen_10min": 6298,
+        "center_three_metric_screen_10min": 10678,
+        "central3_three_metric_screen_10min": 5860,
+        "center_volume_screen_15min": 11578,
+        "central3_volume_screen_15min": 6181,
+        "center_three_metric_screen_15min": 10597,
+        "central3_three_metric_screen_15min": 5757
+      },
+      "screened_calendar_15min_central3_triplets": {
+        "train_before_march": 3619,
+        "validation_march": 967,
+        "test_april": 1171
+      },
+      "dst_ambiguous_windows": 5,
+      "dst_nonexistent_windows": 4
+    },
+    "best_accident": {
+      "all_11_volume_complete_windows": 48,
+      "all_11_triplets_complete_windows": 17,
+      "center_volume_complete_windows": 305,
+      "month_counts": {
+        "2020-11": 69,
+        "2020-12": 47,
+        "2021-01": 50,
+        "2021-02": 59,
+        "2021-03": 63,
+        "2021-04": 73
+      },
+      "candidate_calendar_counts": {
+        "train_before_march": 225,
+        "validation_march": 63,
+        "test_april": 73
+      },
+      "history_rows_distribution": {
+        "30": 361
+      },
+      "positive_offset_rows_distribution": {
+        "31": 361
+      },
+      "screened_window_counts_not_cleaned_data": {
+        "center_volume_screen_5min": 262,
+        "central3_volume_screen_5min": 200,
+        "center_three_metric_screen_5min": 237,
+        "central3_three_metric_screen_5min": 182,
+        "center_volume_screen_10min": 256,
+        "central3_volume_screen_10min": 194,
+        "center_three_metric_screen_10min": 231,
+        "central3_three_metric_screen_10min": 176,
+        "center_volume_screen_15min": 254,
+        "central3_volume_screen_15min": 191,
+        "center_three_metric_screen_15min": 229,
+        "central3_three_metric_screen_15min": 174
+      },
+      "screened_calendar_15min_central3_triplets": {
+        "train_before_march": 104,
+        "validation_march": 27,
+        "test_april": 43
+      },
+      "dst_ambiguous_windows": 0,
+      "dst_nonexistent_windows": 0
+    },
+    "best_control": {
+      "all_11_volume_complete_windows": 1103,
+      "all_11_triplets_complete_windows": 370,
+      "center_volume_complete_windows": 7589,
+      "month_counts": {
+        "2020-11": 1493,
+        "2020-12": 1514,
+        "2021-01": 1571,
+        "2021-02": 1417,
+        "2021-03": 1545,
+        "2021-04": 1428
+      },
+      "candidate_calendar_counts": {
+        "train_before_march": 5995,
+        "validation_march": 1545,
+        "test_april": 1428
+      },
+      "history_rows_distribution": {
+        "30": 8968
+      },
+      "positive_offset_rows_distribution": {
+        "31": 8968
+      },
+      "screened_window_counts_not_cleaned_data": {
+        "center_volume_screen_5min": 6399,
+        "central3_volume_screen_5min": 4665,
+        "center_three_metric_screen_5min": 5782,
+        "central3_three_metric_screen_5min": 4300,
+        "center_volume_screen_10min": 6336,
+        "central3_volume_screen_10min": 4569,
+        "center_three_metric_screen_10min": 5719,
+        "central3_three_metric_screen_10min": 4211,
+        "center_volume_screen_15min": 6280,
+        "central3_volume_screen_15min": 4473,
+        "center_three_metric_screen_15min": 5672,
+        "central3_three_metric_screen_15min": 4127
+      },
+      "screened_calendar_15min_central3_triplets": {
+        "train_before_march": 2487,
+        "validation_march": 750,
+        "test_april": 890
+      },
+      "dst_ambiguous_windows": 4,
+      "dst_nonexistent_windows": 3
+    }
+  },
+  "duplicates": {
+    "byte_identical_groups": 0,
+    "traffic_and_clock_identical_groups": 0,
+    "traffic_and_clock_identical_windows": 0,
+    "note": "Traffic hash omits calendar date; repeated sequences alone do not prove shared observation."
+  },
+  "matching_families": {
+    "definition": "center sensor + weekday + report clock; inferred, no published parent event ID",
+    "families": 715,
+    "with_multiple_accident_windows": 0,
+    "control_only_families": 13,
+    "spanning_candidate_calendar_splits": 715
+  },
+  "overlap": {
+    "window_pairs_with_shared_sensor_timestamp": 6582,
+    "windows_with_any_overlap": 8224,
+    "pairs_with_different_window_labels": 455,
+    "pairs_with_both_in_best": 2860,
+    "shared_sensor_timestamps_summed_over_pairs": 1274010,
+    "finite_value_comparisons": 3150986,
+    "finite_value_disagreements_absolute_gt_1e_6": 0,
+    "overlap_connected_components": 12866,
+    "largest_component_windows": 8,
+    "component_size_histogram": {
+      "1": 9835,
+      "3": 706,
+      "5": 152,
+      "4": 228,
+      "2": 1821,
+      "6": 100,
+      "8": 24
+    },
+    "pairs_crossing_candidate_calendar_split": 0,
+    "scope": "allData only; topology-implied sensor identities; naive local clocks; no DST fold resolution"
+  },
+  "limitations": [
+    "No incident onset truth or first-report field availability certification.",
+    "Screen thresholds volume<=1000 vehicles/30s and speed<=120mph are exploratory plausibility screens, not certified limits; no rows removed.",
+    "Clock labels have no timezone/fold metadata; nearest-day midnight unwrapping is explicit.",
+    "Topology does not certify ramp-free boundaries, capacity, lane aggregation, or queues.",
+    "Calendar split is a coverage diagnostic, not a finalized training protocol.",
+    "No causal, forecasting, or physical-module benefit was evaluated."
+  ]
+}
