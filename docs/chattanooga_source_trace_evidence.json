@@ -1,0 +1,113 @@
+{
+  "retrieved": "2026-10-09",
+  "papers": [
+    {
+      "file": "dib_2024.pdf",
+      "title": "A traffic accident dataset for Chattanooga, Tennessee",
+      "doi": "10.1016/j.dib.2024.110675",
+      "pages": 12,
+      "sha256": "34f4b976b30a2b1a7e4c3364b90e227defd61fc7c6d67720b2fe6c8fd451d91c",
+      "identity_check": "title_authors_and_doi_verified_against_parsed_paper",
+      "reading_scope": "data_and_methods_sections",
+      "citation_count": {
+        "platform": "Crossref",
+        "value": 3,
+        "retrieved": "2026-10-09"
+      }
+    },
+    {
+      "file": "eswa_osti.pdf",
+      "title": "Spatiotemporal features of traffic help reduce automatic accident detection time",
+      "doi": "10.1016/j.eswa.2023.122813",
+      "pages": 20,
+      "sha256": "0e871e78443fadc8f72bd04c4153d135129b837e13095ebbe53d874de5cd4ce0",
+      "identity_check": "title_authors_and_doi_verified_against_parsed_paper",
+      "reading_scope": "data_and_methods_sections",
+      "citation_count": {
+        "platform": "Crossref",
+        "value": 21,
+        "retrieved": "2026-10-09"
+      }
+    }
+  ],
+  "zenodo": {
+    "version_count": 1,
+    "records": [
+      {
+        "id": 7964288,
+        "version": "1.0",
+        "files": [
+          {
+            "name": "metaData.zip",
+            "bytes": 1489338,
+            "checksum": "md5:394d6c5615fc96c5f2ef979d2cf7275d"
+          },
+          {
+            "name": "annotatedData.zip",
+            "bytes": 107669344,
+            "checksum": "md5:9ba05b3ad4fe358998f6c17fd882a79a"
+          }
+        ]
+      }
+    ]
+  },
+  "code": {
+    "doi": "10.24433/co.8627573.v1",
+    "url": "https://codeocean.com/capsule/7228334/tree/v1",
+    "access": "HTTP_403_NO_CODE_DOWNLOADED",
+    "description_scope": "result-generation script per DOI metadata; raw conversion pipeline unverified"
+  },
+  "geojson": {
+    "features": 541,
+    "properties": [
+      "NBR_LANES",
+      "RDS_Sensor",
+      "SPD_LMT",
+      "uniqueID"
+    ],
+    "lane_distribution": {
+      "3": 222,
+      "2": 144,
+      "4": 157,
+      "5": 15,
+      "1": 3
+    },
+    "speed_limit_distribution": {
+      "55": 336,
+      "45": 33,
+      "65": 170,
+      "70": 2
+    }
+  },
+  "geojson_join": {
+    "polygon_count": 541,
+    "geo_unique_sensor_keys": 177,
+    "topology_keys": 181,
+    "exact_key_overlap": 142,
+    "geo_sensors_with_multiple_lane_counts": 29,
+    "lane_count_cardinality_distribution": {
+      "1": 148,
+      "2": 26,
+      "3": 3
+    }
+  },
+  "paper_count_matched_subset": {
+    "selection": "bestData, I75/I24, Fatal or Suspected Minor/Serious Injury; counts match paper but exact event identity is not certified",
+    "results": {
+      "00I75": {
+        "windows": 24,
+        "any_volume_gt1000": 8,
+        "any_occupancy_gt100": 8,
+        "all_11_volume_complete": 3
+      },
+      "00I24": {
+        "windows": 31,
+        "any_volume_gt1000": 7,
+        "any_occupancy_gt100": 10,
+        "all_11_volume_complete": 4
+      }
+    }
+  },
+  "raw_rds_obtained": false,
+  "authors_contacted": false
+}
