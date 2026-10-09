@@ -4,6 +4,8 @@
 
 最新状态：服务器作业 **1163672** 已完成 21 项测试、真实包审计和 V100 合成模型工程检查，退出码 0。两臂初始差均为 0、各完成 2 次更新。当前仍为 `PHYSICAL_CONTRACT_REQUIRED`，详见[服务器结果解读](incident_physics_h1_server_check.md)。无需重复无参数工程检查，下一步补齐真实物理依据。
 
+后续数据核验已推进：确认发布者采用区间起始标签，取得历史车道元数据，并完成去重训练 X 与完整匝道元数据预筛。当前 482 对候选中 217 对通过元数据预筛，尚无认证瓶颈；详见[物理数据契约核验](incident_physics_data_contract.md)。真实模型训练仍待单位转换链、边界和校准依据。
+
 ## 1. 研究问题与思想来源
 
 研究问题是：在完整 IGSTGNN/fixed 基础上，事故条件能否通过有效容量、供需积累和队列记忆，提供有用的未来状态特征？成功标准仍是同协议下超过完整 fixed；P2 的局部门控作用不等于新模块已经有效。
@@ -105,7 +107,7 @@ bash experiments/chronological/run_incident_physics_h1.sh
 
 默认数据路径为 `../data/chronological/Contra_Costa_v8_dev`，传感器表为 `../data/xtraffic/Contra_Costa/sensors.csv`。需要变更时可设置 `PHYSICS_DATA_DIR`、`PHYSICS_SENSORS`、`PHYSICS_DEVICE`、`PHYSICS_PYTHON`；普通运行无需参数。
 
-运行顺序是 21 项单元测试 → 真实包只读核验 → 人工 3 节点、完整 5 层主干的两臂工程检查。每臂仅 2 次优化器更新。它不加载旧最佳 checkpoint，也不进行整轮训练或验证集选模。
+当前运行顺序是 30 项单元测试（含后续新增的 9 项证据准备测试）→ 真实包只读核验 → 人工 3 节点、完整 5 层主干的两臂工程检查。作业1163672所用版本当时为21项。每臂仅 2 次优化器更新。它不加载旧最佳 checkpoint，也不进行整轮训练或验证集选模。
 
 预期结束状态：
 

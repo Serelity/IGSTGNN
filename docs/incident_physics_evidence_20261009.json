@@ -1,0 +1,80 @@
+{
+  "status": "PHYSICS_EVIDENCE_PREPARATION_COMPLETE",
+  "training_started": false,
+  "main_training_ready": false,
+  "readiness": "PHYSICAL_CONTRACT_REQUIRED",
+  "physical_contract_exported": false,
+  "package_sha256": {
+    "summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f"
+  },
+  "source_sha256": {
+    "sensors.csv": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+    "sensor_meta_feature.csv": "a1935d74fc61ada5c0b1d9b3f0161dd4dbcdfc0891c591017d2c1f218a7774bd",
+    "prepare_incident_physics_evidence.py": "a6b8c37f3912be2a9c486a1a42d592a69f668dfa743b48245948a2e1b3770e78",
+    "largest_ca_meta.csv": "57c5edb5e6f1d1802440426f2bd07f54d812859135989c740ab96b1448b087ee"
+  },
+  "train_windows": 3604,
+  "stations": 496,
+  "unique_train_x_nominal_slots": 28320,
+  "train_window_x_slots": 43248,
+  "duplicate_x_slots_removed": 14928,
+  "profile_scope": "unique_train_X_only_not_capacity_calibration",
+  "validation_gap_and_target_values_used_for_statistics": false,
+  "source_interval_label": "start",
+  "time_evidence_level": "publisher_declared_not_independent_clock_certification",
+  "time_bounds_relative_to_T_minutes": {
+    "last_X_end": -5,
+    "first_Y_start": 5,
+    "last_Y_end": 65
+  },
+  "flow_unit_status": "UNRESOLVED_V8_CONVERSION_CHAIN",
+  "optional_source_record_comparison": null,
+  "observed_integer_fraction": 1.0,
+  "published_types": {
+    "Mainline": 496
+  },
+  "full_source_county_types": {
+    "Mainline": 496,
+    "On Ramp": 153,
+    "Off Ramp": 113,
+    "Fwy-Fwy": 11
+  },
+  "candidate_pairs": 482,
+  "metadata_prefilter_pass_pairs": 217,
+  "pairs_with_known_nonmainline": 261,
+  "certified_bottlenecks": 0,
+  "capacity_calibration_performed": false,
+  "historical_lane_id_matches": 488,
+  "historical_lane_road_coordinate_matches": 487,
+  "lane_count_2023_certified": false,
+  "remaining_evidence": [
+    "v8_flow_units_and_lane_aggregation",
+    "bottleneck_boundaries_and_arrival_delay",
+    "capacity_and_queue_scale_calibration"
+  ],
+  "recorded_date": "2026-10-09",
+  "source_summary_sha256": "ed92f7201773536f7444143a9db40043cc52ba61d770fb9470f2ae01678a6836",
+  "evidence_document": "incident_physics_data_contract.md",
+  "public_metadata": {
+    "dataset": "liuxu77/largest",
+    "version": 1,
+    "file": "ca_meta.csv",
+    "url": "https://www.kaggle.com/datasets/liuxu77/largest",
+    "historical_period": "2017-2021; not certified for 2023"
+  },
+  "validation": {
+    "command": "python -m unittest discover -s tests -p 'test_incident_physics*.py' -v",
+    "tests_run": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "python_version": "3.10.18",
+    "torch_version": "2.3.1",
+    "test_device": "cpu",
+    "real_v8_preparation_completed": true,
+    "real_pems_source_comparison_completed": false,
+    "model_or_trainer_modified": false,
+    "native_model_sha256": "3f5bdde8e1e33fd1164ebf2cd65fcc28235cba32be36b063de172580e02e56f4"
+  }
+}
