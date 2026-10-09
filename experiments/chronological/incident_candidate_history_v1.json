@@ -1,0 +1,50 @@
+{
+  "schema": "network_incident_candidate_history_v1",
+  "status": "frozen_before_candidate_traffic_values_are_inspected",
+  "source_version": 8,
+  "source_year": 2023,
+  "candidate_table_sha256": "3a2b8fdffcf342a64c95024aa5e11a9b9417a91bce9b2998355a51811b36f5fe",
+  "data_summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+  "raw_event_sha256": "fd186c2b3334c332d2e70c7f8b2fd35b6bf990da2c4aa5c77517bf6361d97d05",
+  "sensors_sha256": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+  "selection": {
+    "same_road_and_direction": true,
+    "maximum_nearest_station_km": 1.0,
+    "maximum_source_postmile_difference": 10.0,
+    "mapping_status": "candidate_only_not_certified_road_topology",
+    "duplicate_identical_id_records": "retain_first_source_row",
+    "conflicting_id_metadata": "exclude_all_records_for_id",
+    "different_events_at_same_t0": "keep_events_share_history_indices",
+    "sort_order": ["t0", "report_time", "incident_id", "source_row_index"],
+    "numerical_outcome_selection": false
+  },
+  "time": {
+    "training_months": [1, 2, 3, 4, 5, 6, 7, 8],
+    "history_offsets_from_t0_minutes": [-65, -10],
+    "step_minutes": 5,
+    "history_steps": 12,
+    "support_exclusion": "original_full_window_split_and_DST_day_rules",
+    "interval_label": "start_per_publisher",
+    "online_semantics_certified": false
+  },
+  "diagnostics": {
+    "unit_scale_reference_quantile": 0.95,
+    "positive_ratio_relation": "q_approximately_alpha_times_occupancy_times_speed",
+    "ratio_fit_months": [1, 2, 3, 4],
+    "ratio_check_months": [5, 6, 7, 8],
+    "minimum_positive_slots_per_block": 100,
+    "high_speed_proxy_reference_fraction": 0.8,
+    "low_speed_proxy_reference_fraction": 0.6,
+    "high_occupancy_proxy_quantile": 0.75,
+    "physical_fit_acceptance_threshold": null,
+    "hypothesis_status": "descriptive_observation_diagnostic_not_density_or_capacity_certification"
+  },
+  "boundaries": {
+    "traffic_values": "unique_candidate_X_slots_only",
+    "gap_or_Y_values": false,
+    "validation_or_test_traffic": false,
+    "model_training": false,
+    "imputation": false,
+    "frozen_baseline_modified": false
+  }
+}

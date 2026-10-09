@@ -1,0 +1,15 @@
+road,direction,stations,events,new_events,stations_with_report_support,minimum_joint_numeric_fraction,mean_joint_numeric_fraction,stations_with_ratio_diagnostic,physics_certified
+SR4-E,E,85,1236,64,85,1.0,1.0,85,False
+SR4-W,W,86,1328,58,86,1.0,1.0,86,False
+SR24-E,E,21,751,462,21,1.0,1.0,21,False
+SR24-W,W,21,500,192,21,1.0,1.0,21,False
+I80-E,E,38,1081,1081,38,1.0,1.0,38,False
+I80-W,W,47,1017,1017,47,1.0,1.0,47,False
+SR160-N,N,1,58,58,1,1.0,1.0,1,False
+SR160-S,S,1,15,15,1,1.0,1.0,1,False
+SR242-N,N,9,216,2,9,1.0,1.0,9,False
+SR242-S,S,8,216,4,8,1.0,1.0,8,False
+I580-E,E,12,305,305,12,1.0,1.0,12,False
+I580-W,W,12,440,440,12,1.0,1.0,12,False
+I680-N,N,74,1520,1520,74,1.0,1.0,74,False
+I680-S,S,81,1260,1260,81,1.0,1.0,81,False
