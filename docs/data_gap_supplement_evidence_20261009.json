@@ -1,0 +1,89 @@
+{
+  "retrieval_date": "2026-10-09",
+  "ramp_inventory": {
+    "sheet_rows_excluding_header": 1554,
+    "contra_costa_rows": 261,
+    "contra_costa_nonempty_2023_adt": 171,
+    "contra_routes": {
+      "004": 98,
+      "024": 12,
+      "080": 56,
+      "242": 11,
+      "580": 19,
+      "680": 65
+    },
+    "interpretation": "annual ramp count inventory, not five-minute ramp flow; no automatic join between prefixed county postmile and existing Abs PM"
+  },
+  "hpms": {
+    "scope": "THROUGH_LANES records whose HPMS intervals have positive-length overlap with 2023 COUNTY_ID=13 intervals on the same RouteId; untrimmed records, not detector matches",
+    "all_six_route_records": 3322,
+    "positive_overlap_records": 1013,
+    "by_route": {
+      "SHS_004._P": 415,
+      "SHS_024._P": 113,
+      "SHS_080._P": 160,
+      "SHS_242._P": 41,
+      "SHS_580._P": 67,
+      "SHS_680._P": 217
+    }
+  },
+  "hpms_state_county_rows": 1274,
+  "limitations": [
+    "No station-level join performed",
+    "THROUGH_LANES directional semantics not certified for PeMS station lane count",
+    "One broad sorted HPMS lane sample request timed out; subsequent bounded route query succeeded",
+    "FT-AED full CSV not downloaded; Git LFS pointer only"
+  ],
+  "artifacts": [
+    {
+      "file": "caltrans_2023_d4_ramp_adt.xlsx",
+      "bytes": 451240,
+      "sha256": "6e5af6a148ddcd3e0b102641c1f4f284643fe062af0cf0f7c876049de6896e8a"
+    },
+    {
+      "file": "download_manifest.json",
+      "bytes": 1494,
+      "sha256": "a9c21f9dfce69ecc0e32938b99b57d7d52d96f64f8f55671abd77408f361b37e"
+    },
+    {
+      "file": "ft_aed_lfs_pointer.txt",
+      "bytes": 134,
+      "sha256": "46c04a878006647f38f8d479c0291d97d9711b43304fb277fc18b310002f4dc7"
+    },
+    {
+      "file": "ft_aed_readme.md",
+      "bytes": 4372,
+      "sha256": "256c43477ee0e16507b34969273c4376bfc3883f352480b6f9b0c570ff6eb935"
+    },
+    {
+      "file": "hpms_2023_ca_item_counts.json",
+      "bytes": 3922,
+      "sha256": "fff4d4ad7fb12956af4ae21cfdf7bdd5a77928d23ef620c0040a8aff16d96cb1"
+    },
+    {
+      "file": "hpms_2023_candidate_route_lanes.json",
+      "bytes": 1250403,
+      "sha256": "fc2690db6627012a6a50afaf9dc4523a88925332ac3e95657e8f10938810866c"
+    },
+    {
+      "file": "hpms_2023_columns.json",
+      "bytes": 17840,
+      "sha256": "8ee89897b65a1519b08d856206150a03e25046b9fd62873f78177b9d3ddfbe8d"
+    },
+    {
+      "file": "hpms_2023_contra_county_intervals.json",
+      "bytes": 495333,
+      "sha256": "cd0e75fc03ac6ba832e35718492ba41fe41faab253cd1f2b84a6fe1b5777f037"
+    },
+    {
+      "file": "hpms_contra_lane_interval_candidates.json",
+      "bytes": 381125,
+      "sha256": "03f87fab5953a278bf7101c0d022e9d7382cb33106f196a99fdca2f74407ad15"
+    },
+    {
+      "file": "ramp_inventory_summary.json",
+      "bytes": 388,
+      "sha256": "ee137b32adb74f8be97fe8f1864c1942ac5bb3a62688b81b58c9718e842ec885"
+    }
+  ]
+}
