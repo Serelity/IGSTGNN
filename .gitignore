@@ -32,5 +32,6 @@ slurm-*.err
 *.tar.gz
 *.tgz
 .kaggle_upload/
+experiments/chronological_runs/contra_physics_h1_*/
 data/xtraffic/*
 !data/xtraffic/check_overlap.py
