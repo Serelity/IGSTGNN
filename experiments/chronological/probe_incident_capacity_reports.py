@@ -37,6 +37,39 @@ ARTIFACTS = ('summary.json', 'last_checkpoint.pt', 'best_model.pt',
              'best_validation_predictions.npz', 'best_validation_metrics.json')
 
 
+def resolve_probe_batch_size(original_batch_size, requested=None):
+    """Default to the saved validation partition, including its report padding."""
+    require(type(original_batch_size) is int and original_batch_size > 0, 'Invalid original batch size')
+    require(requested is None or (type(requested) is int and requested > 0), 'Probe batch size must be positive')
+    return original_batch_size if requested is None else requested
+
+
+def check_paired_on(actual, expected, selected, original_batch_size, probe_batch_size, output_dir):
+    require(actual.shape == expected.shape and actual.ndim == 4
+            and np.isfinite(actual).all() and np.isfinite(expected).all(), 'Invalid paired ON prediction axes/values')
+    actual64, expected64 = actual.astype(np.float64), expected.astype(np.float64)
+    delta = np.abs(actual64-expected64)
+    allowed = REPLAY_ATOL+REPLAY_RTOL*np.abs(expected64)
+    failed = delta > allowed
+    maximum = float(delta.max())
+    if failed.any():
+        worst = np.unravel_index(np.argmax(delta/allowed), delta.shape)
+        detail = dict(status='PAIRED_ON_REPLAY_FAILED', original_batch_size=original_batch_size,
+            probe_batch_size=probe_batch_size, identical_batch_partition=original_batch_size == probe_batch_size,
+            selected_validation_row_indices=list(map(int, selected)),
+            prediction_abs_max=maximum, failed_positions=int(failed.sum()), positions=int(delta.size),
+            atol=REPLAY_ATOL, rtol=REPLAY_RTOL, off_blocked_for_this_batch=True,
+            worst_normalized_error=dict(validation_row=int(selected[worst[0]]), horizon_index=int(worst[1]),
+                station_index=int(worst[2]), on_value=float(actual64[worst]), reference_value=float(expected64[worst]),
+                absolute_difference=float(delta[worst]), allowed_difference=float(allowed[worst])))
+        path = output_dir/'paired_on_replay_failure.json'
+        write_json(path, detail)
+        raise ValueError('Paired ON differs from verified replay; OFF blocked for this batch. '
+                         f'Original batch={original_batch_size}, paired batch={probe_batch_size}, '
+                         f'max absolute difference={maximum:.9g}. Details: {path}')
+    return maximum
+
+
 def snapshot_run(root):
     paths = [root/'identity.json', root/'paired_report.json']
     paths += [root/arm/name for arm in training.ARMS for name in ARTIFACTS]
@@ -271,6 +304,9 @@ def run_probe(model, inputs, indices, batch_size, probe_batch_size, device, scal
         on_predictions, predictions, associations, counts, matched_counts, ages = [], [], [], [], [], []
         totals = PathwayTotals()
         replay['paired_on_prediction_abs_max_vs_original_batch'] = 0.
+        replay['original_batch_size'] = batch_size
+        replay['paired_batch_size'] = probe_batch_size
+        replay['identical_batch_partition'] = batch_size == probe_batch_size
         for start in range(0, len(indices), probe_batch_size):
             selected = indices[start:start+probe_batch_size]
             batch = inputs.batch('val', selected, device, new_reports=True)
@@ -279,11 +315,9 @@ def run_probe(model, inputs, indices, batch_size, probe_batch_size, device, scal
                 on = forward(model, batch, scaler, True)
                 actual_on = on['prediction'].cpu().numpy()
                 original_on = baseline['prediction'][start:start+len(selected)]
+                maximum = check_paired_on(actual_on, original_on, selected, batch_size, probe_batch_size, output_dir)
                 replay['paired_on_prediction_abs_max_vs_original_batch'] = max(
-                    replay['paired_on_prediction_abs_max_vs_original_batch'],
-                    float(np.abs(actual_on.astype(np.float64)-original_on).max()))
-                require(np.allclose(actual_on, original_on,
-                                    atol=REPLAY_ATOL, rtol=REPLAY_RTOL), 'Paired ON differs from verified replay')
+                    replay['paired_on_prediction_abs_max_vs_original_batch'], maximum)
                 off = forward(model, batch, scaler, False)
                 restored = forward(model, batch, scaler, True)
                 verify_intervention(on, off, restored, model.branch.graph)
@@ -299,7 +333,7 @@ def run_probe(model, inputs, indices, batch_size, probe_batch_size, device, scal
             require(tensor_tree_digest(batch) == batch_before, 'Probe mutated input batch/native incident inputs')
             del on, off, batch
             print(f'Paired ON/OFF/ON: {min(start+probe_batch_size, len(indices))}/{len(indices)} rows', flush=True)
-        # Use actual paired microbatch ON, not a differently rounded baseline.
+        # Store actual paired ON even when a custom batch partition was requested.
         return finish_probe(inputs, indices, baseline, on_predictions, predictions, associations, counts, matched_counts,
                             ages, totals, regions, output_dir, replay)
     finally:
@@ -395,12 +429,13 @@ def main(argv=None):
     p.add_argument('--report-bundle', type=Path, default=Path(__file__).with_name('report_metadata_m42'))
     p.add_argument('--output-dir', type=Path)
     p.add_argument('--device', default='cuda:0')
-    p.add_argument('--probe-batch-size', type=int, default=8)
+    p.add_argument('--probe-batch-size', type=int, default=None,
+                   help='Default: saved validation batch size. Custom sizes remain subject to strict replay checks.')
     args = p.parse_args(argv)
-    require(args.probe_batch_size > 0, 'Probe batch size must be positive')
     root = args.run_dir.resolve() if args.run_dir else discover_run(REPO/'experiments/chronological_runs')
     require(not (root/'capacity_continuation.lock').exists(), 'Training continuation is active; probe a stopped run')
     identity = read_json(root/'identity.json')
+    probe_batch_size = resolve_probe_batch_size(identity['batch_size'], args.probe_batch_size)
     before = snapshot_run(root)
     session = (args.output_dir or root/('report_capacity_probe_'+datetime.now().strftime('%Y%m%d_%H%M%S')
                                       +'_'+uuid.uuid4().hex[:6])).resolve()
@@ -415,6 +450,7 @@ def main(argv=None):
                                         +[root/arm for arm in training.ARMS]), 'Output overlaps protected inputs/arms')
     session.mkdir(parents=True, exist_ok=False)
     print('Run directory: '+str(root)+'\nProbe directory: '+str(session), flush=True)
+    print(f"Validation replay batch: {identity['batch_size']}; paired ON/OFF/ON batch: {probe_batch_size}", flush=True)
     original = inputs = None
     try:
         verify_sources(identity)
@@ -428,7 +464,9 @@ def main(argv=None):
         require(device.type != 'cuda' or torch.cuda.is_available(), 'CUDA unavailable')
         write_json(session/'invocation.json', dict(run_dir=str(root), directories={k: str(v) for k, v in directories.items()},
             sensors=str(args.sensors.resolve()), origin_identity=identity, runtime=runtime_environment(device),
-            replay_batch_size=identity['batch_size'], probe_batch_size=args.probe_batch_size,
+            replay_batch_size=identity['batch_size'], probe_batch_size=probe_batch_size,
+            requested_probe_batch_size=args.probe_batch_size,
+            identical_batch_partition=probe_batch_size == identity['batch_size'],
             script_sha256=sha256(Path(__file__)), protected_artifacts_before=before,
             probe_dependency_sha256={name: sha256(REPO/name) for name in (
                 'experiments/chronological/continue_incident_capacity.py',
@@ -472,7 +510,7 @@ def main(argv=None):
         model.load_state_dict(best['model_state'], strict=True)
         del best, expected_target, expected_valid
         model.eval()
-        report = run_probe(model, inputs, indices, identity['batch_size'], args.probe_batch_size, device,
+        report = run_probe(model, inputs, indices, identity['batch_size'], probe_batch_size, device,
                            original.scaler, saved, read_json(root/'P1/best_validation_metrics.json'), regions, session)
         verify_sources(identity)
         verify_inputs(identity, directories, args.sensors.resolve())

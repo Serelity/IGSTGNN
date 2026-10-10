@@ -249,6 +249,57 @@ class CapacityReportProbeTests(unittest.TestCase):
             (root/'P1/best_model.pt').write_bytes(b'second')
             self.assertNotEqual(before, probe.snapshot_run(root))
 
+    def test_default_uses_saved_batch_size_and_explicit_override_remains_checked(self):
+        self.assertEqual(probe.resolve_probe_batch_size(48), 48)
+        self.assertEqual(probe.resolve_probe_batch_size(2), 2)
+        self.assertEqual(probe.resolve_probe_batch_size(48, 8), 8)
+        self.assertEqual(probe.resolve_probe_batch_size(48, 48), 48)
+        for original, requested in ((0, None), (48, 0), (48, -1), (48, True)):
+            with self.subTest(original=original, requested=requested), self.assertRaises(ValueError):
+                probe.resolve_probe_batch_size(original, requested)
+
+    def test_original_partition_including_partial_tail_is_preserved(self):
+        self.inputs.events['val'].append(dict(sample_index=104, incident_id='4', t0='2023-01-01T08:02:00'))
+        self.indices = list(range(5))
+        self.metrics, self.arrays = training.evaluate(self.model, self.inputs, 'P1', self.indices, 2, 'cpu', self.scaler)
+        original = probe.forward
+        calls = []
+        def observe(model, batch, scaler, enabled):
+            calls.append((len(batch['x']), enabled))
+            return original(model, batch, scaler, enabled)
+        with tempfile.TemporaryDirectory(dir=self.scratch) as tmp, patch.object(probe, 'forward', side_effect=observe):
+            result = self.run_probe(Path(tmp), batch_size=probe.resolve_probe_batch_size(2))
+            self.assertEqual(calls, [(b, enabled) for b in (2, 2, 1) for enabled in (True, False, True)])
+            self.assertTrue(result['replay']['identical_batch_partition'])
+            self.assertEqual(result['replay']['paired_on_prediction_abs_max_vs_original_batch'], 0)
+
+    def test_batch_dependent_drift_records_values_and_blocks_current_off_without_relaxing_tolerance(self):
+        original = probe.forward
+        calls = []
+        def simulate_shape_roundoff(model, batch, scaler, enabled):
+            calls.append(enabled)
+            result = original(model, batch, scaler, enabled)
+            if len(batch['x']) == 1:
+                result['prediction'] = result['prediction'].clone()
+                result['prediction'][0, 0, 0, 0] += .001
+            return result
+        tolerances = probe.REPLAY_ATOL, probe.REPLAY_RTOL, probe.REPLAY_MAE_ATOL
+        with tempfile.TemporaryDirectory(dir=self.scratch) as tmp:
+            root = Path(tmp)
+            with patch.object(probe, 'forward', side_effect=simulate_shape_roundoff):
+                with self.assertRaisesRegex(ValueError, 'Paired ON differs'):
+                    self.run_probe(root, batch_size=1)
+            failure = read_json(root/'paired_on_replay_failure.json')
+            self.assertEqual(calls, [True])
+            self.assertEqual(failure['original_batch_size'], 2)
+            self.assertEqual(failure['probe_batch_size'], 1)
+            self.assertEqual(failure['failed_positions'], 1)
+            self.assertEqual(failure['selected_validation_row_indices'], [0])
+            self.assertGreater(failure['worst_normalized_error']['absolute_difference'],
+                               failure['worst_normalized_error']['allowed_difference'])
+            self.assertFalse((root/'paired_predictions.npz').exists())
+        self.assertEqual(tolerances, (probe.REPLAY_ATOL, probe.REPLAY_RTOL, probe.REPLAY_MAE_ATOL))
+
 
 if __name__ == '__main__':
     unittest.main()
