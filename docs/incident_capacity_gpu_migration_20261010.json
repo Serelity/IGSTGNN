@@ -1,0 +1,85 @@
+{
+  "status": "GPU_NAME_ONLY_RESUME_LOCALLY_VERIFIED_SERVER_EXECUTION_PENDING",
+  "user_constraint": "User cannot choose or change the server GPU model",
+  "server_diagnostic_source": "User supplied console output",
+  "server_difference": {
+    "field": "environment.gpu",
+    "saved": "Tesla V100-SXM2-32GB",
+    "current": "Tesla V100-PCIE-32GB"
+  },
+  "explicit_option": "--allow-gpu-name-change",
+  "default_strict_identity_preserved": true,
+  "origin_identity_file_preserved": true,
+  "arm_origin_identity_strictly_checked": true,
+  "actual_runtime_segments_saved_to": [
+    "last_checkpoint.pt",
+    "best_model.pt when updated",
+    "summary.json"
+  ],
+  "other_identity_differences_rejected": true,
+  "frozen_training_source_count": 17,
+  "frozen_source_sha256": {
+    "experiments/chronological/train_incident_capacity.py": "080d8cfbdb2ad28712996d1b95e663129463dc50a5ef80667862b216c0e0f6b0",
+    "experiments/chronological/train.py": "bc57dbc11d9d2edbf9030e0d3de4fcd884e6c2cab0aa38aa30861d9f61150ce3",
+    "experiments/chronological/smoke.py": "450956a07644c6df4c4f82e5a417b929adbe99a205be9f2c2e621aad25a332f6",
+    "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091",
+    "experiments/chronological/prepare_incident_corridors.py": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+    "experiments/chronological/prepare_context.py": "1dac946c15496a8008b165c741b8028b911827a24453cb4bfcb5b77afeb71949",
+    "experiments/chronological/audit_incident_expansion.py": "a7cab6f76e070c36af7811f6d42761ba6a997a27ad6ee80b1a17d84859b87388",
+    "src/models/igstgnn.py": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "src/models/incident_capacity_fusion.py": "4e413d92c74c657230323da1615c4846b09e6eab16a9ecb41b63fe8c97d8439c",
+    "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+    "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+    "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
+    "src/utils/capacity_training_inputs.py": "88bc9f3226ae86fa032ed7812f90904dda875d6d92fc68edf3a8791021788c50",
+    "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+    "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
+  },
+  "protocol_sha256": "1c62a265e996ecd0ba43a18c303aec22a7f543f97b2d0fa1c71fc43968c9eb0f",
+  "changed_entry_and_test_sha256": {
+    "experiments/chronological/resume_incident_capacity_checked.py": "9ebe47bff9794f20d979e2ac7ba53c1bb51f721718cb65647951403f32bfe1e0",
+    "experiments/chronological/continue_incident_capacity.py": "54bbf9d8a36a24727b1fd0d386698d0d5c3f8a52c34b6083204effcac795882b",
+    "tests/test_capacity_gpu_migration.py": "9d6c2e025647e15d6358f86a784788d79070bb3e508b00e3d53b956d91f88184"
+  },
+  "regression": {
+    "tests_run": 83,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "log_sha256": "3104881b5f7c22ec63c01aa7874a9cebb59f5b92c5415b8163553342a09f5dd8"
+  },
+  "real_data_subset_controlled_migration": {
+    "status": "CONTROLLED_GPU_METADATA_MIGRATION_READBACK_PASS",
+    "source_artifacts_preserved": 32,
+    "audit_fixture_artifacts_preserved": 32,
+    "six_arms_completed_epoch": 3,
+    "updates_per_subset_arm": 6,
+    "strict_mode_rejected_gpu_difference": true,
+    "origin_identity_unchanged": true,
+    "runtime_segments_verified": true,
+    "audit_reports_hardware_migration": true,
+    "same_hardware_model_optimizer_scheduler_exact_match_all_six": true,
+    "controlled_origin_gpu_metadata": true,
+    "actual_cross_gpu_execution_verified": false,
+    "actual_local_gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "frozen_sources_unchanged": true,
+    "verification_script_windows_path_key_fixed": true,
+    "test_accessed": false,
+    "predictive_gain_claim": false,
+    "log_sha256": {
+      "audit.log": "87bab5859a3c6aca6fb5e2afa92097c7bec9046450433ff3727705355101da04",
+      "strict_rejection.log": "eae5156a4e2ac1dab0dc0d26784bffdf3390d69001c38a2f62e078b14ae73bbf",
+      "migration.log": "35cdadb3fe12c800299fd73b9fc930bce05f2faf38298af09a0c07698c2c00a9",
+      "after_audit.log": "86701289c554946f4854eae9391059fb89337772285565496ddc0f5aaae46b42",
+      "control.log": "c8a8615b7a17d5146b4f4979ed6c8204bf8f60dfeaca81818638de22e31e9689"
+    }
+  },
+  "actual_SXM2_to_PCIE_execution_verified": false,
+  "server_epoch_10_completion_reported": false,
+  "test_accessed": false,
+  "predictive_gain_claim": false,
+  "bitwise_cross_hardware_replay_claim": false
+}

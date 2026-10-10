@@ -69,6 +69,8 @@ git pull --ff-only origin research/chronological-tiid
 
 同日gpu05续到10轮时原身份比较拒绝，尚无10轮结果。已补[完整身份差异诊断](incident_capacity_resume_identity_fix_20261010.md)：正常续跑将打印具体不符字段，`--identity-audit-only`可只重建当前身份而不更新。原模型、训练器和拒绝条件保持不变。
 
+诊断后确认唯一差异为SXM2→PCIE的GPU型号，且用户无法选择分配设备。新增[显式硬件迁移选项](incident_capacity_gpu_migration_20261010.md)：加`--allow-gpu-name-change`仅允许这一字段变化，保持来源身份并逐epoch段记录实际环境；其余差异仍拒绝，默认规则仍严格。
+
 ## 本地验收
 
 新增11项测试与既有55项回归全部通过，共66项、无跳过。覆盖六组真实小模型产物回读、同轮/最佳轮次口径、目标和掩码错位拒绝、输入顺序/产物损坏拒绝、summary滞后恢复、尾批权重、损失量纲、唯一目录发现及失败前阻止训练。另对最终M4.2真实数据首4条工程检查点副本使用原训练器续至第2轮，再回读六组；检查审查前后30个训练产物的哈希不变。17个冻结训练源文件及协议哈希保持不变。本地子集结果仅是工程证据，服务器完整5轮结果待运行。机器记录见`incident_capacity_continuation_m43_20261010.json`。

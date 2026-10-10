@@ -17,6 +17,7 @@ sys.path.insert(0, str(REPO))
 from experiments.chronological import train_incident_capacity as training
 from experiments.chronological.prepare_incident_corridors import discover_history
 from experiments.chronological.train import epoch_plan
+from experiments.chronological.resume_incident_capacity_checked import validate_runtime_segments
 from src.utils.incident_corridor import read_json, read_rows, require, sha256, write_json
 
 PROTOCOL = REPO/'experiments/chronological/incident_capacity_training_m42.json'
@@ -170,6 +171,13 @@ def audit_arm(directory, arm, identity, protocol, regions, expected_arrays, scal
     if not lagged:
         require(all(summary[k] == checkpoint[k] for k in ('global_updates', 'best_epoch', 'best_metric')),
                 'Summary/checkpoint counters differ: '+arm)
+    runtime_segments = checkpoint.get('runtime_segments')
+    if runtime_segments is not None:
+        validate_runtime_segments(runtime_segments, completed, identity)
+        if not lagged:
+            require(summary.get('runtime_segments') == runtime_segments, 'Summary/checkpoint runtime differs: '+arm)
+        elif summary.get('runtime_segments') is not None:
+            validate_runtime_segments(summary['runtime_segments'], summary['completed_epoch'], identity)
     best_model = torch.load(directory/'best_model.pt', map_location='cpu', weights_only=False)
     require(best_model['identity'] == checkpoint['identity'] and best_model['epoch'] == best_epoch,
             'Best model identity/epoch mismatch: '+arm)
@@ -205,6 +213,8 @@ def audit_arm(directory, arm, identity, protocol, regions, expected_arrays, scal
                 'Prediction/metric readback differs: '+arm+'/'+name)
     return dict(completed_epoch=completed, global_updates=completed*batches, best_epoch=best_epoch,
                 best_metric=best, summary_lagged=lagged, prediction_sha256=prediction_hash,
+                runtime_segments=runtime_segments,
+                hardware_migration_observed=any(s['gpu_name_change_accepted'] for s in runtime_segments or []),
                 best_prediction_regions=metrics,
                 best_station_horizon_absolute_error_sum=error.tolist(), best_station_horizon_count=count.tolist(),
                 epochs=[epoch_diagnostic(row, protocol, scaler_std, samples, identity['batch_size']) for row in history],
@@ -253,11 +263,14 @@ def audit_run(root, identity, directories):
                 station_ids=station_ids.tolist(), check=identity['check'], seed=identity['seed'],
                 region_station_counts={k: int(v.sum()) for k, v in regions.items()},
                 shared_validation_arrays_sha256=expected, runs=runs, comparisons=comparisons(runs),
+                hardware_migration_observed=any(r['hardware_migration_observed'] for r in runs.values()),
+                bitwise_same_hardware_replay_claim=False,
                 predictive_gain_claim=False, test_accessed=False, main_training_ready=False,
                 online_semantics_certified=False, jointly_certified_nodes=0)
 
 
-def trainer_command(root, identity, directories, sensors, target_epoch, identity_report=None, identity_audit_only=False):
+def trainer_command(root, identity, directories, sensors, target_epoch, identity_report=None, identity_audit_only=False,
+                    allow_gpu_name_change=False):
     command = [sys.executable, '-u', str(REPO/'experiments/chronological/resume_incident_capacity_checked.py'),
                '--identity-report', str(identity_report or root/'resume_identity_diagnostic.json'),
                '--data-dir', str(directories['data']), '--history-dir', str(directories['history']),
@@ -270,6 +283,8 @@ def trainer_command(root, identity, directories, sensors, target_epoch, identity
         command.append('--check')
     if identity_audit_only:
         command.append('--identity-audit-only')
+    if allow_gpu_name_change:
+        command.append('--allow-gpu-name-change')
     return command
 
 
@@ -309,6 +324,8 @@ def main(argv=None):
     mode.add_argument('--audit-only', action='store_true', help='Read saved artifacts without optimizer updates')
     mode.add_argument('--identity-audit-only', action='store_true',
                       help='Rebuild the current full trainer identity and report differences, without updates')
+    p.add_argument('--allow-gpu-name-change', action='store_true',
+                   help='Explicitly allow only a GPU name difference and record hardware per epoch segment')
     args = p.parse_args(argv)
     root = args.run_dir.resolve() if args.run_dir else discover_run(args.runs_dir)
     identity = read_json(root/'identity.json')
@@ -343,11 +360,13 @@ def main(argv=None):
                 'A checkpoint is already beyond the requested stopping epoch')
         identity_report = session/'identity_diagnostic.json'
         command = trainer_command(root, identity, directories, sensors, args.epochs,
-                                  identity_report=identity_report, identity_audit_only=args.identity_audit_only)
+                                  identity_report=identity_report, identity_audit_only=args.identity_audit_only,
+                                  allow_gpu_name_change=args.allow_gpu_name_change)
         write_json(session/'invocation.json', dict(command=command, identity=identity, target_epoch=args.epochs,
                    wrapper_sha256=sha256(Path(__file__)),
                    checker_sha256=sha256(Path(__file__).with_name('resume_incident_capacity_checked.py')),
-                   identity_audit_only=args.identity_audit_only, test_accessed=False))
+                   identity_audit_only=args.identity_audit_only,
+                   allow_gpu_name_change=args.allow_gpu_name_change, test_accessed=False))
         print('Rebuilding full identity without updates' if args.identity_audit_only else
               'Continuing all six arms to absolute epoch '+str(args.epochs), flush=True)
         with (session/'training.log').open('w', encoding='utf-8') as log:
