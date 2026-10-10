@@ -1,0 +1,218 @@
+{
+  "schema": "capacity_training_m42_evidence_v1",
+  "date": "2026-10-10",
+  "status": "LOCAL_ENGINEERING_PASS_SERVER_FULL_EPOCH_PENDING",
+  "tests": {
+    "total": 55,
+    "skipped": 0,
+    "breakdown": {
+      "training": 9,
+      "exchange": 21,
+      "fusion": 12,
+      "network_inputs": 9,
+      "original_inputs": 4
+    },
+    "bash_run": "experiments\\chronological_runs\\contra_training_m42_20261010_143131_J0YmtH",
+    "log_sha256": "9d2a655c3ea9044ff9820641004596e0a4b9249a9b68d79b53fb0bb79b3188e6",
+    "exit_code": 0
+  },
+  "final_real_readback": {
+    "directory": "experiments\\chronological_runs\\contra_m42_final_readback",
+    "log_sha256": "17ded3af52877e2d0dc9bc585dbcebfed9562f3322d446785ebd34ea61e044a0",
+    "scope": "first_four_original_train_and_val_rows_two_updates_per_arm",
+    "identity": {
+      "schema": "capacity_training_m42_v1",
+      "seed": 11,
+      "check": true,
+      "batch_size": 2,
+      "common_backbone_sha256": "1c25422c3847ce0900d1666ab8f6622475380bef9380ca808823eb403a957d1a",
+      "common_branch_sha256": "1af196df2f2e867a0a38df32bd5c5da8570e340358cbb270e906fa6cf07df1b9",
+      "inputs_sha256": {
+        "data/summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+        "data/context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+        "data/station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+        "data/train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+        "data/train_context.npz": "f7b9644110fb42893c46c4e9a405c00ababed5a46adbe4825fcb79f9740d5d74",
+        "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+        "metadata/manifest.json": "743be1502ba780e639735a6213cd6a31aa601e44f2c47fd49be96f81611aef28",
+        "metadata/source_sensor_subset.tsv": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+        "history/summary.json": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+        "history/train_history.npy": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+        "history/train_multichannel_scaler.json": "f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4",
+        "data/scaler.json": "abc1853df9ca35de9a42bc15ff3db67dff3978c7c028a0daa19eed027eb540ba",
+        "data/adjacency.npy": "8cedf3a01e4c5d228793ef1eafeb99d924126b207b55841b569265ac53b62beb",
+        "network/summary.json": "a6f5da7d74b29e014b801220338dceea6e4f7d11c2c5e8627a9d96ac80bdc914",
+        "data/train_flow.npy": "a3c961e9a10038f3d8be452868258021bbfa066ba59615ddd0aa913ad689c115",
+        "data/val_manifest.csv": "2dfd7c4462fe14e1232117717ab9f37141a97babf99020f14bcb2f3c142673b9",
+        "data/val_flow.npy": "bec3455d35f818f15ccd741246799fd09175ac52e3351d58f6789e00979a801d",
+        "data/val_context.npz": "d00788e9911a02ed80a4454a807d690f9f8733db17847e0e2983c26570a1079d",
+        "history/val_history.npy": "5d2394667da81b95cdbd8b22f08718ea3767a386c0b046ba1c56208fb9e09ce3",
+        "reports/manifest.json": "dcd3d2d1db587cb22009ac7fec2cccd81c7a3ae851a2c134b70bd49df1a1d288",
+        "reports/locations.tsv": "96141974b78269b87688873df89168b4643c6d9ebe667e9c5ced7703910f5bc1"
+      },
+      "protocol_sha256": "1c62a265e996ecd0ba43a18c303aec22a7f543f97b2d0fa1c71fc43968c9eb0f",
+      "source_sha256": {
+        "experiments/chronological/train_incident_capacity.py": "080d8cfbdb2ad28712996d1b95e663129463dc50a5ef80667862b216c0e0f6b0",
+        "experiments/chronological/train.py": "bc57dbc11d9d2edbf9030e0d3de4fcd884e6c2cab0aa38aa30861d9f61150ce3",
+        "experiments/chronological/smoke.py": "450956a07644c6df4c4f82e5a417b929adbe99a205be9f2c2e621aad25a332f6",
+        "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091",
+        "experiments/chronological/prepare_incident_corridors.py": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+        "experiments/chronological/prepare_context.py": "1dac946c15496a8008b165c741b8028b911827a24453cb4bfcb5b77afeb71949",
+        "experiments/chronological/audit_incident_expansion.py": "a7cab6f76e070c36af7811f6d42761ba6a997a27ad6ee80b1a17d84859b87388",
+        "src/models/igstgnn.py": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+        "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+        "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+        "src/models/incident_capacity_fusion.py": "4e413d92c74c657230323da1615c4846b09e6eab16a9ecb41b63fe8c97d8439c",
+        "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+        "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+        "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
+        "src/utils/capacity_training_inputs.py": "45513e3f7f9575a8f8b62bc3a007ea0310db8c26c583ed46f0b5c8a90152e648",
+        "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+        "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
+      },
+      "device": "cuda:0",
+      "torch_version": "2.8.0+cu126",
+      "numpy_version": "1.26.4",
+      "ramp_exchanges": true,
+      "environment": {
+        "python": "3.10.16",
+        "cuda": "12.6",
+        "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+        "deterministic": true,
+        "tf32": false
+      },
+      "sample_scope": "first_4_train_val",
+      "candidate_structure_nodes": 476,
+      "certified_structure_nodes": 0
+    },
+    "runs": {
+      "F": {
+        "parameters": 443645,
+        "branch_parameters": 0,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      },
+      "N0": {
+        "parameters": 451118,
+        "branch_parameters": 7473,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      },
+      "N1": {
+        "parameters": 451118,
+        "branch_parameters": 7473,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      },
+      "P0": {
+        "parameters": 450874,
+        "branch_parameters": 7229,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      },
+      "P1": {
+        "parameters": 450874,
+        "branch_parameters": 7229,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      },
+      "L1": {
+        "parameters": 450874,
+        "branch_parameters": 7229,
+        "global_updates": 2,
+        "completed_epoch": 1,
+        "scientific_status": "EXPLORATORY_CHECK_SUBSET_NO_GAIN_CLAIM",
+        "test_accessed": false
+      }
+    },
+    "paired_report_sha256": "41030e6380aa6703e475dc17facc56e45d27fab86341a93ad4a4de76a4c71a99"
+  },
+  "capacity_participation": {
+    "main_loss_coefficient_max_l1": 0.004799340385943651,
+    "diagnostics": [
+      {
+        "state_min": 0.06071013957262039,
+        "state_max": 0.9872363209724426,
+        "forecast_delta_abs_max": 0.0,
+        "capacity_limited_fraction": 0.034429602324962616,
+        "receiving_limited_fraction": 0.6674635410308838,
+        "sending_bid_limited_fraction": 0.7619659900665283,
+        "balance_residual_abs_max": 3.1068921089172363e-06
+      },
+      {
+        "state_min": 0.06080068275332451,
+        "state_max": 0.987561821937561,
+        "forecast_delta_abs_max": 0.012113618664443493,
+        "capacity_limited_fraction": 0.034509509801864624,
+        "receiving_limited_fraction": 0.6656589508056641,
+        "sending_bid_limited_fraction": 0.7618893980979919,
+        "balance_residual_abs_max": 2.86102294921875e-06
+      }
+    ]
+  },
+  "source_sha256": {
+    "experiments/chronological/train_incident_capacity.py": "080d8cfbdb2ad28712996d1b95e663129463dc50a5ef80667862b216c0e0f6b0",
+    "experiments/chronological/train.py": "bc57dbc11d9d2edbf9030e0d3de4fcd884e6c2cab0aa38aa30861d9f61150ce3",
+    "experiments/chronological/smoke.py": "450956a07644c6df4c4f82e5a417b929adbe99a205be9f2c2e621aad25a332f6",
+    "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091",
+    "experiments/chronological/prepare_incident_corridors.py": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+    "experiments/chronological/prepare_context.py": "1dac946c15496a8008b165c741b8028b911827a24453cb4bfcb5b77afeb71949",
+    "experiments/chronological/audit_incident_expansion.py": "a7cab6f76e070c36af7811f6d42761ba6a997a27ad6ee80b1a17d84859b87388",
+    "src/models/igstgnn.py": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "src/models/incident_capacity_fusion.py": "4e413d92c74c657230323da1615c4846b09e6eab16a9ecb41b63fe8c97d8439c",
+    "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+    "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+    "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
+    "src/utils/capacity_training_inputs.py": "45513e3f7f9575a8f8b62bc3a007ea0310db8c26c583ed46f0b5c8a90152e648",
+    "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+    "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
+  },
+  "public_metadata": {
+    "manifest_sha256": "dcd3d2d1db587cb22009ac7fec2cccd81c7a3ae851a2c134b70bd49df1a1d288",
+    "locations_sha256": "96141974b78269b87688873df89168b4643c6d9ebe667e9c5ced7703910f5bc1",
+    "rows": 10777,
+    "license": "CC BY-NC 4.0",
+    "original_raw_sha256": "fd186c2b3334c332d2e70c7f8b2fd35b6bf990da2c4aa5c77517bf6361d97d05",
+    "release_evidence": [
+      "https://github.com/XAITraffic/XTraffic",
+      "https://github.com/XAITraffic/XTraffic/blob/main/xtraffic-metadata.json",
+      "https://proceedings.neurips.cc/paper_files/paper/2025/file/7813e19a86fd73d40f7e811ab15f6d5f-Paper-Datasets_and_Benchmarks_Track.pdf"
+    ],
+    "primary_evidence_checked": "2026-10-10_before_M41_push",
+    "version_note": "Author Croissant snapshot describes v5; local byte-verified source is v8; distinct identities retained"
+  },
+  "launcher_mock": {
+    "status": "M42_LAUNCHER_PATH_CHECK_PASS",
+    "artifacts": "experiments/chronological_runs/m42_launcher_mock_rfiNoB",
+    "real_sbatch_submitted": false,
+    "explicit_memory_requested": false,
+    "spool_and_invalid_cwd_checked": true
+  },
+  "preceding_server_M41": {
+    "job": 1171369,
+    "host": "gpu18",
+    "tests_passed": 46,
+    "exit_code": 0,
+    "log_sha256": "d4c9f7fbb5db1bd8a29dcfac48c67739158b615796c9fcb5e280462bc2e1554c"
+  },
+  "limitations": {
+    "predictive_gain_claim": false,
+    "jointly_certified_nodes": 0,
+    "main_training_ready": false,
+    "online_semantics_certified": false,
+    "real_full_epoch_performed_locally": false,
+    "test_accessed": false
+  }
+}

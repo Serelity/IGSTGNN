@@ -8,7 +8,7 @@ from torch import nn
 
 from src.models.incident_relative_capacity import finite_float, require
 from src.models.incident_capacity_exchange import (
-    CapacityLimitedExchange, OrdinaryDirectedRecurrence, compatible,
+    CapacityLimitedExchange, OrdinaryDirectedRecurrence, LocalCapacityRecurrence, compatible,
     condition_coefficients, edge_capacities, target_window_features,
 )
 
@@ -113,7 +113,7 @@ class IncidentCapacityBranch(nn.Module):
     def __init__(self, graph, outgoing_weights, *, mode='capacity', hidden=16, channels=4,
                  forecast_dim=256, substeps=4):
         super().__init__()
-        require(mode in ('capacity', 'ordinary'), 'Unknown recurrence mode')
+        require(mode in ('capacity', 'ordinary', 'local'), 'Unknown recurrence mode')
         require(isinstance(substeps, int) and substeps >= 2, 'At least two substeps required')
         require(outgoing_weights.shape == (graph.edges,), 'Outgoing weight axes mismatch')
         self.mode, self.hidden, self.channels, self.substeps = mode, hidden, channels, substeps
@@ -129,7 +129,8 @@ class IncidentCapacityBranch(nn.Module):
         self.projection = nn.Linear(4*channels, forecast_dim, bias=False)
         nn.init.zeros_(self.projection.weight)
         rates = outgoing_weights.new_ones(graph.nodes, channels)
-        recurrence = CapacityLimitedExchange if mode == 'capacity' else OrdinaryDirectedRecurrence
+        recurrence = dict(capacity=CapacityLimitedExchange, ordinary=OrdinaryDirectedRecurrence,
+                          local=LocalCapacityRecurrence)[mode]
         self.operator = recurrence(graph, rates, rates)
         self.register_buffer('outgoing_weights', outgoing_weights.clone())
 
@@ -171,17 +172,36 @@ class IncidentCapacityBranch(nn.Module):
 
     def forward(self, history, valid, references, labels, reports=None, *, incident_enabled=True):
         prepared = self.prepare(history, valid, references, labels, reports, incident_enabled=incident_enabled)
-        times = torch.arange(13*self.substeps+1, device=history.device, dtype=history.dtype)*(5./self.substeps)
+        return self.rollout_prepared(prepared)
+
+    def rollout_prepared(self, prepared, windows=None):
+        """Same recurrence/readout for the main task and a shorter prefix task."""
+        reference = prepared['initial']
+        if windows is None:
+            starts = torch.arange(5., 65., 5., device=reference.device, dtype=reference.dtype)
+            windows = torch.stack((starts, starts+5), -1)
+        compatible(windows, reference, 'Forecast windows')
+        require(windows.ndim == 2 and windows.shape[1] == 2 and windows.numel() > 0,
+                'Expected forecast windows [H,2]')
+        end = float(windows[-1, 1])
+        require(0 < end <= 65 and end*self.substeps/5 == int(end*self.substeps/5),
+                'Forecast end must lie on the existing 65-minute grid')
+        times = torch.arange(int(end*self.substeps/5)+1, device=reference.device,
+                             dtype=reference.dtype)*(5./self.substeps)
         u = times[:-1]/65.
         basis = torch.stack(((1-u)**3, 3*u*(1-u)**2, 3*u*u*(1-u), u**3), -1)
         capacity = edge_capacities(prepared['coefficients'], times[:-1], 65., self.graph,
                                    self.operator.alpha, self.outgoing_weights)
         src, dst = self.graph.edge_index
-        boundary = torch.einsum('bnrd,kr->bknd', prepared['boundary_coefficients'], basis)
-        boundary = torch.where((src < 0)[None, None, :, None], boundary[:, :, dst.clamp_min(0)], 0)
-        rollout = self.operator(prepared['initial'], capacity, boundary, times, self.outgoing_weights)
-        starts = torch.arange(5., 65., 5., device=history.device, dtype=history.dtype)
-        features = target_window_features(rollout, torch.stack((starts, starts+5), -1))
+        node_demand = torch.einsum('bnrd,kr->bknd', prepared['boundary_coefficients'], basis)
+        boundary = torch.where((src < 0)[None, None, :, None], node_demand[:, :, dst.clamp_min(0)], 0)
+        extra = {}
+        if self.mode == 'local':
+            internal = (src >= 0) & (dst >= 0)
+            demand = self.outgoing_weights[None, None, :, None] * node_demand[:, :, src.clamp_min(0)]
+            extra['local_demand'] = torch.where(internal[None, None, :, None], demand, 0)
+        rollout = self.operator(prepared['initial'], capacity, boundary, times, self.outgoing_weights, **extra)
+        features = target_window_features(rollout, windows)
         mask = self.graph.operator_mask[None, None, :, None]
         delta = torch.where(mask, self.projection(features), 0)
         observation = torch.where(mask, self.observation(features), 0)

@@ -3,6 +3,9 @@ experiments/chronological/run_incident_physics_evidence.sh text eol=lf
 experiments/chronological/run_incident_corridors.sh text eol=lf
 experiments/chronological/run_incident_capacity_network.sh text eol=lf
 experiments/chronological/submit_incident_capacity_network.sh text eol=lf
+experiments/chronological/run_incident_capacity_training.sh text eol=lf
+experiments/chronological/submit_incident_capacity_training.sh text eol=lf
+experiments/chronological/report_metadata_m42/* text eol=lf
 experiments/chronological/report_metadata/* text eol=lf
 experiments/chronological/physics_metadata/* text eol=lf
 # Trailing empty TSV fields preserve missing source coordinates.

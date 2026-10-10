@@ -45,7 +45,7 @@
 
 9项新测试涵盖道路顺序/缺口/重复来源、匝道共享预算、端点唯一附着、报告空间关联与未来隔离、同截止点集合、四种配置边轴重映射、完整性失败、缺报告及原事故路径保留。Bash同时执行21项交换、12项融合和4项原训练适配回归，共46项。另模拟Slurm转存脚本与错误工作目录，不申请显式内存。
 
-本地完整Bash流程46项通过、无跳过、退出0，环境为Python3.10.16、Torch2.8.0+cu126、RTX4060 Laptop GPU。主产物为`contra_network_m41_20261010_131629_uXF0Uo`；报告manifest规范为跨平台LF后，以相同代码重新回读输入包，未重复训练。逐方向覆盖、哈希及前序服务器M4.0日志依据保存在[机器证据](incident_capacity_network_m41_20261010.json)。本轮M4.1尚待服务器V100复核。
+本地完整Bash流程46项通过、无跳过、退出0，环境为Python3.10.16、Torch2.8.0+cu126、RTX4060 Laptop GPU。主产物为`contra_network_m41_20261010_131629_uXF0Uo`；报告manifest规范为跨平台LF后，以相同代码重新回读输入包，未重复训练。逐方向覆盖、哈希及前序服务器M4.0日志依据保存在[机器证据](incident_capacity_network_m41_20261010.json)。服务器作业1171369（gpu18，2026-10-10 14:00:36）亦46项全部通过、退出0，覆盖及报告统计与本地一致。
 
 真实输入回读只做无梯度递推，确认新增报告只改变容量系数，初态、边界和初始零投影保持一致。初始预测差0是零初始化的预期行为，不能视为信息无效或收益证据。本轮没有主训练器、真实优化更新、预测MAE或L1/历史前缀监督的新实现。
 
@@ -61,4 +61,4 @@ bash experiments/chronological/submit_incident_capacity_network.sh
 
 在已有GPU分配中可直接运行`run_incident_capacity_network.sh`；默认设备CPU，可设置`M41_DEVICE=cuda:0`。本轮成功标记为`M41_NETWORK_INPUT_PACK_COMPLETE_EXPLORATORY`及退出0，结果在新建的`contra_network_m41_.../pack`目录。
 
-下一阶段补L1与历史前缀观测外推监督，并针对尚未闭合的来源/拓扑证据继续核验。探索性短跑必须明确披露当前假设；确认性广度门槛维持未通过状态。
+后续[M4.2](incident_capacity_training_m42.md)已实现L1、历史前缀观测外推监督及六组共同训练入口。探索性短跑必须明确披露当前假设；确认性广度门槛维持未通过状态。

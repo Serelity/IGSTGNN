@@ -240,6 +240,45 @@ class OrdinaryDirectedRecurrence(CapacityLimitedExchange):
                     kind='ordinary_messages_NOT_physical_flux')
 
 
+class LocalCapacityRecurrence(CapacityLimitedExchange):
+    """L1: independent future cells with history-predicted incoming demand.
+
+    An internal edge has separate arrival and departure estimates. They are
+    deliberately NOT a shared interface flux, so global balance is not claimed.
+    No evolving neighbour state enters either estimate. Local sending/receiving
+    budgets still preserve [0,1] without clipping.
+    """
+    def forward(self, initial, capacity, boundary, times, outgoing_weights, *, local_demand):
+        h = validate_inputs(initial, capacity, boundary, times, outgoing_weights,
+                            self.graph, self.alpha, self.beta, self.interval_minutes)
+        compatible(local_demand, initial, 'History-predicted local demand')
+        require(local_demand.shape == capacity.shape and (local_demand >= 0).all(),
+                'Invalid local incoming demand')
+        src, dst = self.graph.edge_index
+        internal = (src >= 0) & (dst >= 0)
+        require((local_demand[:, :, ~internal] == 0).all(), 'Local demand belongs only to internal edges')
+        state, states, records = initial, [initial], []
+        for k in range(h.numel()):
+            sending = outgoing_weights[None, :, None] * self.alpha[src.clamp_min(0)] * state[:, src.clamp_min(0)]
+            departure = torch.where((src >= 0)[None, :, None], torch.minimum(sending, capacity[:, k]), 0)
+            arrival_bid = torch.where((src < 0)[None, :, None], boundary[:, k],
+                                      torch.minimum(local_demand[:, k], capacity[:, k]))
+            incoming_bid = self.graph.aggregate(arrival_bid, incoming=True)
+            denominator = torch.where(incoming_bid > 0, incoming_bid, 1)
+            scale = torch.minimum(torch.ones_like(state), self.beta*(1-state)/denominator)
+            arrival = arrival_bid * scale[:, dst.clamp_min(0)]
+            inflow = self.graph.aggregate(arrival, incoming=True)
+            outflow = self.graph.aggregate(departure, incoming=False)
+            state = state + h[k]*(inflow-outflow)
+            states.append(state)
+            records.append(dict(inflow=inflow, outflow=outflow, edge_inflow=arrival,
+                                edge_outflow=departure, receiving_scale=scale))
+        return dict(states=torch.stack(states, 1), times=times,
+                    interval_minutes=self.interval_minutes, operator_mask=self.graph.operator_mask,
+                    kind='local_independent_arrivals_NOT_shared_flux',
+                    **{key: torch.stack([r[key] for r in records], 1) for key in records[0]})
+
+
 def target_window_features(rollout, windows):
     """[B,H,N,4d]: end state, mean in/out rates, within-window state change.
 
