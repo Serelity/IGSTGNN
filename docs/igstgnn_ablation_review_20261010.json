@@ -1,0 +1,189 @@
+{
+  "review_id": "igstgnn_internal_incident_ablation_review_20261010",
+  "source_code_head_before_review": "d011d2f",
+  "scope": "existing_local_evidence_review_no_new_training_or_inference",
+  "remote_runs_independently_replayed_locally": false,
+  "test_metrics_inspected": false,
+  "input_artifacts": [
+    {
+      "path_relative_to_project": "code/src/models/igstgnn.py",
+      "sha256": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+      "bytes": 45371
+    },
+    {
+      "path_relative_to_project": "code/src/models/incident_capacity_fusion.py",
+      "sha256": "4e413d92c74c657230323da1615c4846b09e6eab16a9ecb41b63fe8c97d8439c",
+      "bytes": 14366
+    },
+    {
+      "path_relative_to_project": "code/experiments/chronological/train_incident_capacity.py",
+      "sha256": "080d8cfbdb2ad28712996d1b95e663129463dc50a5ef80667862b216c0e0f6b0",
+      "bytes": 23042
+    },
+    {
+      "path_relative_to_project": "code/docs/architecture_region_audit.md",
+      "sha256": "47cfe301ed3ce5f3d44df32d258f157964f0696b8c6798d83facbcdaa71c56b9",
+      "bytes": 5772
+    },
+    {
+      "path_relative_to_project": "code/docs/effective_input_audit_v13a_results.md",
+      "sha256": "f59d98164e689a01ae52e8310ff22af6170befe29256fcdd24da56acb09a6816",
+      "bytes": 8390
+    },
+    {
+      "path_relative_to_project": "code/docs/minimal_information_ablation_v13b_draft.md",
+      "sha256": "74df1afe4374265dad1a4b9ae5fb101783eeb86ce4d795c45836a31720752cb6",
+      "bytes": 10324
+    },
+    {
+      "path_relative_to_project": "code/docs/minimal_information_v13b_formal_results.md",
+      "sha256": "a70e49defdf50413affeefcd247a63f6ff298e3a401565bc181526155272781f",
+      "bytes": 5183
+    },
+    {
+      "path_relative_to_project": "code/docs/incident_routing_p2_screening_results.md",
+      "sha256": "034e9b77f1e5ab370bc937269706803e07a0a170d4c5fa8a0ad1a5ae5e11e970",
+      "bytes": 3943
+    },
+    {
+      "path_relative_to_project": "code/docs/vector_correction_geometry_v12n_results.md",
+      "sha256": "47d1c7a9e42ce99e4a1b9f20761f76ccd6f5883849f9c7683699c78dc75ce65e",
+      "bytes": 11156
+    },
+    {
+      "path_relative_to_project": "code/docs/temporal_robust_correction_v12o_results.md",
+      "sha256": "ebc61d48b2ebdca4d449fc1975b637d4d43eef843f2e0566d3ae9aeedff4698a",
+      "bytes": 25837
+    },
+    {
+      "path_relative_to_project": "code/docs/module_value_review_20261005.md",
+      "sha256": "2d255937d6f5d71762995e76ee5aa8075664c7d6b829c1efb405e9261b8e3d74",
+      "bytes": 13193
+    },
+    {
+      "path_relative_to_project": "复现结果/模块输入核验_20261005/server_review_1148424/received_log.txt",
+      "sha256": "3db6a1a80c48871cc0ddd3b2e73d74a1d8882c8d0238fc6288804b64c5d7f38b",
+      "bytes": 9797
+    },
+    {
+      "path_relative_to_project": "复现结果/最小信息消融_v13b_20261005/server_formal_review_1155207/received_log.txt",
+      "sha256": "14c6ac952abf0e55b8529eef841e2e28f234ebc34f8b631fd3390041dc8639e7",
+      "bytes": 2845960
+    },
+    {
+      "path_relative_to_project": "复现结果/P2_ACDG_20261008/server_completed_1162687/received_completion_report.json",
+      "sha256": "2c9ba053e4deaefc7fe0e37b56567b795cef5dd669958b22e1a082edda5167e0",
+      "bytes": 2410
+    },
+    {
+      "path_relative_to_project": "复现结果/P2_ACDG_20261008/server_gate_probe_1163180/received_probe_report.json",
+      "sha256": "8d17953d33a88de603c03b0795e477ce5db85f4ba3003b751ab2dbafb1384142",
+      "bytes": 10856
+    },
+    {
+      "path_relative_to_project": "复现结果/P2_ACDG_20261008/server_layer_probe_1163328/received_layer_probe_report.json",
+      "sha256": "e251c481c0e0619b22edb4d40303a548d878881ca00f3ce5f498209811d7999b",
+      "bytes": 9874
+    },
+    {
+      "path_relative_to_project": "复现结果/P2_ACDG_20261008/server_layer_probe_1163328/derived_layer_comparisons.csv",
+      "sha256": "bb0504e6ac7cc34953a101d852be434f57404cd02b82e00858e901d93e25bbd5",
+      "bytes": 4416
+    }
+  ],
+  "temporal_response_saved_validation_summaries": [
+    {
+      "archive_relative_to_project": "复现结果/A轮验证/contra_fixed_s2025_full_01_20260918094241.zip",
+      "member": "summary.json",
+      "member_sha256": "a3a4edabab22b6f7be66017d75a20d3dd074b3c629de5d78d7ffbc1030cbe8a9",
+      "variant": "fixed",
+      "seed": 2025,
+      "completed_epoch": 100,
+      "best_epoch": 99,
+      "best_metric": 22.686666155323852,
+      "global_updates": 7600,
+      "parameters": 443645,
+      "selection_metric": "all_nodes.mae_macro",
+      "scope": "conditional_offline_screening",
+      "scientific_support": "CONDITIONAL_OFFLINE_SCREENING_ONLY"
+    },
+    {
+      "archive_relative_to_project": "复现结果/B轮验证/contra_shared_s2025_full_01_20260918095615.zip",
+      "member": "summary.json",
+      "member_sha256": "2f3f8a11aba9d9ee3ce970d7556c7a4b35089f1eb75886fdfe91bdc66a34da29",
+      "variant": "shared",
+      "seed": 2025,
+      "completed_epoch": 100,
+      "best_epoch": 99,
+      "best_metric": 22.814105835625863,
+      "global_updates": 7600,
+      "parameters": 443657,
+      "selection_metric": "all_nodes.mae_macro",
+      "scope": "conditional_offline_screening",
+      "scientific_support": "CONDITIONAL_OFFLINE_SCREENING_ONLY"
+    },
+    {
+      "archive_relative_to_project": "复现结果/C轮验证/contra_conditioned_s2025_full_01_20260918094130.zip",
+      "member": "summary.json",
+      "member_sha256": "12312b79db971d2c2a0309dd6540ec38fcba176f277fbe38dffdada532667a2c",
+      "variant": "conditioned",
+      "seed": 2025,
+      "completed_epoch": 100,
+      "best_epoch": 99,
+      "best_metric": 22.78017670568316,
+      "global_updates": 7600,
+      "parameters": 443913,
+      "selection_metric": "all_nodes.mae_macro",
+      "scope": "conditional_offline_screening",
+      "scientific_support": "CONDITIONAL_OFFLINE_SCREENING_ONLY"
+    },
+    {
+      "archive_relative_to_project": "复现结果/c'改进结果/contra_phase_s2025_full_01_20260918142716.zip",
+      "member": "summary.json",
+      "member_sha256": "45fd5c39fdb4ff91b50b8aff8ef860f913779d0fcd87681e2756018e68e375da",
+      "variant": "phase",
+      "seed": 2025,
+      "completed_epoch": 100,
+      "best_epoch": 99,
+      "best_metric": 22.758619081596475,
+      "global_updates": 7600,
+      "parameters": 443789,
+      "selection_metric": "all_nodes.mae_macro",
+      "scope": "conditional_offline_screening",
+      "scientific_support": "CONDITIONAL_OFFLINE_SCREENING_ONLY"
+    },
+    {
+      "archive_relative_to_project": "复现结果/c''改进结果/contra_phase_residual_s2025_full_01_20260918193300.zip",
+      "member": "summary.json",
+      "member_sha256": "a9bcaa930a4fc4b6cdd7c46b4a58c23fa6803a7bca25b297cbdf86bb380f2a67",
+      "variant": "phase_residual",
+      "seed": 2025,
+      "completed_epoch": 100,
+      "best_epoch": 99,
+      "best_metric": 22.79775110283656,
+      "global_updates": 7600,
+      "parameters": 443773,
+      "selection_metric": "all_nodes.mae_macro",
+      "scope": "conditional_offline_screening",
+      "scientific_support": "CONDITIONAL_OFFLINE_SCREENING_ONLY"
+    }
+  ],
+  "m45_console_evidence": "incident_capacity_report_gain_analysis_server_20261010.json",
+  "checks": {
+    "v13a_received_log_hash_matches_record": true,
+    "v13b_received_log_hash_matches_record": true,
+    "five_temporal_runs_same_seed_completed100_best99": true,
+    "four_temporal_candidates_validation_MAE_above_fixed": true,
+    "m45_positive_negative_identity": true,
+    "m45_partition_additivity": true,
+    "m45_cancellation_identity": true
+  },
+  "decision": {
+    "old_external_M46_M47": "historical_candidate_not_default_next_step",
+    "next_design": "controlled_internal_incident_interface_modification_against_original_ICSF_TIID",
+    "new_architecture_implemented": false,
+    "new_protocol_frozen": false,
+    "extra_information_factor_separate": true,
+    "same_checkpoint_intervention_is_not_retraining_ablation": true
+  }
+}

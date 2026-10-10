@@ -1,0 +1,41 @@
+{
+  "evidence_type": "user_pasted_server_console_result",
+  "captured_on": "2026-10-10",
+  "source_probe": "report_capacity_probe_20261010_195655_424b3a",
+  "server_analysis_session": "report_gain_analysis_20261010_213615_fbf129",
+  "local_independent_server_reexecution": false,
+  "server_full_analysis_arrays_present_locally": false,
+  "interpretation_scope": "additional_capacity_report_route_with_original_ICSF_TIID_kept_on",
+  "console_result": {
+    "status": "P1_REPORT_GAIN_ANALYSIS_PASS",
+    "source_scope": "EXPLORATORY_CHECKPOINT_SENSITIVITY",
+    "validation_rows": 917,
+    "source_best_epoch": 9,
+    "all_nodes": {
+      "on_mae_macro": 26.642471599726473,
+      "off_mae_macro": 26.642481252750446,
+      "off_minus_on_mae": 9.653023976442412e-06,
+      "gain_positive": 0.00010765660786343283,
+      "gain_negative": 9.800358388699044e-05,
+      "cancellation_fraction": 0.9530632355523779,
+      "prediction_abs_change_horizon_macro_mean": 0.00020580695947788514,
+      "prediction_abs_change_max": 2.236541748046875,
+      "response_fraction_above": {
+        "0.0001": 0.006525119897749791,
+        "0.001": 0.004396678333978261,
+        "0.01": 0.0022279288469881924,
+        "0.1": 0.0005820830548422274,
+        "1.0": 5.862970649968926e-06
+      }
+    },
+    "partition_contributions": {
+      "direct_report_nodes": 1.9538184633940617e-06,
+      "potential_propagation_only_nodes": 7.69920551304835e-06,
+      "outside_potential_supported_nodes": 0.0,
+      "no_report_supported_samples": 0.0
+    },
+    "source_artifacts_preserved": true,
+    "new_inference_calls": 0,
+    "analysis": "/seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-code/experiments/chronological_runs/contra_training_m42_20261010_153544/report_gain_analysis_20261010_213615_fbf129/analysis.json"
+  }
+}

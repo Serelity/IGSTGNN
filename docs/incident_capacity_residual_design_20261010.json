@@ -1,6 +1,6 @@
 {
   "design_id": "incident_capacity_residual_m45_m47_20261010",
-  "status": "M45_IMPLEMENTED_SERVER_ANALYSIS_PENDING_M46_M47_PLANNED",
+  "status": "M45_SERVER_CONSOLE_PASS_M46_M47_HISTORICAL_CANDIDATES_INTERNAL_DESIGN_NEXT",
   "research_target": "cutoff_visible_reports_to_latent_capacity_to_shared_exchange_to_IGSTGNN_prediction",
   "source_code_at_design": "133e013",
   "source_probe": "report_capacity_probe_20261010_195655_424b3a",
@@ -14,17 +14,21 @@
       "script": "experiments/chronological/analyze_incident_capacity_report_probe.py",
       "local_tests_passed": 18,
       "local_full917_scope": "epoch1_engineering_only",
-      "server_epoch9_analysis_completed": false
+      "server_epoch9_analysis_completed": true,
+      "server_evidence_type": "user_pasted_console_not_locally_reexecuted",
+      "server_evidence": "incident_capacity_report_gain_analysis_server_20261010.json"
     },
     {
       "id": "M4.6",
       "task": "history_baseline_and_report_capacity_logit_residual",
-      "implemented": false
+      "implemented": false,
+      "current_priority": "historical_candidate_pending_internal_design"
     },
     {
       "id": "M4.7",
       "task": "paired_PR0_PR1_ten_epoch_exploratory_pilot",
-      "implemented": false
+      "implemented": false,
+      "current_priority": "historical_candidate_pending_internal_design"
     }
   ],
   "conditioner": {
@@ -179,5 +183,13 @@
     "full_operator_or_real_data_tested": false,
     "scope": "small_tensor_only; no_full_model_implementation; single_slot_reparameterization_coefficient_bound_and_VJP_counterexample_reviewed"
   },
-  "novelty_or_gain_established": false
+  "novelty_or_gain_established": false,
+  "research_direction_update": {
+    "date": "2026-10-10",
+    "reason": "Current external capacity route retains original ICSF/TIID; its ON/OFF does not compare replacement incident modules.",
+    "review": "igstgnn_internal_incident_ablation_review_20261010.md",
+    "next_priority": "design_internal_incident_interface_and_same_information_original_module_controls",
+    "old_conditioner_and_training_plan_status": "historical_candidate_not_implemented_not_default_next_action",
+    "old_experiment_identity_preserved": true
+  }
 }
