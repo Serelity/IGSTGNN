@@ -49,7 +49,7 @@
 bash experiments/chronological/submit_incident_capacity_fusion.sh
 ```
 
-提交入口内置V100分区、1张GPU、3个CPU、12G内存和15分钟时限，默认服务器已有igstgnn Python及cuda:0；自动把现有`M40_*`数据环境变量传给作业。显示`Submitted batch job ...`表示提交成功，日志为仓库根目录`slurm-capacity_m40-作业号.out`。可用`M40_PARTITION`或`M40_PYTHON`覆盖分区和Python。若手动指定原v11a历史目录，将其作为该提交入口的唯一参数。
+提交入口内置V100分区、1张GPU、3个CPU和15分钟时限，内存由集群按CPU核数自动分配。根据服务器实际拒绝信息，已移除显式内存申请；该集群不允许使用`--mem`参数。默认服务器已有igstgnn Python及cuda:0；自动把现有`M40_*`数据环境变量传给作业。显示`Submitted batch job ...`表示提交成功，日志为仓库根目录`slurm-capacity_m40-作业号.out`。可用`M40_PARTITION`或`M40_PYTHON`覆盖分区和Python。若手动指定原v11a历史目录，将其作为该提交入口的唯一参数。
 
 已有GPU分配内直接执行验收：
 
