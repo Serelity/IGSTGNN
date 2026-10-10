@@ -257,14 +257,19 @@ def audit_run(root, identity, directories):
                 online_semantics_certified=False, jointly_certified_nodes=0)
 
 
-def trainer_command(root, identity, directories, sensors, target_epoch):
-    command = [sys.executable, '-u', str(REPO/'experiments/chronological/train_incident_capacity.py'),
+def trainer_command(root, identity, directories, sensors, target_epoch, identity_report=None, identity_audit_only=False):
+    command = [sys.executable, '-u', str(REPO/'experiments/chronological/resume_incident_capacity_checked.py'),
+               '--identity-report', str(identity_report or root/'resume_identity_diagnostic.json'),
                '--data-dir', str(directories['data']), '--history-dir', str(directories['history']),
                '--sensors', str(sensors), '--output-dir', str(root), '--network-dir', str(directories['network']),
                '--report-bundle', str(directories['reports']), '--device', identity['device'],
                '--seed', str(identity['seed']), '--epochs', str(target_epoch), '--allow-exploratory', '--resume']
     if not identity['ramp_exchanges']:
         command.append('--without-ramp-exchanges')
+    if identity['check']:
+        command.append('--check')
+    if identity_audit_only:
+        command.append('--identity-audit-only')
     return command
 
 
@@ -300,12 +305,16 @@ def main(argv=None):
     p.add_argument('--network-dir', type=Path)
     p.add_argument('--report-bundle', type=Path, default=Path(__file__).with_name('report_metadata_m42'))
     p.add_argument('--epochs', type=int, default=5, help='Absolute stopping epoch, not additional epochs')
-    p.add_argument('--audit-only', action='store_true', help='No optimizer updates; also accepts an explicit check run')
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument('--audit-only', action='store_true', help='Read saved artifacts without optimizer updates')
+    mode.add_argument('--identity-audit-only', action='store_true',
+                      help='Rebuild the current full trainer identity and report differences, without updates')
     args = p.parse_args(argv)
     root = args.run_dir.resolve() if args.run_dir else discover_run(args.runs_dir)
     identity = read_json(root/'identity.json')
     verify_sources(identity)
-    require(args.audit_only or identity['check'] is False, 'Subset check cannot be continued by this full-run entry')
+    require(args.audit_only or args.identity_audit_only or identity['check'] is False,
+            'Subset check cannot be continued by this full-run entry')
     require(1 <= args.epochs <= read_json(PROTOCOL)['max_epochs'], 'Invalid target epoch')
     history = args.history_dir or discover_history(
         [args.data_dir, args.data_dir.parent, REPO/'experiments/chronological_runs', REPO.parent/'论文学习/研究开发_20260911'],
@@ -330,12 +339,17 @@ def main(argv=None):
         if args.audit_only:
             print('Audit complete; no training updates. Report: '+str(session/'before.json'), flush=True)
             return
-        require(all(r['completed_epoch'] <= args.epochs for r in before['runs'].values()),
+        require(args.identity_audit_only or all(r['completed_epoch'] <= args.epochs for r in before['runs'].values()),
                 'A checkpoint is already beyond the requested stopping epoch')
-        command = trainer_command(root, identity, directories, sensors, args.epochs)
+        identity_report = session/'identity_diagnostic.json'
+        command = trainer_command(root, identity, directories, sensors, args.epochs,
+                                  identity_report=identity_report, identity_audit_only=args.identity_audit_only)
         write_json(session/'invocation.json', dict(command=command, identity=identity, target_epoch=args.epochs,
-                   wrapper_sha256=sha256(Path(__file__)), test_accessed=False))
-        print('Continuing all six arms to absolute epoch '+str(args.epochs), flush=True)
+                   wrapper_sha256=sha256(Path(__file__)),
+                   checker_sha256=sha256(Path(__file__).with_name('resume_incident_capacity_checked.py')),
+                   identity_audit_only=args.identity_audit_only, test_accessed=False))
+        print('Rebuilding full identity without updates' if args.identity_audit_only else
+              'Continuing all six arms to absolute epoch '+str(args.epochs), flush=True)
         with (session/'training.log').open('w', encoding='utf-8') as log:
             with subprocess.Popen(command, cwd=REPO, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                   text=True, encoding='utf-8', errors='replace') as process:
@@ -346,6 +360,10 @@ def main(argv=None):
                 code = process.wait()
         write_json(session/'process_result.json', dict(exit_code=code))
         require(code == 0, 'Trainer failed; preserved checkpoints and before audit. See '+str(session/'training.log'))
+        if args.identity_audit_only:
+            require(identity_report.is_file(), 'Identity audit produced no report')
+            print('IDENTITY_AUDIT_COMPLETE_NO_TRAINING\nReport: '+str(identity_report), flush=True)
+            return
         verify_sources(identity)
         verify_inputs(identity, directories, sensors)
         after = audit_run(root, identity, directories)

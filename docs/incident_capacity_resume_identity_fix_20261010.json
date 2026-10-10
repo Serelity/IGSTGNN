@@ -1,0 +1,73 @@
+{
+  "status": "LOCAL_IDENTITY_DIAGNOSTICS_VERIFIED_SERVER_DIFFERENCE_PENDING",
+  "server_failure": {
+    "attachment_sha256": "f7c93f163419e36dfbe7bdd197fc243fa8f7ab360fc76f911e82ffa782149301",
+    "error": "Run identity changed",
+    "previous_node": "gpu14",
+    "current_node": "gpu05",
+    "failed_session": "continuation_20261010_170632_1b47ec",
+    "saved_completed_epoch": 5,
+    "requested_absolute_epoch": 10,
+    "failed_before_any_arm_update": true,
+    "exact_differing_fields": null,
+    "gpu_change_is_confirmed_cause": false
+  },
+  "regression": {
+    "tests_run": 73,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "log_sha256": "d926df00f03dc3b76fb3cf37dde93ddd2ba42c747a7a721d544ba1eb531ef657"
+  },
+  "real_data_subset_readback": {
+    "audit_exit_code": 0,
+    "audit_preserved_artifact_count": 31,
+    "checked_resume_exit_code": 0,
+    "completed_epoch": 3,
+    "updates_per_subset_arm": 6,
+    "controlled_gpu_mismatch_rejected": true,
+    "mismatch_fields": [
+      "environment.gpu"
+    ],
+    "frozen_sources_unchanged": true,
+    "log_sha256": {
+      "identity_audit.log": "17282f04739bfc5b9641670d1132c5b8332d0d369ea07a5078026ce322e8218b",
+      "resume.log": "6b3eda74360c1545009855c8eea085f81839f687d3aaae8e81cbdcd09f87b63b",
+      "mismatch.log": "ed69a5075190c863a00c47d96230a79ee444544651b8c22f64d7f9c62a274c5a"
+    }
+  },
+  "verification_scope": "Local first four real-data samples, isolated checkpoint copy; not a full training or predictive result",
+  "original_identity_sha256": "a17e6be9860f28b043df036049a7ffd8c7f89676d93085eb14aa5592f864806a",
+  "frozen_source_count": 17,
+  "frozen_sources_unchanged": true,
+  "frozen_source_sha256": {
+    "experiments/chronological/train_incident_capacity.py": "080d8cfbdb2ad28712996d1b95e663129463dc50a5ef80667862b216c0e0f6b0",
+    "experiments/chronological/train.py": "bc57dbc11d9d2edbf9030e0d3de4fcd884e6c2cab0aa38aa30861d9f61150ce3",
+    "experiments/chronological/smoke.py": "450956a07644c6df4c4f82e5a417b929adbe99a205be9f2c2e621aad25a332f6",
+    "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091",
+    "experiments/chronological/prepare_incident_corridors.py": "f4864c0dcfcf06c2148e298264fb129f1e7ac27fec350289a5fafb5b95227899",
+    "experiments/chronological/prepare_context.py": "1dac946c15496a8008b165c741b8028b911827a24453cb4bfcb5b77afeb71949",
+    "experiments/chronological/audit_incident_expansion.py": "a7cab6f76e070c36af7811f6d42761ba6a997a27ad6ee80b1a17d84859b87388",
+    "src/models/igstgnn.py": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "src/models/incident_capacity_fusion.py": "4e413d92c74c657230323da1615c4846b09e6eab16a9ecb41b63fe8c97d8439c",
+    "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+    "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+    "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
+    "src/utils/capacity_training_inputs.py": "88bc9f3226ae86fa032ed7812f90904dda875d6d92fc68edf3a8791021788c50",
+    "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+    "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
+  },
+  "protocol_sha256": "1c62a265e996ecd0ba43a18c303aec22a7f543f97b2d0fa1c71fc43968c9eb0f",
+  "changed_entry_and_tests_sha256": {
+    "experiments/chronological/resume_incident_capacity_checked.py": "da382375531ffbb47a3ea895bc52af5d0880ca6501ba24489af0a96c13d9bf86",
+    "experiments/chronological/continue_incident_capacity.py": "e6923f88a77d0d5b9bc9b23b6406f4385e492ec1ff1a6adb051297502f9a9997",
+    "tests/test_capacity_resume_identity.py": "075c36ed66d87d79fb495717991edeebf0daaedf84be8964ac2361aeab48122e",
+    "tests/test_capacity_continuation.py": "d567977c0c89d9225a5c53a09915874ca320f57b41a76cbedc3e31bc14e13a32"
+  },
+  "original_identity_policy_preserved": true,
+  "test_accessed": false,
+  "predictive_gain_claim": false
+}

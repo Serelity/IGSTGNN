@@ -150,7 +150,7 @@ class CapacityContinuationTests(unittest.TestCase):
 
     def test_command_keeps_identity_and_restores_optimizer(self):
         directories = {key: Path(key) for key in ('data', 'history', 'network', 'reports')}
-        identity = dict(self.identity, device='cuda:0', ramp_exchanges=False)
+        identity = dict(self.identity, check=False, device='cuda:0', ramp_exchanges=False)
         command = continuation.trainer_command(self.root, identity, directories, Path('sensors'), 5)
         self.assertIn('--resume', command)
         self.assertIn('--without-ramp-exchanges', command)
@@ -159,6 +159,7 @@ class CapacityContinuationTests(unittest.TestCase):
         self.assertNotIn('--check', command)
         for option in ('--network-dir', '--report-bundle', '--history-dir'):
             self.assertIn(option, command)
+        self.assertIn('--identity-report', command)
 
     def test_frozen_source_set_rejects_drift_without_touching_model_code(self):
         from src.utils.incident_corridor import sha256
