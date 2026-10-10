@@ -17,8 +17,8 @@
     "exit_code": 0
   },
   "final_real_readback": {
-    "directory": "experiments\\chronological_runs\\contra_m42_final_readback",
-    "log_sha256": "17ded3af52877e2d0dc9bc585dbcebfed9562f3322d446785ebd34ea61e044a0",
+    "directory": "experiments\\chronological_runs\\contra_m42_final_readback_v2",
+    "log_sha256": "23d8d6a5ef783163a34c6affd4f5c1f408d7d7313b9b00633c7d8f584c4a4665",
     "scope": "first_four_original_train_and_val_rows_two_updates_per_arm",
     "identity": {
       "schema": "capacity_training_m42_v1",
@@ -66,7 +66,7 @@
         "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
         "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
         "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
-        "src/utils/capacity_training_inputs.py": "45513e3f7f9575a8f8b62bc3a007ea0310db8c26c583ed46f0b5c8a90152e648",
+        "src/utils/capacity_training_inputs.py": "88bc9f3226ae86fa032ed7812f90904dda875d6d92fc68edf3a8791021788c50",
         "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
         "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
       },
@@ -175,7 +175,7 @@
     "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
     "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
     "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
-    "src/utils/capacity_training_inputs.py": "45513e3f7f9575a8f8b62bc3a007ea0310db8c26c583ed46f0b5c8a90152e648",
+    "src/utils/capacity_training_inputs.py": "88bc9f3226ae86fa032ed7812f90904dda875d6d92fc68edf3a8791021788c50",
     "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
     "src/utils/incident_corridor.py": "da3ca480906f062fcacf58a9b8c91365c16ebebb0a899f96d7178d05a7d9e16a"
   },
