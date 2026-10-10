@@ -7,6 +7,16 @@ This data retains the source **CC BY-NC 4.0** license, rather than the code's
 MIT license. [License](https://creativecommons.org/licenses/by-nc/4.0/).
 No endorsement by the original authors is implied.
 
+Public-source verification (2026-10-10): the authors' [published Croissant
+metadata](https://github.com/XAITraffic/XTraffic/blob/main/xtraffic-metadata.json)
+explicitly lists `incidents_y2023.csv`, its timestamp/road/latitude/longitude
+fields, free accessibility and the CC BY-NC 4.0 license (that metadata snapshot
+describes version 5; the byte-verified local source here is version 8).
+Their [NeurIPS paper](https://proceedings.neurips.cc/paper_files/paper/2025/file/7813e19a86fd73d40f7e811ab15f6d5f-Paper-Datasets_and_Benchmarks_Track.pdf)
+states in its ethics/safeguards checklist that released data are anonymous and
+contain no personal information; Appendix A.2/A.3 states the dataset license.
+This excerpt adds no person/vehicle identifiers or private observations.
+
 The eight columns retain only a source row index, entity ID, recorded timestamp,
 road/direction, postmile and coordinates. Timestamps/numeric road identifiers
 are normalized; no duration, Type, DESCRIPTION or LOCATION text is included.

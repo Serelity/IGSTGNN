@@ -477,7 +477,7 @@
   "scientific_status": "EXPLORATORY_METADATA_STRUCTURE_AND_INPUT_INTERFACE_ONLY_NO_FORECAST_GAIN",
   "source_bundle_files": {
     "experiments/chronological/report_metadata/manifest.json": "9a5c60b462422ba7d50a0d345a73c905fb95bcf9547181daef08099ddf8c8340",
-    "experiments/chronological/report_metadata/README.md": "5aa6eba7a77f9edd6ef2106c7a6cbc51535115873312ee23153f87cde8e5612d",
+    "experiments/chronological/report_metadata/README.md": "7bd19692894fdff4fdeebbb80368a04f02d8c0bea979aaded9721b718fa3f005",
     "experiments/chronological/report_metadata/train_locations.tsv": "d2d87e6ebdb4d0fa79efa9edccde99cf736bf881324495460338c862c3e44a07"
   },
   "checked_sources_sha256": {
@@ -486,5 +486,11 @@
     "tests/test_capacity_network_inputs.py": "6f0b9cfea787c2b0978c4c9a74d456f282ed62a57c86028b027639d7c5bcd4d6",
     "experiments/chronological/run_incident_capacity_network.sh": "bbe1ff5db15fbd947572aa89afac5f4548c19649ec4a53ca03784fc58dd8480e",
     "experiments/chronological/submit_incident_capacity_network.sh": "b1de297fa359bccaa132714bb48b8c55d474c61e897fdad55c0fb4e583cd99ef"
+  },
+  "public_source_verification": {
+    "checked_date": "2026-10-10",
+    "authors_metadata_url": "https://github.com/XAITraffic/XTraffic/blob/main/xtraffic-metadata.json",
+    "paper_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/7813e19a86fd73d40f7e811ab15f6d5f-Paper-Datasets_and_Benchmarks_Track.pdf",
+    "findings": "authors metadata lists public 2023 incident timestamp/road/coordinate fields and CC BY-NC 4.0; paper ethics/safeguards describes anonymous data without personal information; local excerpt contains only whitelisted public metadata"
   }
 }
