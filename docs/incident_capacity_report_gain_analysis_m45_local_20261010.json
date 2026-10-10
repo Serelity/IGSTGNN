@@ -1,0 +1,94 @@
+{
+  "status": "M45_LOCAL_ENGINEERING_PASS_SERVER_EPOCH9_ANALYSIS_PENDING",
+  "script": "experiments/chronological/analyze_incident_capacity_report_probe.py",
+  "script_sha256": "29b91f6b270213f47ca5fea9a5bf6135997c4a72e2c62c64ce3de5f5815f977e",
+  "tests": {
+    "file": "tests/test_capacity_report_gain_analysis.py",
+    "sha256": "335b50dfb6a3620e9d7bf6f395608d3101fef698017b4deaffe1abd7180d1d4d",
+    "command": "python -m unittest discover -s tests -p test_capacity_report_gain_analysis.py -v",
+    "passed": 18,
+    "failed": 0
+  },
+  "artifact_checks": [
+    {
+      "analysis_directory": "experiments/chronological_runs/contra_p1_report_gain_m45_local_final",
+      "analysis_sha256": "4105c64285e43418dbfa95f6c51230e0b5fceaeaadfb365b35c8ec5ab6cd44bc",
+      "validation_rows": 4,
+      "stations": 496,
+      "source_model_scope": "epoch1_first4_engineering_model",
+      "source_manifest_scope": "standard_completed_manifest",
+      "source_scientific_scope": "ENGINEERING_ONLY",
+      "source_metrics_reproduced": true,
+      "sample_csv_metrics_reproduced": true,
+      "partition_contributions_add_up": true,
+      "triangle_bounds_passed": true,
+      "source_artifacts_preserved": true,
+      "new_inference_calls": 0,
+      "optimizer_updates": 0,
+      "test_accessed": false,
+      "input_sha256": {
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\report.json": "e7131ddb96e63094a8ae01be42774a5fb550c060e4392e09014d65683d620898",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\checkpoint_audit.json": "91bd3bd5ec79eaa3e50b95bf179b4d0015f00a38a229ad5efedf3f6933b9bc2d",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\invocation.json": "1370c761b5eb31a468f2188d686e12fdfc08994dfec12aaff7979fd312fff3c3",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\paired_predictions.npz": "606f8f2f31b95e65899491762404e97ba50f3447832b6ffad12be3950db2eac5",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\pathway_curves.npz": "34924d2b9294f18a0bfbb68220ff42e8e34b5e90be9179f9c959363c290aafc4",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\replay.json": "bc146946d55b73f0dc46eba77abf61da635dd2c6864bcadb37953661c6d0608c",
+        "experiments\\chronological_runs\\contra_p1_report_probe_m44_local_final\\samples.csv": "a97a1b727b418a4b954f48b991770c59d9bfb14907880dd7480224f48938579c",
+        "experiments\\chronological_runs\\contra_network_m41_final\\summary.json": "a6f5da7d74b29e014b801220338dceea6e4f7d11c2c5e8627a9d96ac80bdc914",
+        "experiments\\chronological_runs\\contra_network_m41_final\\graph.json": "10a69e096f0157d97391929077fe5b1fd3857609334bb4cf1720e9fe68796ac4",
+        "experiments\\chronological_runs\\contra_network_m41_final\\common_structure_mask.npy": "efa68e98fbdb8c5dedfd565945972ff0874020b78898c7a82d0fbfdec9a031bd",
+        "experiments\\chronological_runs\\contra_network_m41_final\\stations.csv": "34ad02ad5df5b39c03e91762d1d483c6d2352c6697546794f297e12894bca881",
+        "experiments\\chronological_runs\\contra_network_m41_final\\roads.csv": "fa5732cec19e9c0dffa1ea6bd7bd6611a9797a36800e26f2b86b6574e99f08c4"
+      },
+      "output_sha256": {
+        "cutoff_summary.csv": "529a87ed31b922dbac8841821e136b6b3b561b7d5894ef3734fc932e5cd2dc11",
+        "gain_decomposition.csv": "1726c79cca211142c3e5e9fd65ae13089b16e4e301e18426c5d3e7f36bf63c5b",
+        "README.md": "6cb2a79c48be4f210aed635b366e9750b4f60f2effcae5a63e2207f3b77b66ff",
+        "trigger_event_summary.csv": "81d82453cebeb1adee4a9814533f1889837b7c72bd100394428e5c229c96f8b1"
+      }
+    },
+    {
+      "analysis_directory": "experiments/chronological_runs/contra_p1_report_gain_m45_full917_final",
+      "analysis_sha256": "b3c5223e79e4e23560cd198be3a5742c264b0ad771e0caa6496716b5c8754953",
+      "validation_rows": 917,
+      "stations": 496,
+      "source_model_scope": "epoch1_engineering_model_not_server_epoch9",
+      "source_manifest_scope": "explicit_marked_engineering_fixture_without_manifest",
+      "source_scientific_scope": "ENGINEERING_ONLY",
+      "source_metrics_reproduced": true,
+      "sample_csv_metrics_reproduced": true,
+      "partition_contributions_add_up": true,
+      "triangle_bounds_passed": true,
+      "source_artifacts_preserved": true,
+      "new_inference_calls": 0,
+      "optimizer_updates": 0,
+      "test_accessed": false,
+      "input_sha256": {
+        "experiments\\chronological_runs\\p1_report_probe_batch_fix_full917\\paired_predictions.npz": "a608119ca86e14767a063967745549410f8a5ff3f785eefd4b5e9ae99af1244c",
+        "experiments\\chronological_runs\\p1_report_probe_batch_fix_full917\\pathway_curves.npz": "50f97d1de262d8bd48cf00deabb27df3aec27bd09b3f2040d77c41ee715f3529",
+        "experiments\\chronological_runs\\p1_report_probe_batch_fix_full917\\replay.json": "208689635d0c5cf9672899b1bd42d1209dedc457af398cb17b0b015500177c90",
+        "experiments\\chronological_runs\\p1_report_probe_batch_fix_full917\\report.json": "e2d2c436488f28520f51536ecd63656c1ba45156e973f0aabdbe7342e4a700d3",
+        "experiments\\chronological_runs\\p1_report_probe_batch_fix_full917\\samples.csv": "4d37debfef46f7c1ae478839c9a487a62095dcad1733df2571074b0efdca83b9",
+        "experiments\\chronological_runs\\contra_network_m41_final\\summary.json": "a6f5da7d74b29e014b801220338dceea6e4f7d11c2c5e8627a9d96ac80bdc914",
+        "experiments\\chronological_runs\\contra_network_m41_final\\graph.json": "10a69e096f0157d97391929077fe5b1fd3857609334bb4cf1720e9fe68796ac4",
+        "experiments\\chronological_runs\\contra_network_m41_final\\common_structure_mask.npy": "efa68e98fbdb8c5dedfd565945972ff0874020b78898c7a82d0fbfdec9a031bd",
+        "experiments\\chronological_runs\\contra_network_m41_final\\stations.csv": "34ad02ad5df5b39c03e91762d1d483c6d2352c6697546794f297e12894bca881",
+        "experiments\\chronological_runs\\contra_network_m41_final\\roads.csv": "fa5732cec19e9c0dffa1ea6bd7bd6611a9797a36800e26f2b86b6574e99f08c4"
+      },
+      "output_sha256": {
+        "cutoff_summary.csv": "e29c00f020ea0616e35acc161f4629c1ff6836c577ba0f229d465b32899a6bd8",
+        "gain_decomposition.csv": "f3c486681e37b933a1a62a986d62f605c6d5b92cabeae29e167bb18fde930b62",
+        "README.md": "8533daa0dfd56124bd852053feb9ea2d970ea50d3505b6be8f5acc022ed3995b",
+        "trigger_event_summary.csv": "d0132a6b16fda2aec571811a7d41ed495aece495f8c8f8ccc731937bdc9a9cbd"
+      }
+    }
+  ],
+  "frozen_M42_training_source_files_verified_unchanged": 17,
+  "server_epoch9_probe": "report_capacity_probe_20261010_195655_424b3a",
+  "server_epoch9_analysis_completed": false,
+  "M46_model_implemented": false,
+  "M47_training_implemented": false,
+  "predictive_gain_claim": false,
+  "causal_claim": false,
+  "test_accessed": false
+}
