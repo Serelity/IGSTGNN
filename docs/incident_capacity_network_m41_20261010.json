@@ -1,0 +1,490 @@
+{
+  "schema": "incident_capacity_network_m41_local_evidence_v1",
+  "status": "M41_LOCAL_ENGINEERING_PASS",
+  "validation": {
+    "tests": 46,
+    "breakdown": {
+      "network_inputs": 9,
+      "exchange": 21,
+      "fusion": 12,
+      "original_inputs": 4
+    },
+    "full_bash_run": "experiments/chronological_runs/contra_network_m41_20261010_131629_uXF0Uo",
+    "log_sha256": "d3f295aa8c09cedb1ace07a2a6728e689456d467ae13f090d4b9db65a31617fa",
+    "exit_code": 0,
+    "launcher_spool_simulation": "M41_PATH_SIMULATION_PASS",
+    "launcher_manual_check_sha256": "67e938aec653ab77aee2474f496ba6fe2f595fb125909848313d2e82a827e342",
+    "environment": {
+      "python": "3.10.16",
+      "torch": "2.8.0+cu126",
+      "numpy": "1.26.4",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU"
+    },
+    "canonical_LF_report_manifest_readback_pack": "experiments/chronological_runs/contra_network_m41_final",
+    "canonical_LF_readback_summary_sha256": "a6f5da7d74b29e014b801220338dceea6e4f7d11c2c5e8627a9d96ac80bdc914"
+  },
+  "preceding_server_M40": {
+    "job_id": 1171068,
+    "tests": 83,
+    "exit_code": 0,
+    "torch": "2.3.1+cu121",
+    "gpu": "Tesla V100-SXM2-32GB",
+    "pasted_log_sha256": "bda7a3312e75f815313c2b037d20274415476dac7bdf99411b714f8af6e15e7d"
+  },
+  "result": {
+    "schema": "incident_capacity_network_m41_v1",
+    "status": "M41_NETWORK_INPUT_PACK_COMPLETE_EXPLORATORY",
+    "main_training_ready": false,
+    "online_semantics_certified": false,
+    "original_train_samples": 3604,
+    "nodes": 496,
+    "distinct_cutoffs": 3346,
+    "frozen_trigger_location_replays": 3604,
+    "candidate_pairs": 482,
+    "metadata_clear_pairs": 457,
+    "metadata_chain_nodes": 476,
+    "metadata_chain_fraction": 0.9596774193548387,
+    "conservative_no_ramp_chain_nodes": 216,
+    "conservative_metadata_clear_pairs": 211,
+    "metadata_chain_components": 20,
+    "metadata_internal_edges": 456,
+    "metadata_boundary_edges": 266,
+    "mapped_ramp_sources": 254,
+    "unmapped_ramp_sources": 11,
+    "numeric_90pct_metadata_chain_nodes": 476,
+    "jointly_certified_nodes": 0,
+    "majority_joint_gate_passed": false,
+    "numeric_duplicate_groups": [
+      [
+        402542,
+        402543
+      ],
+      [
+        402071,
+        402070
+      ],
+      [
+        424096,
+        424104
+      ],
+      [
+        414838,
+        414829
+      ]
+    ],
+    "report_entities": 7999,
+    "associated_report_entities": 5939,
+    "information_available": {
+      "new_reports": true,
+      "ramp_exchanges": true
+    },
+    "report_memberships": 13035,
+    "cutoffs_with_multiple_reports": 2916,
+    "cutoffs_with_linked_reports": 3242,
+    "max_reports_at_cutoff": 15,
+    "policy": {
+      "lookback_minutes": 60,
+      "association_radius_km": 1.0,
+      "catalog_nearest_station_radius_km": 5.0,
+      "catalog_postmile_tolerance_source_units": 10,
+      "scope": "source rows preceding original train cutoffs by at most 60 minutes; same road/direction within 5km of model station, plus original trigger IDs",
+      "recorded_dt_and_location_at_first_report_assumed": true,
+      "first_publication_time_available": false,
+      "source_versions_available": false,
+      "duration_description_type_included": false
+    },
+    "source_report_conflicts": [],
+    "primary_evaluation": "unchanged original trigger-conditioned rows; 1/multiplicity weights saved for separate sensitivity only",
+    "source_provenance": {
+      "source_order": [
+        "flow",
+        "occupancy",
+        "speed"
+      ],
+      "evidence_status": "inferred_from_publication_and_numeric_ranges_not_declared_by_source_matrix_metadata",
+      "flow_units": "source_units",
+      "occupancy_units": "unconfirmed_source_units",
+      "speed_units": "unconfirmed_source_units"
+    },
+    "original_inputs_sha256": {
+      "data/summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+      "data/context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+      "data/station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+      "data/train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+      "data/train_context.npz": "f7b9644110fb42893c46c4e9a405c00ababed5a46adbe4825fcb79f9740d5d74",
+      "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+      "metadata/manifest.json": "743be1502ba780e639735a6213cd6a31aa601e44f2c47fd49be96f81611aef28",
+      "metadata/source_sensor_subset.tsv": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+      "history/summary.json": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+      "history/train_history.npy": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+      "history/train_multichannel_scaler.json": "f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4",
+      "data/scaler.json": "abc1853df9ca35de9a42bc15ff3db67dff3978c7c028a0daa19eed027eb540ba",
+      "data/adjacency.npy": "8cedf3a01e4c5d228793ef1eafeb99d924126b207b55841b569265ac53b62beb"
+    },
+    "report_inputs_sha256": {
+      "manifest.json": "9a5c60b462422ba7d50a0d345a73c905fb95bcf9547181daef08099ddf8c8340",
+      "train_locations.tsv": "d2d87e6ebdb4d0fa79efa9edccde99cf736bf881324495460338c862c3e44a07"
+    },
+    "traffic_Y_or_gap_read": false,
+    "validation_test_traffic_read": false,
+    "real_optimizer_updates": 0,
+    "sources_sha256": {
+      "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+      "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091"
+    },
+    "outputs_sha256": {
+      "common_structure_mask.npy": "efa68e98fbdb8c5dedfd565945972ff0874020b78898c7a82d0fbfdec9a031bd",
+      "conservative_graph.json": "fc250d28b2d2bbe75a1dc734ebbca5b75dfb71189c6c3db26f8df9b194a1ddbb",
+      "cutoffs.json": "750bfc45839fdbb9024703ad8d456cb9d08563dc692262ebd37bc1b081962503",
+      "graph.json": "10a69e096f0157d97391929077fe5b1fd3857609334bb4cf1720e9fe68796ac4",
+      "information_ablation.json": "b30ded3b0d41ad142564e8bebd23c987acf1bea41acd529b6c7dd00f968b42ea",
+      "numeric_cutoff_available.npy": "1b8164e063743ed7e16153f39f14572a1c0f09bfc08d67123047f12bc1768a80",
+      "reports.csv": "2a8ecd0db3267fe84f7b1861632183983a1620c9a1ff196348d0a3b124586eef",
+      "roads.csv": "fa5732cec19e9c0dffa1ea6bd7bd6611a9797a36800e26f2b86b6574e99f08c4",
+      "stations.csv": "34ad02ad5df5b39c03e91762d1d483c6d2352c6697546794f297e12894bca881"
+    },
+    "readback": {
+      "status": "REAL_X_METADATA_HYPOTHESIS_ROLLOUT_PASS",
+      "sample_index": 1023,
+      "report_count": 13,
+      "report_supported_edges": 8,
+      "condition_coefficient_abs_max": 0.007360249757766724,
+      "initial_on_off_abs_max": 0.0,
+      "boundary_on_off_abs_max": 0.0,
+      "initial_fusion_abs_max": 0.0,
+      "cpu_or_cuda_device": "cuda:0",
+      "graph_scope": "metadata_hypothesis_only_not_certified_real_topology"
+    },
+    "information_profile_readback": [
+      {
+        "name": "ramps_0_reports_0",
+        "information_status": {
+          "new_reports": {
+            "available": true,
+            "requested": false,
+            "enabled": false,
+            "missing_reason": null
+          },
+          "ramp_exchanges": {
+            "available": true,
+            "requested": false,
+            "enabled": false,
+            "missing_reason": null
+          }
+        },
+        "graph_edges": 262,
+        "nodes": 216,
+        "report_slots": 0
+      },
+      {
+        "name": "ramps_0_reports_1",
+        "information_status": {
+          "new_reports": {
+            "available": true,
+            "requested": true,
+            "enabled": true,
+            "missing_reason": null
+          },
+          "ramp_exchanges": {
+            "available": true,
+            "requested": false,
+            "enabled": false,
+            "missing_reason": null
+          }
+        },
+        "graph_edges": 262,
+        "nodes": 216,
+        "report_slots": 13
+      },
+      {
+        "name": "ramps_1_reports_0",
+        "information_status": {
+          "new_reports": {
+            "available": true,
+            "requested": false,
+            "enabled": false,
+            "missing_reason": null
+          },
+          "ramp_exchanges": {
+            "available": true,
+            "requested": true,
+            "enabled": true,
+            "missing_reason": null
+          }
+        },
+        "graph_edges": 722,
+        "nodes": 476,
+        "report_slots": 0
+      },
+      {
+        "name": "ramps_1_reports_1",
+        "information_status": {
+          "new_reports": {
+            "available": true,
+            "requested": true,
+            "enabled": true,
+            "missing_reason": null
+          },
+          "ramp_exchanges": {
+            "available": true,
+            "requested": true,
+            "enabled": true,
+            "missing_reason": null
+          }
+        },
+        "graph_edges": 722,
+        "nodes": 476,
+        "report_slots": 13
+      }
+    ]
+  },
+  "road_coverage": [
+    {
+      "road": "I580-E",
+      "direction": "E",
+      "stations": "12",
+      "metadata_chain_nodes": "12",
+      "numeric_90pct_metadata_chain_nodes": "12",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "I580-W",
+      "direction": "W",
+      "stations": "12",
+      "metadata_chain_nodes": "12",
+      "numeric_90pct_metadata_chain_nodes": "12",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "I680-N",
+      "direction": "N",
+      "stations": "74",
+      "metadata_chain_nodes": "70",
+      "numeric_90pct_metadata_chain_nodes": "70",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "I680-S",
+      "direction": "S",
+      "stations": "81",
+      "metadata_chain_nodes": "76",
+      "numeric_90pct_metadata_chain_nodes": "76",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "I80-E",
+      "direction": "E",
+      "stations": "38",
+      "metadata_chain_nodes": "38",
+      "numeric_90pct_metadata_chain_nodes": "38",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "I80-W",
+      "direction": "W",
+      "stations": "47",
+      "metadata_chain_nodes": "47",
+      "numeric_90pct_metadata_chain_nodes": "47",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR160-N",
+      "direction": "N",
+      "stations": "1",
+      "metadata_chain_nodes": "0",
+      "numeric_90pct_metadata_chain_nodes": "0",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR160-S",
+      "direction": "S",
+      "stations": "1",
+      "metadata_chain_nodes": "0",
+      "numeric_90pct_metadata_chain_nodes": "0",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR24-E",
+      "direction": "E",
+      "stations": "21",
+      "metadata_chain_nodes": "21",
+      "numeric_90pct_metadata_chain_nodes": "21",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR24-W",
+      "direction": "W",
+      "stations": "21",
+      "metadata_chain_nodes": "21",
+      "numeric_90pct_metadata_chain_nodes": "21",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR242-N",
+      "direction": "N",
+      "stations": "9",
+      "metadata_chain_nodes": "7",
+      "numeric_90pct_metadata_chain_nodes": "7",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR242-S",
+      "direction": "S",
+      "stations": "8",
+      "metadata_chain_nodes": "8",
+      "numeric_90pct_metadata_chain_nodes": "8",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR4-E",
+      "direction": "E",
+      "stations": "85",
+      "metadata_chain_nodes": "83",
+      "numeric_90pct_metadata_chain_nodes": "83",
+      "jointly_certified_nodes": "0"
+    },
+    {
+      "road": "SR4-W",
+      "direction": "W",
+      "stations": "86",
+      "metadata_chain_nodes": "81",
+      "numeric_90pct_metadata_chain_nodes": "81",
+      "jointly_certified_nodes": "0"
+    }
+  ],
+  "excluded_metadata_chain_nodes": [
+    {
+      "station_id": 401393,
+      "road": "SR242-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 402542,
+      "road": "I680-S",
+      "direction": "S",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 400516,
+      "road": "SR4-W",
+      "direction": "W",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 402071,
+      "road": "SR160-N",
+      "direction": "N",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 401434,
+      "road": "I680-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 402541,
+      "road": "I680-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 424096,
+      "road": "SR4-E",
+      "direction": "E",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 405931,
+      "road": "I680-S",
+      "direction": "S",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 401401,
+      "road": "SR242-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 414838,
+      "road": "SR4-W",
+      "direction": "W",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 424111,
+      "road": "SR4-W",
+      "direction": "W",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 424110,
+      "road": "SR4-W",
+      "direction": "W",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 414829,
+      "road": "SR4-E",
+      "direction": "E",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 404694,
+      "road": "I680-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 402103,
+      "road": "I680-S",
+      "direction": "S",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 402540,
+      "road": "I680-N",
+      "direction": "N",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 405930,
+      "road": "I680-S",
+      "direction": "S",
+      "numeric_alias": "False"
+    },
+    {
+      "station_id": 424104,
+      "road": "SR4-W",
+      "direction": "W",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 402070,
+      "road": "SR160-S",
+      "direction": "S",
+      "numeric_alias": "True"
+    },
+    {
+      "station_id": 402543,
+      "road": "I680-S",
+      "direction": "S",
+      "numeric_alias": "True"
+    }
+  ],
+  "scientific_status": "EXPLORATORY_METADATA_STRUCTURE_AND_INPUT_INTERFACE_ONLY_NO_FORECAST_GAIN",
+  "source_bundle_files": {
+    "experiments/chronological/report_metadata/manifest.json": "9a5c60b462422ba7d50a0d345a73c905fb95bcf9547181daef08099ddf8c8340",
+    "experiments/chronological/report_metadata/README.md": "5aa6eba7a77f9edd6ef2106c7a6cbc51535115873312ee23153f87cde8e5612d",
+    "experiments/chronological/report_metadata/train_locations.tsv": "d2d87e6ebdb4d0fa79efa9edccde99cf736bf881324495460338c862c3e44a07"
+  },
+  "checked_sources_sha256": {
+    "src/utils/capacity_network_inputs.py": "41fd519e2cdba48bd1853dc81944127823107228af9769ddda4e3298fd5cdb81",
+    "experiments/chronological/prepare_incident_capacity_network.py": "07087d9d82bed6c4516048255f28d2ff5d1e1dc5d5eba870a440127f50653091",
+    "tests/test_capacity_network_inputs.py": "6f0b9cfea787c2b0978c4c9a74d456f282ed62a57c86028b027639d7c5bcd4d6",
+    "experiments/chronological/run_incident_capacity_network.sh": "bbe1ff5db15fbd947572aa89afac5f4548c19649ec4a53ca03784fc58dd8480e",
+    "experiments/chronological/submit_incident_capacity_network.sh": "b1de297fa359bccaa132714bb48b8c55d474c61e897fdad55c0fb4e583cd99ef"
+  }
+}

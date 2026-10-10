@@ -31,6 +31,8 @@
 
 [机器证据](incident_capacity_fusion_m40_20261010.json)保留源码、日志、资格清单和合成checkpoint哈希。真实输入没有优化器更新、没有Y/val/test交通读取。真实资格待补，不能将该工程通过写成真实传播收益。
 
+后续服务器作业1171068（2026-10-10 12:17，gpu12）已在Python3.10.21、Torch2.3.1+cu121、Tesla V100-SXM2-32GB完整执行上述83项检查并退出0；原3604训练X/496站接口、合成主梯度与保存继续均通过。用户回传日志的哈希保存在[M4.1机器证据](incident_capacity_network_m41_20261010.json)。这补充服务器兼容性证据，真实图与真实收益资格仍未由M4.0认证。
+
 ## 原训练清单适配及资格清单
 
 `OriginalCapacityInputs`复用已验真的v11a `train_history.npy`，保持原3604训练记录、496站与X时钟。原主干的输入仍是标准化flow、time-of-day、weekday；新增历史才是flow/occupancy/speed，不混用这两组三通道。归一化来自原训练清单，候选9943 X和它的p95不进入本适配。
