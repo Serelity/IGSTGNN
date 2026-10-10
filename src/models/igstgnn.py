@@ -150,7 +150,8 @@ class IGSTGNN(BaseModel):
         history_data = history_data[:, :, :, :num_feat]
         return history_data, node_emb_u, node_emb_d, time_in_day_feat, day_in_week_feat
 
-    def forward(self, history_data, label=None, incident_data=None, sensor_data=None):  # (b, t, n, f)
+    def forward(self, history_data, label=None, incident_data=None, sensor_data=None,
+                forecast_delta=None):  # (b, t, n, f)
         state = (history_state(history_data)
                  if self._time_response_mode in ('conditioned', 'phase', 'phase_residual') else None)
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
@@ -196,9 +197,9 @@ class IGSTGNN(BaseModel):
         inh_forecast_hidden = sum(inh_forecast_hidden_list)
         forecast_hidden = dif_forecast_hidden + inh_forecast_hidden
 
-        return self._decode_forecast(forecast_hidden, incident_inputs)
+        return self._decode_forecast(forecast_hidden, incident_inputs, forecast_delta)
 
-    def _decode_forecast(self, forecast_hidden, incident_inputs):
+    def _decode_forecast(self, forecast_hidden, incident_inputs, forecast_delta=None):
         # The released backbone predicts gap-sized blocks. Apply Eq.14 at each
         # real future step, while retaining the block head's channel ordering.
         gap = self._model_args['gap']
@@ -216,6 +217,11 @@ class IGSTGNN(BaseModel):
                 history_state=incident_inputs.get('history_state'),
                 report_age_minutes=incident_inputs.get('report_age_minutes'),
             )
+        if forecast_delta is not None:
+            if (forecast_delta.shape != step_hidden.shape or forecast_delta.dtype != step_hidden.dtype
+                    or forecast_delta.device != step_hidden.device or not torch.isfinite(forecast_delta).all()):
+                raise ValueError('Forecast residual axes, device, dtype or values mismatch')
+            step_hidden = step_hidden + forecast_delta
         forecast = self.out_fc_2(F.relu(self.out_fc_1(F.relu(step_hidden))))
         channels = torch.arange(self.horizon, device=forecast.device) % gap
         channels = channels.view(1, -1, 1, 1).expand(forecast.shape[0], -1, self.node_num, 1)

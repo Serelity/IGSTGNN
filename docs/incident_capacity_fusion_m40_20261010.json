@@ -1,0 +1,140 @@
+{
+  "schema": "incident_capacity_fusion_m40_validation_record_v1",
+  "date": "2026-10-10",
+  "status": "M40_ENGINEERING_CHECK_PASS",
+  "full_bash_run": "experiments/chronological_runs/contra_fusion_m40_20261010_113831_vg3CLo",
+  "test_groups": [
+    59,
+    4,
+    3,
+    11,
+    6
+  ],
+  "total_tests": 83,
+  "new_tests": 16,
+  "skips": 0,
+  "bash_exit_code": 0,
+  "full_check": {
+    "schema": "incident_capacity_fusion_m40_v1",
+    "status": "M40_ENGINEERING_CHECK_PASS",
+    "synthetic": {
+      "status": "SYNTHETIC_FUSION_PASS",
+      "graph_scope": "synthetic_only",
+      "initial_forecast_abs_max": 0.0,
+      "binding_capacity_gradient_checks": [
+        {
+          "update": 1,
+          "synthetic_loss_NOT_forecast_metric": 3.4517951011657715,
+          "capacity_gradient_l1": 0.11761420965194702,
+          "main_only_capacity_gradient_l1": null
+        },
+        {
+          "update": 2,
+          "synthetic_loss_NOT_forecast_metric": 3.3438427448272705,
+          "capacity_gradient_l1": 1.3002407550811768,
+          "main_only_capacity_gradient_l1": 1.2898433208465576
+        }
+      ],
+      "synthetic_updates": 2,
+      "checkpoint_feature_abs_max": 0.0,
+      "continuation_parameter_abs_max": 0.0,
+      "branch_parameters": {
+        "capacity": 7229,
+        "ordinary": 7473,
+        "ordinary_additional": 244
+      },
+      "budget_policy": "identical shared widths; ordinary has 244 extra active parameters; not exact matching",
+      "report_path": "coefficients -> capacity -> recurrence -> features -> residual",
+      "L1_local_control_implemented": false
+    },
+    "original_train_X": {
+      "status": "ORIGINAL_TRAIN_X_STATE_INTERFACE_PASS",
+      "samples": 3604,
+      "nodes": 496,
+      "nodes_with_available_history": 496,
+      "original_trigger_path_preserved": true,
+      "state_range_UNTRAINED_NOT_density": [
+        0.32798922061920166,
+        0.7067800760269165
+      ],
+      "source_hashes": {
+        "data/summary.json": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+        "data/context_manifest.json": "b08796709e476c6d86720e785ec99503dbd18ee1a1807a1ab393f3cd8d8b209f",
+        "data/station_ids.npy": "7cb30df99650ad6668e99c30766fd62cdc40662ed4351bf593216eb4882c42cb",
+        "data/train_manifest.csv": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+        "data/train_context.npz": "f7b9644110fb42893c46c4e9a405c00ababed5a46adbe4825fcb79f9740d5d74",
+        "sensors": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+        "metadata/manifest.json": "743be1502ba780e639735a6213cd6a31aa601e44f2c47fd49be96f81611aef28",
+        "metadata/source_sensor_subset.tsv": "5a1a8a4b96239ec941dba3806e0472f1f230a598e36146da856f9756f77511bc",
+        "history/summary.json": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+        "history/train_history.npy": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+        "history/train_multichannel_scaler.json": "f25a7dec2ff6ab1e5e9af1b12f6a9d9802e4616590d609f704d8455cd23555f4",
+        "data/scaler.json": "abc1853df9ca35de9a42bc15ff3db67dff3978c7c028a0daa19eed027eb540ba",
+        "data/adjacency.npy": "8cedf3a01e4c5d228793ef1eafeb99d924126b207b55841b569265ac53b62beb"
+      },
+      "normalization": "original_unique_train_X_global_channel_mean_as_asinh_reference_not_capacity",
+      "qualification": {
+        "original_train_samples": 3604,
+        "nodes": 496,
+        "road_direction_groups": 14,
+        "distinct_cutoffs": 3346,
+        "extra_trigger_rows_sharing_cutoff": 258,
+        "evaluation_policy": "preserve_original_trigger_conditioned_rows; unique_cutoff_weighting_not_yet_frozen",
+        "trigger_reports_are_not_complete_visible_report_sets": true,
+        "graph_qualification_established": false,
+        "certified_directed_exchange_nodes": 0,
+        "candidate_pairs": 482,
+        "metadata_prefilter_pairs": 217,
+        "zero_certified_means_evidence_pending_not_proven_inapplicable": true,
+        "online_semantics_certified": false,
+        "main_training_ready": false
+      },
+      "qualified_graph_edges": 0,
+      "fusion_test_scope": "evidence_pending_zero_increment_fallback_only",
+      "initial_forecast_abs_max": 0.0,
+      "real_optimizer_updates": 0,
+      "real_Y_read": false,
+      "validation_test_traffic_read": false,
+      "seconds": 1.4105642000004082
+    },
+    "scientific_status": "NO_REAL_PREDICTIVE_GAIN_OR_REAL_NETWORK_MECHANISM_CLAIM",
+    "main_training_ready": false,
+    "real_optimizer_updates": 0,
+    "environment": {
+      "python": "3.10.16",
+      "torch": "2.8.0+cu126",
+      "device": "cuda:0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU"
+    },
+    "sources_sha256": {
+      "src/models/incident_capacity_fusion.py": "dd01d598fd19fc3d7cff47900dc82bf3e41ef08ed4452d4f1f6ecbc71c555f21",
+      "src/models/igstgnn.py": "73fe8e663ed43183c78aeb56524b9f5b5f574f30ce1ed392d05f3735eebe5c56",
+      "src/utils/capacity_fusion_inputs.py": "aee419fcd8ddb4fc18b06b6703148aefea949762ff88f4028b79dd377cc3470c",
+      "tests/test_incident_capacity_fusion.py": "60962418a8416957e371efb6c3cd9622f1fefe86274138d3ded3098a9c26be03",
+      "tests/test_capacity_fusion_inputs.py": "cc54b17d167fddda7572bfbd25fa82d5fb671afdec0604ae03faf0aed88689d2",
+      "experiments/chronological/check_incident_capacity_fusion.py": "3c9a90001872e4c15b852f3e6c3e13133de0bda1f17e3bc7039a0deaed8d2a2b",
+      "experiments/chronological/run_incident_capacity_fusion.sh": "6a4509e757fd5367e5f19ea734edd9420067b50fb05763bc011760b86d059616"
+    }
+  },
+  "artifacts_sha256": {
+    "check/candidate_connection_qualification.csv": "d0172f3805dead5359f2857e0e90a61458b742314acf2a2077045064ac5eda30",
+    "check/fusion_synthetic_only.pt": "96da31e510e1c5b9b9242a462d45bf3996612f19ceb8b833300de8faf44e0d3e",
+    "check/qualification.json": "2b02b89b58eaef332e79016ccd0163c1a45c9c3757f92c45cacd8b8e5a2172ff",
+    "check/road_qualification.csv": "465c6fd4bd8857f7181ba4d898aa54060c3aa67dd727243db61550aba2b6da77",
+    "check/station_qualification.csv": "777ed0bee084467a348e09da9a5ef2e3ed84c74f3fb77812ee1ca525b4857765",
+    "check/summary.json": "2690361cfd0de30d43cacc4c0887b103abfc6048aceb5f054b7bddc15b0753a6",
+    "exit_code": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "run.log": "a835a7a5c09611f322870d0c75a58c6230cd949b7f8332147ec8c3d3cb485a4b"
+  },
+  "torch_231_compatibility": {
+    "tests": 12,
+    "status": "PASS",
+    "exit_code": 0,
+    "python": "3.11.14",
+    "torch": "2.3.1+cu121",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "scope": "fusion tests only; no NumPy adapter or complete Bash",
+    "preexisting_numpy_bridge_warning": true
+  },
+  "interpretation": "engineering and original-X interface only; real graph is pending; no predictive gain claim"
+}
