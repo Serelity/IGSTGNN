@@ -43,7 +43,15 @@
 
 ## 服务器运行
 
-先在终端独立更新`research/chronological-tiid`分支，运行脚本没有Git。已有GPU分配内：
+先在终端独立更新`research/chronological-tiid`分支。两个Bash入口均没有Git。在Slurm登录节点直接提交：
+
+```bash
+bash experiments/chronological/submit_incident_capacity_fusion.sh
+```
+
+提交入口内置V100分区、1张GPU、3个CPU、12G内存和15分钟时限，默认服务器已有igstgnn Python及cuda:0；自动把现有`M40_*`数据环境变量传给作业。显示`Submitted batch job ...`表示提交成功，日志为仓库根目录`slurm-capacity_m40-作业号.out`。可用`M40_PARTITION`或`M40_PYTHON`覆盖分区和Python。若手动指定原v11a历史目录，将其作为该提交入口的唯一参数。
+
+已有GPU分配内直接执行验收：
 
 ```bash
 M40_DEVICE=cuda:0 bash experiments/chronological/run_incident_capacity_fusion.sh
@@ -56,14 +64,5 @@ M40_DEVICE=cuda:0 bash experiments/chronological/run_incident_capacity_fusion.sh
 ```
 
 可用环境变量`M40_PYTHON`、`M40_DATA_DIR`、`M40_SENSORS`、`M40_HISTORY_DIR`指定既有资产。默认设备CPU，并在日志开头打印设备。成功时输出`M40_ENGINEERING_CHECK_PASS`与退出码0；`check/summary.json`分别记录合成接入、原训练X检查和未完成资格。
-
-从仓库根目录提交V100作业：
-
-```bash
-sbatch --partition=gpu_v100 --job-name=capacity_m40 --nodes=1 --ntasks=1 \
-  --cpus-per-task=3 --gres=gpu:1 --mem=12G --time=00:15:00 \
-  --output=slurm-%x-%j.out \
-  --wrap='M40_PYTHON=/seu_share/home/huangkai/220243809/.conda/envs/igstgnn/bin/python M40_DEVICE=cuda:0 bash experiments/chronological/run_incident_capacity_fusion.sh'
-```
 
 下一开发任务是补齐真实连接/边界和截止点报告集合适配，再实现L1及历史前缀观测外推监督，随后进入原3604/917配对短跑。不能用本轮回退结果替代多数道路共同适用性验收，也不能把合成梯度损失写成预测收益。
