@@ -1,0 +1,60 @@
+{
+  "schema": "incident_capacity_propagation_v21_development_contract",
+  "status": "ENGINEERING_ONLY_NOT_FORMAL_TRAINING_READY",
+  "source_plan_sha256": "fe21d4eb780375ac239e661319af7d3c0dc2372cf005dbb9be5f35a30c78a381",
+  "current_delivery": "M3.0 latent exchange operator and explicit target-window interface",
+  "reference": {
+    "latent_channels": 4,
+    "observation_interval_minutes": 5,
+    "default_substeps_per_interval": 4,
+    "sensitivity_substeps_per_interval": 8,
+    "rate_range": [0.05, 2],
+    "kappa": 1.0,
+    "kappa_trainable": false,
+    "capacity_coefficients": 4,
+    "capacity_loss_range": [0, 0.95],
+    "trajectory": "cubic_bernstein_on_explicit_cutoff_relative_time",
+    "ordinary_report_entry": "same_edge_capacity_tensor_only",
+    "full_model_parameter_matching_complete": false
+  },
+  "first_supervised_stage": {
+    "policy": "original_frozen_manifests_after_input_qualification",
+    "train_samples": 3604,
+    "validation_samples": 917,
+    "stations": 496,
+    "data_summary_sha256": "7611ac36a0e8ac5fdfb11a9d09487d3505f0fae24b0da05af7cbdcd24f113dd7",
+    "train_manifest_sha256": "de64ae74a7e237959467d17bfd0798e902e358df999abff20c2786dc0734234c",
+    "validation_manifest_sha256": "2dfd7c4462fe14e1232117717ab9f37141a97babf99020f14bcb2f3c142673b9",
+    "candidate_9943_X_role": "input_and_coverage_audit_only_not_supervised_expansion",
+    "candidate_Y_built": false,
+    "report_set_reconstruction_complete": false,
+    "evaluation_weighting_frozen": false,
+    "test_used": false
+  },
+  "clock": {
+    "evidence": "publisher_declared_interval_start_not_independent_online_certification",
+    "cutoff_relative_zero_minutes": 0,
+    "X_label_offsets_minutes": [-65, -10],
+    "last_X_interval_end_minutes": -5,
+    "excluded_source_intervals_minutes": [[-5, 0], [0, 5]],
+    "initial_state_semantics": "infer_state_at_cutoff_zero_from_legal_X_not_last_X_observation",
+    "future_rollout_minutes": [0, 65],
+    "first_Y_window_minutes": [5, 10],
+    "last_Y_window_minutes": [60, 65],
+    "target_window_endpoints_minutes": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65]
+  },
+  "blocked_before_confirmatory_training": [
+    "joint_source_and_input_time_qualification",
+    "verified_directed_edges_and_boundary_evidence",
+    "cutoff_visible_report_set_and_duplicate_trigger_policy",
+    "shared_history_and_report_capacity_encoder",
+    "IGSTGNN_fusion_and_auxiliary_observation_head",
+    "full_effective_parameter_budget_and_L1_equations"
+  ],
+  "physical_interpretation": {
+    "main_model": "physics_inspired_latent_exchange_not_vehicle_conservation",
+    "local_CTM_does_not_certify_main_model": true,
+    "local_observable_response_bridge_complete": false,
+    "physical_contract_status": "PHYSICAL_CONTRACT_REQUIRED"
+  }
+}

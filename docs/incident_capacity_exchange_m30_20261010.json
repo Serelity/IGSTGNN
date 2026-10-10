@@ -1,0 +1,234 @@
+{
+  "schema": "incident_capacity_exchange_m30_local_evidence_v1",
+  "full_workflow_tests": {
+    "count": 47,
+    "skipped": 0,
+    "status": "PASS",
+    "exit_code": 0,
+    "log_sha256": "654c80420ca2105d0b0153a4e6e2d9903a214244951d2391347587ea3d8e1d8c"
+  },
+  "torch231_new_tests": {
+    "count": 21,
+    "skipped": 0,
+    "status": "PASS",
+    "log_sha256": "6c5ab5acc771a432a08e9bd496d885bd64d47e82b5397521f1cc4bc5d77aa6f8"
+  },
+  "full_workflow": {
+    "schema": "incident_capacity_exchange_m30_v1",
+    "status": "M30_ENGINEERING_CHECK_PASS",
+    "scenarios": {
+      "status": "PASS",
+      "low_demand_exactly_unchanged": true,
+      "upstream_difference_at_15_minutes": 0.3787282705307007,
+      "maximum_balance_residual": 4.470348358154297e-08,
+      "four_vs_eight_substep_state_abs_max": 0.008564889430999756,
+      "sensitivity_tolerance": 0.05,
+      "tolerance_scope": "synthetic development diagnostic in latent state units, not empirical accuracy"
+    },
+    "gradients": {
+      "status": "PASS",
+      "synthetic_updates_before_checkpoint": 2,
+      "coefficient_checks": [
+        {
+          "artificial_response_loss_NOT_forecast_metric": 0.009889451786875725,
+          "gradient_l1": [
+            0.05285494774580002,
+            0.049877725541591644,
+            0.04918384179472923,
+            0.04693052917718887
+          ]
+        },
+        {
+          "artificial_response_loss_NOT_forecast_metric": 0.009495759382843971,
+          "gradient_l1": [
+            0.051816120743751526,
+            0.04887809604406357,
+            0.048184219747781754,
+            0.04596862941980362
+          ]
+        }
+      ],
+      "checkpoint_state_replay_abs_max": 0.0,
+      "continuation_parameter_abs_max": 0.0,
+      "condition_off_is_history_capacity_NOT_unit_capacity": true
+    },
+    "full_axis": {
+      "status": "SYNTHETIC_496_AXIS_PASS",
+      "graph_scope": "synthetic_only",
+      "real_road_mapping_used": false,
+      "real_joint_qualification_assessed": false,
+      "arms": {
+        "capacity_limited": {
+          "learned_operator_parameters": 0,
+          "feature_shape": [
+            1,
+            12,
+            496,
+            16
+          ],
+          "state_shape": [
+            1,
+            53,
+            496,
+            4
+          ],
+          "balance_residual_abs_max": 2.384185791015625e-07
+        },
+        "ordinary": {
+          "learned_operator_parameters": 244,
+          "feature_shape": [
+            1,
+            12,
+            496,
+            16
+          ],
+          "state_shape": [
+            1,
+            53,
+            496,
+            4
+          ],
+          "balance_residual_abs_max": null
+        }
+      },
+      "seconds": 0.42129339999974036,
+      "full_model_parameter_matching_complete": false,
+      "budget_note": "Operator-only control; shared encoders, observation head and IGSTGNN fusion are M4 work"
+    },
+    "kappa": 1.0,
+    "real_traffic_used": false,
+    "real_optimizer_updates": 0,
+    "igstgnn_fusion_implemented": false,
+    "full_training_started": false,
+    "physical_contract_status": "PHYSICAL_CONTRACT_REQUIRED",
+    "scientific_status": "NO_PREDICTIVE_GAIN_OR_REAL_NETWORK_PHYSICS_CLAIM",
+    "environment": {
+      "python": "3.10.16",
+      "torch": "2.8.0+cu126",
+      "device": "cuda:0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "cuda_visible_devices": null
+    },
+    "source_sha256": {
+      "src/models/incident_capacity_exchange.py": "51a044f1c1eaec1e0f49ee7914692ef92954a8e3ec690d434bc5434afba9482c",
+      "tests/test_incident_capacity_exchange.py": "7e36bbcc5157731661c5fe575380fa5fa80f9f0c68c8cf59e30e0bc47ad356cd",
+      "experiments/chronological/check_incident_capacity_exchange.py": "5cd5eeac36db39a3444c7557f7c27ab1657e61acb10932f1bfde54d97b078aac",
+      "experiments/chronological/run_incident_capacity_exchange.sh": "e80fe6d77d74af200de8f130532c83dd8dd6c6a158911b52911d2875dba1a943",
+      "experiments/chronological/incident_capacity_exchange_v21.json": "310da096c615c3447eaf8b9c05921f12b587a56104c618cc2ca35ef37f97bd90",
+      "src/models/igstgnn.py": "3f5bdde8e1e33fd1164ebf2cd65fcc28235cba32be36b063de172580e02e56f4"
+    },
+    "output_sha256": {
+      "shared_head_synthetic_only.pt": "51d6abbe1bdf1f1842cc284ba9a70af2d825cb1642e48f6c76c82cc0fe0b385b",
+      "synthetic_responses.csv": "10625df3aa6fafe046de578a808e2fa71ee5a90eea8dcc704314da7e40d4e1ff"
+    }
+  },
+  "torch231_compatibility": {
+    "schema": "incident_capacity_exchange_m30_v1",
+    "status": "M30_ENGINEERING_CHECK_PASS",
+    "scenarios": {
+      "status": "PASS",
+      "low_demand_exactly_unchanged": true,
+      "upstream_difference_at_15_minutes": 0.3787282705307007,
+      "maximum_balance_residual": 4.470348358154297e-08,
+      "four_vs_eight_substep_state_abs_max": 0.008564889430999756,
+      "sensitivity_tolerance": 0.05,
+      "tolerance_scope": "synthetic development diagnostic in latent state units, not empirical accuracy"
+    },
+    "gradients": {
+      "status": "PASS",
+      "synthetic_updates_before_checkpoint": 2,
+      "coefficient_checks": [
+        {
+          "artificial_response_loss_NOT_forecast_metric": 0.009889451786875725,
+          "gradient_l1": [
+            0.05285494774580002,
+            0.049877725541591644,
+            0.04918384179472923,
+            0.04693052917718887
+          ]
+        },
+        {
+          "artificial_response_loss_NOT_forecast_metric": 0.009495759382843971,
+          "gradient_l1": [
+            0.051816120743751526,
+            0.04887809604406357,
+            0.048184219747781754,
+            0.04596862941980362
+          ]
+        }
+      ],
+      "checkpoint_state_replay_abs_max": 0.0,
+      "continuation_parameter_abs_max": 0.0,
+      "condition_off_is_history_capacity_NOT_unit_capacity": true
+    },
+    "full_axis": {
+      "status": "SYNTHETIC_496_AXIS_PASS",
+      "graph_scope": "synthetic_only",
+      "real_road_mapping_used": false,
+      "real_joint_qualification_assessed": false,
+      "arms": {
+        "capacity_limited": {
+          "learned_operator_parameters": 0,
+          "feature_shape": [
+            1,
+            12,
+            496,
+            16
+          ],
+          "state_shape": [
+            1,
+            53,
+            496,
+            4
+          ],
+          "balance_residual_abs_max": 2.384185791015625e-07
+        },
+        "ordinary": {
+          "learned_operator_parameters": 244,
+          "feature_shape": [
+            1,
+            12,
+            496,
+            16
+          ],
+          "state_shape": [
+            1,
+            53,
+            496,
+            4
+          ],
+          "balance_residual_abs_max": null
+        }
+      },
+      "seconds": 0.2783625000001848,
+      "full_model_parameter_matching_complete": false,
+      "budget_note": "Operator-only control; shared encoders, observation head and IGSTGNN fusion are M4 work"
+    },
+    "kappa": 1.0,
+    "real_traffic_used": false,
+    "real_optimizer_updates": 0,
+    "igstgnn_fusion_implemented": false,
+    "full_training_started": false,
+    "physical_contract_status": "PHYSICAL_CONTRACT_REQUIRED",
+    "scientific_status": "NO_PREDICTIVE_GAIN_OR_REAL_NETWORK_PHYSICS_CLAIM",
+    "environment": {
+      "python": "3.11.14",
+      "torch": "2.3.1+cu121",
+      "device": "cuda:0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "cuda_visible_devices": null
+    },
+    "source_sha256": {
+      "src/models/incident_capacity_exchange.py": "51a044f1c1eaec1e0f49ee7914692ef92954a8e3ec690d434bc5434afba9482c",
+      "tests/test_incident_capacity_exchange.py": "7e36bbcc5157731661c5fe575380fa5fa80f9f0c68c8cf59e30e0bc47ad356cd",
+      "experiments/chronological/check_incident_capacity_exchange.py": "5cd5eeac36db39a3444c7557f7c27ab1657e61acb10932f1bfde54d97b078aac",
+      "experiments/chronological/run_incident_capacity_exchange.sh": "e80fe6d77d74af200de8f130532c83dd8dd6c6a158911b52911d2875dba1a943",
+      "experiments/chronological/incident_capacity_exchange_v21.json": "310da096c615c3447eaf8b9c05921f12b587a56104c618cc2ca35ef37f97bd90",
+      "src/models/igstgnn.py": "3f5bdde8e1e33fd1164ebf2cd65fcc28235cba32be36b063de172580e02e56f4"
+    },
+    "output_sha256": {
+      "shared_head_synthetic_only.pt": "9fccdf296cb3f76413ac83294f2ed3ed96649cc7a2e251640d751fcaf443ce6b",
+      "synthetic_responses.csv": "10625df3aa6fafe046de578a808e2fa71ee5a90eea8dcc704314da7e40d4e1ff"
+    }
+  }
+}
