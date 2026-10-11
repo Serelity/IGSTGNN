@@ -1,0 +1,96 @@
+{
+  "schema": "is11_server_first_epoch_from_user_log_v1",
+  "date": "2026-10-11",
+  "slurm_job": "1173155",
+  "host": "gpu05",
+  "started": "2026-10-11T16:32:05+08:00",
+  "status": "IS11_PAIRED_STAGE_COMPLETE",
+  "common_epoch": 1,
+  "evidence_source": "user_pasted_stdout_only",
+  "server_artifacts_downloaded": false,
+  "run_directory": "/seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-code/experiments/chronological_runs/contra_is11_20261011_163218_259a3f",
+  "session_directory": "session_20261011_163220_5c6bfd",
+  "reported_arms": {
+    "B0": {
+      "train_mae": 49.91165894168293,
+      "validation_mae": 36.581029577632435,
+      "seconds": 61.42320441454649
+    },
+    "B1": {
+      "train_mae": 49.91240774637253,
+      "validation_mae": 34.514476333172354,
+      "seconds": 59.63334479276091
+    },
+    "B2": {
+      "train_mae": 49.26690605107049,
+      "validation_mae": 35.701978843974594,
+      "seconds": 91.64466625079513
+    },
+    "B3": {
+      "train_mae": 50.127890327713345,
+      "validation_mae": 36.474372750667406,
+      "seconds": 100.18421730957925
+    }
+  },
+  "arithmetic_comparisons": [
+    {
+      "candidate": "B1",
+      "control": "B0",
+      "gain": 2.0665532444600814,
+      "gain_percent": 5.649248444673851,
+      "time_ratio": 0.9708602043992075
+    },
+    {
+      "candidate": "B2",
+      "control": "B0",
+      "gain": 0.8790507336578415,
+      "gain_percent": 2.4030234900642036,
+      "time_ratio": 1.4920202735155814
+    },
+    {
+      "candidate": "B3",
+      "control": "B0",
+      "gain": 0.10665682696502898,
+      "gain_percent": 0.2915632178659197,
+      "time_ratio": 1.6310483678681738
+    },
+    {
+      "candidate": "B3",
+      "control": "B2",
+      "gain": -0.7723939066928125,
+      "gain_percent": -2.163448446564662,
+      "time_ratio": 1.0931811027104923
+    },
+    {
+      "candidate": "B3",
+      "control": "B1",
+      "gain": -1.9598964174950524,
+      "gain_percent": -5.678476470498752,
+      "time_ratio": 1.680003321258293
+    }
+  ],
+  "b2_stability": {
+    "train": {
+      "clip_fraction": 0.07055650992361429,
+      "clip_abs_max": 0.6016969680786133
+    },
+    "validation": {
+      "clip_fraction": 0.06436677088138054,
+      "clip_abs_max": 0.5836305618286133
+    }
+  },
+  "epoch_seconds_sum": 312.8854327676818,
+  "remaining_nine_epochs_minutes_at_first_epoch_rate": 46.932814915152264,
+  "unseen_artifacts": [
+    "initialization.json",
+    "identity.json",
+    "per_arm_history_and_summary",
+    "checkpoints",
+    "per_window_errors",
+    "detailed_budget_flux_and_group_metrics"
+  ],
+  "decision": "Continue all four arms unchanged to absolute epoch 10; no arm elimination.",
+  "predictive_gain_confirmed": false,
+  "physical_mechanism_validated_by_this_stdout": false,
+  "test_read_reported_by_stdout": null
+}
