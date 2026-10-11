@@ -31,14 +31,14 @@ def verify_package(directory):
     report = {}
     for name, key in [('summary.json', 'files'), ('context_manifest.json', 'outputs')]:
         path = directory / name
-        meta = json.loads(path.read_text())
+        meta = json.loads(path.read_text(encoding='utf-8'))
         if name == 'summary.json' and (meta.get('source_version') != 8 or not meta.get('build_complete')):
             raise ValueError('Raw flow package is incomplete or has a different source version')
         for filename, expected in meta[key].items():
             if sha256(directory / filename) != expected:
                 raise ValueError(f'Package checksum mismatch: {filename}')
         report[name] = sha256(path)
-    context = json.loads((directory / 'context_manifest.json').read_text())
+    context = json.loads((directory / 'context_manifest.json').read_text(encoding='utf-8'))
     if context['schema'] != 'report_location_v1' or context['scope'] != 'conditional_development':
         raise ValueError('Unexpected event input schema or scope')
     return report

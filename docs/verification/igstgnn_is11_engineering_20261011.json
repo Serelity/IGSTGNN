@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-11",
+  "status": "IS11_LOCAL_ENGINEERING_PASS",
+  "predictive_gain_claim": false,
+  "check_run": "experiments\\chronological_runs\\contra_is11_check_20261011_111413_0681c2",
+  "environment": {
+    "python": "3.10.16 | packaged by conda-forge | (main, Apr  3 2025, 14:14:45) [MSC v.1943 64 bit (AMD64)]",
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "device": "cuda:0",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "train_rows": 4,
+  "validation_rows": 4,
+  "batch_size": 2,
+  "real_updates_per_arm": 2,
+  "source_sha256": {
+    "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_strength_gate.py": "b41d77e643396894f6cb0da7a0d549a4c287d95b67f0eeb79117bab7743234f2",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "src/models/incident_relative_capacity.py": "4f8dd3f8a70f95c71bdf709f4e5baf7a59f37e773d7d15e8e185a57f8cd2bb9a",
+    "src/base/model.py": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83",
+    "src/utils/chronological.py": "173492cd5c5dddf2e302e9931f2cf7488417b00275845e104dcdc480afba5b91",
+    "experiments/chronological/smoke.py": "7ec11cde59798f095bdaaabc0e35edac9a7cbe3a7c5f5bdbd521a5512b4009a7",
+    "experiments/chronological/train.py": "bc57dbc11d9d2edbf9030e0d3de4fcd884e6c2cab0aa38aa30861d9f61150ce3",
+    "experiments/chronological/train_internal_spatial.py": "371f03212141d6cb2d8599fcc8daa0804c4f87fc75e283fd885312b69b6663d4"
+  },
+  "graph": {
+    "nodes": 496,
+    "operator_nodes": 476,
+    "edges": 722,
+    "internal_edges": 456,
+    "boundary_edges": 266,
+    "road_direction_groups": 14,
+    "evidence_scope": "candidate_unverified",
+    "jointly_certified_nodes": 0
+  },
+  "initialization": {
+    "b0_b1_prediction_abs_max": 0.0,
+    "common_weights_identical": true,
+    "b2_b3_parameters_identical": true
+  },
+  "arms": {
+    "B0": {
+      "parameters": 443645,
+      "global_updates": 2,
+      "mechanisms": null
+    },
+    "B1": {
+      "parameters": 445278,
+      "global_updates": 2,
+      "mechanisms": null
+    },
+    "B2": {
+      "parameters": 458360,
+      "global_updates": 2,
+      "mechanisms": {
+        "clip_fraction": 0.09017127684407096,
+        "clip_abs_max": 0.4576086401939392
+      }
+    },
+    "B3": {
+      "parameters": 458360,
+      "global_updates": 2,
+      "mechanisms": {
+        "clip_fraction": 0.0,
+        "clip_abs_max": 0.0
+      }
+    }
+  },
+  "restricted_validation_maxima": {
+    "capacity_violation_max": 0.0,
+    "sending_violation_max": 5.960464477539063e-08,
+    "receiving_violation_max": 5.960464477539063e-08,
+    "float64_balance_abs_max": 1.8551945686340332e-06
+  },
+  "core_tests": {
+    "total": 67,
+    "passed": 65,
+    "skipped": 2,
+    "log": "experiments/chronological_runs/is11_core_tests_20261011.log"
+  },
+  "baseline_comparison": {
+    "baseline_commit": "bde35eeb9cedf10446641f7ad790b70c6185a456",
+    "native_prediction_abs_max": {
+      "with_report": 0.0,
+      "without_report": 0.0
+    },
+    "preexisting_legacy_gate_test_error": "KeyError: 'incident_embedding'",
+    "error_reproduced_on_baseline": true
+  },
+  "optional_train_X_audit": {
+    "status": "IS11_OPTIONAL_TRAIN_X_AUDIT_COMPLETE",
+    "summary_sha256": "9585576f18d78db3d9c4ee8be4e5d9af60af62b2744e43bb9d7ff0a604313d92",
+    "train_history_sha256": "0920788d147efdcecfbcbfcdc1f644bac46badc6e6b62fbd0de013d54cff3ab9",
+    "source_hash_verified": true,
+    "shape": [
+      3604,
+      12,
+      496,
+      3
+    ],
+    "channel_semantics": {
+      "source_order": [
+        "flow",
+        "occupancy",
+        "speed"
+      ],
+      "evidence_status": "inferred_from_publication_and_numeric_ranges_not_declared_by_source_matrix_metadata",
+      "flow_units": "source_units",
+      "occupancy_units": "unconfirmed_source_units",
+      "speed_units": "unconfirmed_source_units"
+    },
+    "source_cache": {
+      "months_verified": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "cached_rows_verified": 4960,
+      "unique_blob_hashes_verified": 4839
+    },
+    "channels": [
+      {
+        "index": 0,
+        "cells": 21451008,
+        "valid_nonnegative": 21451008,
+        "zero": 52033,
+        "missing_fraction": 0.0,
+        "minimum": 0.0,
+        "maximum": 1039.0
+      },
+      {
+        "index": 1,
+        "cells": 21451008,
+        "valid_nonnegative": 21451008,
+        "zero": 52021,
+        "missing_fraction": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.8263000249862671
+      },
+      {
+        "index": 2,
+        "cells": 21451008,
+        "valid_nonnegative": 21451008,
+        "zero": 0,
+        "missing_fraction": 0.0,
+        "minimum": 3.0,
+        "maximum": 84.0
+      }
+    ],
+    "history_slots": "0:12 materialized; excluded gap and Y absent from this array",
+    "timing_evidence": "existing materialization metadata only; no new source-time certification",
+    "source_imputation_certified": false,
+    "independent_observation_entities_certified": false,
+    "online_report_versions_certified": false,
+    "physical_units_certified": false,
+    "first_phase_inputs_changed": false,
+    "future_Y_read": false,
+    "validation_test_read": false,
+    "interpretation": "Finite arrays do not prove independent sensors or absence of upstream imputation"
+  },
+  "server_full_epoch_run": false,
+  "test_read": false
+}

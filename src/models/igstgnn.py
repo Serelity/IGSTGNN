@@ -151,12 +151,19 @@ class IGSTGNN(BaseModel):
         return history_data, node_emb_u, node_emb_d, time_in_day_feat, day_in_week_feat
 
     def forward(self, history_data, label=None, incident_data=None, sensor_data=None,
-                forecast_delta=None):  # (b, t, n, f)
+                forecast_delta=None, *, spatial_report_enabled=True,
+                tiid_report_enabled=True, return_spatial_details=False):  # (b, t, n, f)
+        if type(spatial_report_enabled) is not bool or type(tiid_report_enabled) is not bool:
+            raise ValueError('Report switches must be bool')
+        internal_spatial = hasattr(self, 'report_spatial_state')
+        if internal_spatial and forecast_delta is not None:
+            raise ValueError('IS1.1 cannot combine with an external forecast residual')
         state = (history_state(history_data)
                  if self._time_response_mode in ('conditioned', 'phase', 'phase_residual') else None)
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
 
         history_data = self.embedding(history_data)
+        report_free_history = history_data
         incident_inputs = None
         if incident_data is not None:
             if self._incident_schema == 'report_location_v1':
@@ -176,6 +183,15 @@ class IGSTGNN(BaseModel):
                 incident_inputs['history_state'] = state
             if self._time_response_mode in ('phase', 'phase_residual'):
                 incident_inputs['report_age_minutes'] = incident_data['report_age_minutes']
+        spatial_context = None
+        if internal_spatial:
+            if incident_data is None:
+                raise ValueError('IS1.1 requires cutoff clocks; use spatial_report_enabled=False for report OFF')
+            spatial_context = self.report_spatial_state(
+                report_free_history, incident_tod_feat, incident_day_feat,
+                incident_inputs['incident_embedding'], incident_data, self.internal_spatial_graph,
+                report_enabled=spatial_report_enabled)
+            spatial_context['collect'] = return_spatial_details
         static_graph, dynamic_graph = self._graph_constructor(node_embedding_u=node_embedding_u, node_embedding_d=node_embedding_d, 
                                                               history_data=history_data, time_in_day_feat=time_in_day_feat, 
                                                               day_in_week_feat=day_in_week_feat)
@@ -189,7 +205,9 @@ class IGSTGNN(BaseModel):
                                                                                   dynamic_graph, static_graph, 
                                                                                   node_embedding_u, node_embedding_d, 
                                                                                   time_in_day_feat, day_in_week_feat,
-                                                                                  incident_inputs=incident_inputs)
+                                                                                  incident_inputs=incident_inputs,
+                                                                                  **({'spatial_context': spatial_context}
+                                                                                     if spatial_context is not None else {}))
             dif_forecast_hidden_list.append(dif_forecast_hidden)
             inh_forecast_hidden_list.append(inh_forecast_hidden)
 
@@ -197,7 +215,11 @@ class IGSTGNN(BaseModel):
         inh_forecast_hidden = sum(inh_forecast_hidden_list)
         forecast_hidden = dif_forecast_hidden + inh_forecast_hidden
 
-        return self._decode_forecast(forecast_hidden, incident_inputs, forecast_delta)
+        prediction = self._decode_forecast(forecast_hidden,
+                                           incident_inputs if tiid_report_enabled else None, forecast_delta)
+        if return_spatial_details:
+            return {'prediction': prediction, 'spatial': spatial_context}
+        return prediction
 
     def _decode_forecast(self, forecast_hidden, incident_inputs, forecast_delta=None):
         # The released backbone predicts gap-sized blocks. Apply Eq.14 at each
@@ -453,6 +475,15 @@ class IncidentContextSpatialFusion(nn.Module):
         distance_mask = (incident_distances.abs().sum(dim=-1) > 0).float().unsqueeze(-1)
         
         K_incident = self.k_proj(incident_embedding).unsqueeze(1)
+        if getattr(self, 'state_spatial_mode', False):
+            enhanced_data = history_data.clone()
+            enhanced_data[:, -1] = self.output_norm(history_data[:, -1])
+            return enhanced_data, {
+                'incident_embedding': incident_embedding,
+                'incident_key': K_incident.squeeze(1),
+                'sensor_features': history_data.new_empty(history_data.shape[0], num_nodes, 0),
+                'distances': incident_distances,
+            }
         V_incident = self.v_proj(incident_embedding).unsqueeze(1)
         
         K_expanded = K_incident.expand(-1, num_nodes, -1)
@@ -480,6 +511,8 @@ class IncidentContextSpatialFusion(nn.Module):
         final_attn_weights = F.softmax(enhanced_attn_masked, dim=-1) * distance_mask
             
         incident_context = final_attn_weights * V_expanded
+        if hasattr(self, 'strength_gate'):
+            incident_context = incident_context * self.strength_gate(history_data, incident_data)
         enhanced_data = history_data.clone()
         enhanced_data[:, -1, :, :] = self.output_norm(history_data[:, -1, :, :] + incident_context)
         
@@ -499,12 +532,15 @@ class DecoupleLayer(nn.Module):
         self.inh_layer = InhBlock(hidden_dim, forecast_hidden_dim=fk_dim, **model_args)
 
     def forward(self, history_data, dynamic_graph, static_graph, node_embedding_u, node_embedding_d,
-                time_in_day_feat, day_in_week_feat, incident_inputs=None):
+                time_in_day_feat, day_in_week_feat, incident_inputs=None, spatial_context=None):
         gated_history_data = self.estimation_gate(
             node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat,
             history_data, incident_inputs=incident_inputs)
 
-        dif_backcast_seq_res, dif_forecast_hidden = self.dif_layer(history_data=history_data, gated_history_data=gated_history_data, dynamic_graph=dynamic_graph, static_graph=static_graph)
+        dif_backcast_seq_res, dif_forecast_hidden = self.dif_layer(
+            history_data=history_data, gated_history_data=gated_history_data,
+            dynamic_graph=dynamic_graph, static_graph=static_graph,
+            **({'spatial_context': spatial_context} if spatial_context is not None else {}))
 
         inh_backcast_seq_res, inh_forecast_hidden = self.inh_layer(dif_backcast_seq_res)         
         return inh_backcast_seq_res, dif_forecast_hidden, inh_forecast_hidden
@@ -629,10 +665,12 @@ class DifBlock(nn.Module):
         self.residual_decompose = ResidualDecomp([-1, -1, -1, hidden_dim])
 
 
-    def forward(self, history_data, gated_history_data, dynamic_graph, static_graph):
-        hidden_states_dif = self.localized_st_conv(gated_history_data, dynamic_graph, static_graph)
+    def forward(self, history_data, gated_history_data, dynamic_graph, static_graph, spatial_context=None):
+        extra = {'spatial_context': spatial_context} if spatial_context is not None else {}
+        hidden_states_dif = self.localized_st_conv(gated_history_data, dynamic_graph, static_graph, **extra)
 
-        forecast_hidden = self.forecast_branch(gated_history_data, hidden_states_dif, self.localized_st_conv, dynamic_graph, static_graph)
+        forecast_hidden = self.forecast_branch(gated_history_data, hidden_states_dif, self.localized_st_conv,
+                                              dynamic_graph, static_graph, **extra)
         backcast_seq = self.backcast_branch(hidden_states_dif)
 
         history_data = history_data[:, -backcast_seq.shape[1]:, :, :]
@@ -708,7 +746,7 @@ class STLocalizedConv(nn.Module):
         return st_local_graph
 
 
-    def forward(self, X, dynamic_graph, static_graph):
+    def forward(self, X, dynamic_graph, static_graph, spatial_context=None):
         X = X.unfold(1, self.k_t, 1).permute(0, 1, 2, 4, 3)
         batch_size, seq_len, node_num, kernel_size, num_feat = X.shape
 
@@ -728,6 +766,10 @@ class STLocalizedConv(nn.Module):
         X_0 = torch.mean(out, dim=-2)
         X_k = out.transpose(-3, -2).reshape(batch_size, seq_len, kernel_size*node_num, num_feat)
         hidden = self.gconv(support, X_k, X_0)
+        if hasattr(self, 'incident_exchange'):
+            if spatial_context is None:
+                raise ValueError('Missing internal spatial context')
+            hidden = hidden + self.incident_exchange(X_0, spatial_context)
         return hidden
 
 
@@ -740,7 +782,8 @@ class DifForecast(nn.Module):
         self.model_args = model_args
 
 
-    def forward(self, gated_history_data, hidden_states_dif, localized_st_conv, dynamic_graph, static_graph):
+    def forward(self, gated_history_data, hidden_states_dif, localized_st_conv, dynamic_graph, static_graph,
+                spatial_context=None):
         predict = []
         history = gated_history_data
         predict.append(hidden_states_dif[:, -1, :, :].unsqueeze(1))
@@ -752,7 +795,8 @@ class DifForecast(nn.Module):
                 _1 = torch.cat([_2] + _1, dim=1)
             else:
                 _1 = torch.cat(_1, dim=1)
-            predict.append(localized_st_conv(_1, dynamic_graph, static_graph))
+            predict.append(localized_st_conv(_1, dynamic_graph, static_graph,
+                           **({'spatial_context': spatial_context} if spatial_context is not None else {})))
         predict = torch.cat(predict, dim=1)
         predict = self.forecast_fc(predict)
         return predict

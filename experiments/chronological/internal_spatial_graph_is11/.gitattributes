@@ -1,0 +1,4 @@
+# Fingerprinted source artifacts must retain exact bytes across Windows/Linux checkouts.
+graph.json -text whitespace=cr-at-eol
+stations.csv -text whitespace=cr-at-eol
+source_summary.json -text whitespace=cr-at-eol
