@@ -48,8 +48,8 @@
 在仓库根目录运行：
 
 ```bash
-bash experiments/chronological/run_internal_spatial.sh \\
-  --run-dir experiments/chronological_runs/contra_is11_20261011_163218_259a3f \\
+bash experiments/chronological/run_internal_spatial.sh \
+  --run-dir experiments/chronological_runs/contra_is11_20261011_163218_259a3f \
   --epochs 10
 ```
 

@@ -1,6 +1,6 @@
 # IGSTGNN IS1.1：内部事故状态与受限空间传播实现
 
-日期：2026-10-11。状态：本地工程验收通过；服务器作业1173155已回传四组完整epoch1，IS11_PAIRED_STAGE_COMPLETE。B1首轮领先，B3优于同信息B2尚未得到支持，下一步保持四组与协议续到总计10轮。见[完整首轮分析](igstgnn_internal_spatial_is11_first_epoch_20261011.md)。首轮不构成最终预测收益。
+日期：2026-10-11。状态：本地工程验收通过；服务器作业1173155已回传四组累计epoch10，IS11_PAIRED_STAGE_COMPLETE。前10轮最佳MAE排序B1、B3、B2、B0；B3相对B2/B0有初步收益，仍未超过简单门控B1。B2验证裁剪约7.09%，需结合完整机制记录判读。下一步保持四组与协议续到总计30轮，见[十轮分析](igstgnn_internal_spatial_is11_epoch10_20261011.md)；[首轮分析](igstgnn_internal_spatial_is11_first_epoch_20261011.md)保留历史结果。当前不是确认性预测增益。
 
 本版落实用户《IGSTGNN_IS1.0_修改建议与执行清单_20261010.md》的 R1—R5。[IS1.0](igstgnn_internal_spatial_interface_plan_20261010.md) 保留为设计来源，读出和执行状态以本文件为准。
 
@@ -100,14 +100,14 @@ bash experiments/chronological/run_internal_spatial.sh --epochs 1
 
 开头打印Run directory，形如experiments/chronological_runs/contra_is11_时间_随机后缀。默认定位此前../data/chronological/Contra_Costa_v8_dev；如放别处，加--data-dir /实际原数据包目录，不传旧M4 run/history目录。
 
-首轮分析后，用同一个实际run续到总计10轮：
+四组已完成10轮。下一步用同一个实际run续到总计30轮：
 
 ```bash
 bash experiments/chronological/run_internal_spatial.sh \
-  --run-dir experiments/chronological_runs/实际contra_is11目录 --epochs 10
+  --run-dir experiments/chronological_runs/contra_is11_20261011_163218_259a3f --epochs 30
 ```
 
-30轮同理改--epochs 30，是绝对累计轮数。不要加--check；它只取首4条训练/验证、batch2，每组两次更新，身份与完整训练隔离。
+--epochs 30是绝对累计目标，本次每组计划新增20轮，保留原patience20早停规则；全部完成的轮内时间粗估约102分钟。不要加--check；它只取首4条训练/验证、batch2，每组两次更新，身份与完整训练隔离。
 
 ## 5. 独立的可选数据审查
 
@@ -119,6 +119,6 @@ audit_internal_spatial_optional_data.py只读取既有多通道训练X和元数�
 
 已验收单链、合流、分岔、开放/闭合收支、空图、节点/边重排、零分母、报告读取权限、20次空间覆盖、强制容量路径主预测梯度及保存恢复一致性。真实首4条训练/验证、每组两次更新已在本地CUDA完成，工程数据和检查点保存在独立check目录。
 
-本地Python3.10、Torch2.8/CUDA12.6；服务器沿用既有环境，作业1173155完整首轮已回传成功。该标准输出未附Torch/CUDA/GPU型号身份文件，未另行认证环境指纹。使用Torch已有基础算子，无新增pip依赖。没有按本地小样本MAE选模块或淘汰组；服务器首轮耗时和指标见独立分析。
+本地Python3.10、Torch2.8/CUDA12.6；服务器沿用既有环境，作业1173155四组累计10轮已回传成功。该标准输出未附Torch/CUDA/GPU型号身份文件，未另行认证环境指纹。使用Torch已有基础算子，无新增pip依赖。没有按本地小样本MAE选模块或淘汰组；服务器各阶段耗时和指标见独立分析。
 
 相关核心检查共67项，65项通过、2项旧Bash平台测试跳过。另检查旧v12c适配器测试发现其context缺少incident_embedding，已在开发前提交bde35ee上复现同一KeyError；该冻结实验接口保持原状。旧综合workflow在此Windows环境还出现OpenMP重复加载，未将其计入通过项。新B1使用独立端到端接口，已验证与原结构初始预测严格相同。对开发前源码的原模型有/无报告前向复核差值均为0。
