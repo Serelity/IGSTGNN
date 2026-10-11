@@ -1,6 +1,6 @@
 # IGSTGNN IS1.1：内部事故状态与受限空间传播实现
 
-日期：2026-10-11。状态：本地工程验收通过；服务器作业1173577已回传四组累计epoch30，IS11_PAIRED_STAGE_COMPLETE。前30轮最佳MAE排序B1、B0、B2、B3，B3未保持十轮时的最佳值优势；末10轮均值B3最低，但不改选模规则。B2验证裁剪约4.91%，完整机制记录尚待回读。下一步回读分组/机制并保持四组与冻结协议续到目标50轮，见[三十轮分析](igstgnn_internal_spatial_is11_epoch30_20261011.md)。[十轮](igstgnn_internal_spatial_is11_epoch10_20261011.md)与[首轮分析](igstgnn_internal_spatial_is11_first_epoch_20261011.md)保留历史结果；当前不是确认性预测增益。
+日期：2026-10-11；结果更新：2026-10-12。状态：本地工程验收通过；服务器作业1173577已成功续跑补齐四组累计epoch50，IS11_PAIRED_STAGE_COMPLETE。前50轮最佳MAE排序B3、B2、B0、B1，B3相对B0/B2改善约0.33%/0.24%，末5/10轮均值最低，第50轮单点略落后B0；当前仅为小幅正向信号。B2验证裁剪约4.50%，完整机制记录尚待回读。下一步四组与冻结协议不变续到目标70轮，见[五十轮分析](igstgnn_internal_spatial_is11_epoch50_20261012.md)。[三十轮](igstgnn_internal_spatial_is11_epoch30_20261011.md)、[十轮](igstgnn_internal_spatial_is11_epoch10_20261011.md)与[首轮分析](igstgnn_internal_spatial_is11_first_epoch_20261011.md)保留历史结果；当前不是确认性预测增益。
 
 本版落实用户《IGSTGNN_IS1.0_修改建议与执行清单_20261010.md》的 R1—R5。[IS1.0](igstgnn_internal_spatial_interface_plan_20261010.md) 保留为设计来源，读出和执行状态以本文件为准。
 
@@ -100,14 +100,14 @@ bash experiments/chronological/run_internal_spatial.sh --epochs 1
 
 开头打印Run directory，形如experiments/chronological_runs/contra_is11_时间_随机后缀。默认定位此前../data/chronological/Contra_Costa_v8_dev；如放别处，加--data-dir /实际原数据包目录，不传旧M4 run/history目录。
 
-四组已完成30轮。回读已保存分组/机制后，用同一个实际run续到目标累计50轮：
+四组已完成50轮。用同一个实际run续到目标累计70轮：
 
 ```bash
 bash experiments/chronological/run_internal_spatial.sh \
-  --run-dir experiments/chronological_runs/contra_is11_20261011_163218_259a3f --epochs 50
+  --run-dir experiments/chronological_runs/contra_is11_20261011_163218_259a3f --epochs 70
 ```
 
---epochs 50是绝对累计目标，本次每组计划新增20轮，保留原patience20早停、上限100及第38/46轮后的学习率下降；全部完成的轮内时间粗估约103分钟。50是执行/回读端点，不改变最终停止规则。不要加--check；它只取首4条训练/验证、batch2，每组两次更新，身份与完整训练隔离。
+--epochs 70是绝对累计目标，本次每组计划新增20轮，保留原patience20早停、上限100及学习率计划；全部完成的轮内时间粗估约103分钟。70是执行/回读端点，不改变最终停止规则。不要加--check；它只取首4条训练/验证、batch2，每组两次更新，身份与完整训练隔离。
 
 ## 5. 独立的可选数据审查
 
@@ -119,6 +119,6 @@ audit_internal_spatial_optional_data.py只读取既有多通道训练X和元数�
 
 已验收单链、合流、分岔、开放/闭合收支、空图、节点/边重排、零分母、报告读取权限、20次空间覆盖、强制容量路径主预测梯度及保存恢复一致性。真实首4条训练/验证、每组两次更新已在本地CUDA完成，工程数据和检查点保存在独立check目录。
 
-本地Python3.10、Torch2.8/CUDA12.6；服务器沿用既有环境，作业1173577四组累计30轮已回传成功。该标准输出未附Torch/CUDA/GPU型号身份文件，未另行认证环境指纹。使用Torch已有基础算子，无新增pip依赖。没有按本地小样本MAE选模块或淘汰组；服务器各阶段耗时和指标见独立分析。
+本地Python3.10、Torch2.8/CUDA12.6；服务器沿用既有环境，作业1173577四组累计50轮已回传成功。该标准输出未附Torch/CUDA/GPU型号身份文件，未另行认证环境指纹。使用Torch已有基础算子，无新增pip依赖。没有按本地小样本MAE选模块或淘汰组；服务器各阶段耗时和指标见独立分析。
 
 相关核心检查共67项，65项通过、2项旧Bash平台测试跳过。另检查旧v12c适配器测试发现其context缺少incident_embedding，已在开发前提交bde35ee上复现同一KeyError；该冻结实验接口保持原状。旧综合workflow在此Windows环境还出现OpenMP重复加载，未将其计入通过项。新B1使用独立端到端接口，已验证与原结构初始预测严格相同。对开发前源码的原模型有/无报告前向复核差值均为0。
