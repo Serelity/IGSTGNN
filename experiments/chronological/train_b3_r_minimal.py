@@ -1,8 +1,9 @@
-"""Train the pruned history-only B3R_MIN in a fresh, resumable run.
+"""Train B3R_MIN on author-published data by default.
 
 TIID, incident encoders and D are absent from the registered model. Historical
 traffic, calendar time, the original graph backbone, P and constrained latent
 exchange remain. Report metadata serves package audits and validation cohorts.
+The old v8 implementation below is retained only for --data-source chronological.
 """
 import argparse
 from datetime import datetime
@@ -301,6 +302,7 @@ def launch(args, device, initialization, audit):
     print('Session directory: '+str(session), flush=True)
     print('Initialization: '+initialization['status']+'; input scope: history flow/calendar only', flush=True)
     command = [sys.executable, '-X', 'utf8', '-u', str(Path(__file__).resolve()), '--worker', ARM,
+               '--data-source', 'chronological',
                '--run-dir', str(args.run_dir), '--data-dir', str(args.data_dir), '--graph-dir', str(args.graph_dir),
                '--protocol', str(args.protocol), '--epochs', str(args.epochs), '--seed', str(args.seed),
                '--device', args.device, '--threads', str(args.threads)]
@@ -332,6 +334,12 @@ def launch(args, device, initialization, audit):
 
 
 def main(argv=None):
+    router = argparse.ArgumentParser(add_help=False)
+    router.add_argument('--data-source', choices=('paper', 'chronological'), default='paper')
+    source, argv = router.parse_known_args(sys.argv[1:] if argv is None else argv)
+    if source.data_source == 'paper':
+        from experiments.chronological.train_b3_r_minimal_paper import main as paper_main
+        return paper_main(argv)
     args = parse_args(argv)
     torch.set_num_threads(args.threads)
     torch.use_deterministic_algorithms(True)

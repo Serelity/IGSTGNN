@@ -1,0 +1,34 @@
+{
+  "status": "B3R_MIN_PUBLISHED_DATA_LOCAL_VERIFICATION_PASS",
+  "data_source": "author_model_ready_release",
+  "default_entry": "experiments/chronological/train_b3_r_minimal.py",
+  "protocol": "experiments/chronological/b3_r_minimal_paper_v1.json",
+  "tests": {
+    "passed": 22,
+    "modules": ["tests.test_b3_r_minimal_paper", "tests.test_b3_r_minimal_model", "tests.test_b3_r_minimal_runner", "tests.test_b3_r_minimal_evaluation"]
+  },
+  "engineering_check": {
+    "directory": "experiments/chronological_runs/contra_b3r_min_paper_check_20261013_025726_36c5de",
+    "status": "ENGINEERING_CHECK_PASS",
+    "device": "cpu",
+    "stations": 496,
+    "batch_size": 2,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "epochs": 1,
+    "updates": 2,
+    "parameters": 435856
+  },
+  "release_counts": {"train": 3909, "validation": 837, "test": 839},
+  "release_files_sha256_verified": 6,
+  "chronological_checkpoints_rejected": true,
+  "continuous_vs_resumed_training_exact": true,
+  "batch_size_default": 48,
+  "batch_size_override_supported": true,
+  "batch_size_change_rejects_resume": true,
+  "test_payload_deserialized": true,
+  "test_evaluated": false,
+  "gpu_full_batch_verified": false,
+  "predictive_gain_claim": false,
+  "verification_scope": "local checks before Git publication"
+}

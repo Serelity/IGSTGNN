@@ -232,7 +232,7 @@ class MinimalRunnerTests(unittest.TestCase):
                                          'B3R_STRENGTH_INTERNAL_WORKER': str(root)+'|'+training.ARM}):
                 with patch.object(training, 'prepare', side_effect=AssertionError('Data accessed before guard')):
                     with self.assertRaisesRegex(ValueError, 'direct internal workers'):
-                        training.main(['--run-dir', str(root), '--device', 'cpu', '--worker', training.ARM])
+                        training.main(['--data-source', 'chronological', '--run-dir', str(root), '--device', 'cpu', '--worker', training.ARM])
 
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ cd "$REPO_DIR"
 printf 'Repository: %s\nStarted: %s\nHost: %s\nSlurm job: %s\n' "$REPO_DIR" "$(date --iso-8601=seconds)" "$(hostname)" "${SLURM_JOB_ID:-direct}"
 for argument in "$@"; do
   if [[ "$argument" == --check ]]; then
-    "$PYTHON_BIN" -X utf8 -m unittest tests.test_b3_r_minimal_model tests.test_b3_r_minimal_runner -v
+    "$PYTHON_BIN" -X utf8 -m unittest tests.test_b3_r_minimal_model tests.test_b3_r_minimal_runner tests.test_b3_r_minimal_paper -v
     break
   fi
 done

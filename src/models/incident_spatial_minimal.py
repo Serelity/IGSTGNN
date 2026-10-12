@@ -21,13 +21,15 @@ MAPPING_VERSION = 'b3r_to_history_prior_pruned_minimal_v1'
 CUTOFF_CLOCK_POLICY = 'last_history_slot_plus_two_5minute_slots_with_day_rollover'
 
 
-def cutoff_clock_from_history(history_data, *, num_feat=1, tpd=288):
+def cutoff_clock_from_history(history_data, *, num_feat=1, tpd=288, offset_slots=2):
     """Recover t0 from X's nominal clock, independently of incident contents.
 
-    The frozen package has x_end=t0-10 minutes. X contains 12 consecutive
-    five-minute slots. Floating-point roundoff in normalized clock channels is
+    The chronological package has x_end=t0-10 minutes (offset_slots=2).
+    The published package uses its last history slot (offset_slots=0).
+    X contains 12 consecutive five-minute slots. Floating-point roundoff is
     removed only after checking that they represent integer nominal slots.
     """
+    require(type(offset_slots) is int and offset_slots in (0, 2), 'Unknown minimal history clock policy')
     require(tpd == 288 and history_data.ndim == 4 and history_data.shape[1] == 12
             and history_data.shape[2] > 0 and history_data.shape[3] == num_feat+2,
             'Minimal model requires the 12-slot five-minute history clock contract')
@@ -42,7 +44,7 @@ def cutoff_clock_from_history(history_data, *, num_feat=1, tpd=288):
     slot, day = rounded.long().unbind(-1)
     require(bool(((slot >= 0) & (slot < tpd) & (day >= 0) & (day < 7)).all()),
             'History cutoff clock index is out of range')
-    future = slot+2
+    future = slot+offset_slots
     return future.remainder(tpd), (day+torch.div(future, tpd, rounding_mode='floor')).remainder(7)
 
 
@@ -103,7 +105,8 @@ class MinimalIGSTGNN(IGSTGNN):
                 'Report switches must be bool')
         require(forecast_delta is None, 'Minimal model cannot combine with an external forecast residual')
         cutoff_tod, cutoff_dow = cutoff_clock_from_history(
-            history_data, num_feat=self._model_args['num_feat'], tpd=self._model_args['tpd'])
+            history_data, num_feat=self._model_args['num_feat'], tpd=self._model_args['tpd'],
+            offset_slots=getattr(self, '_minimal_clock_offset_slots', 2))
         history_data, node_embedding_u, node_embedding_d, time_in_day_feat, day_in_week_feat = self._prepare_inputs(history_data)
         report_free_history = self.embedding(history_data)
         spatial_context = self.report_spatial_state(
@@ -129,14 +132,15 @@ class MinimalIGSTGNN(IGSTGNN):
         return {'prediction': prediction, 'spatial': spatial_context} if return_spatial_details else prediction
 
 
-def from_residual(model):
+def from_residual(model, *, clock_offset_slots=2):
     """Independently prune B3-R while exactly retaining every active tensor.
 
     Conversion is valid for fresh initialization or trained weights. It does
     not imply that training the smaller model reproduces full B3-R training.
     Reference forward equality is B3-R with both report paths disabled, when
-    its supplied cutoff clocks agree with X's frozen chronological contract.
+    its supplied cutoff clocks agree with the selected history clock policy.
     """
+    require(type(clock_offset_slots) is int and clock_offset_slots in (0, 2), 'Unknown minimal history clock policy')
     require(getattr(model, '_internal_spatial_mode', None) == 'state_restricted'
             and isinstance(model.report_spatial_state, ReportCapacityResidual)
             and getattr(model.icsf_module, 'state_spatial_mode', False)
@@ -154,6 +158,7 @@ def from_residual(model):
         result.report_spatial_state = HistoryCapacityPrior(result.report_spatial_state)
         del result.tiid_module
     result._minimal_variant = 'P_only_no_TIID_no_D'
+    result._minimal_clock_offset_slots = clock_offset_slots
     copied = result.state_dict()
     require(set(copied) < set(parent_state), 'Minimal conversion failed to prune registered tensors')
     require(all(torch.equal(value, parent_state[name]) for name, value in copied.items()),
@@ -174,10 +179,10 @@ def from_residual(model):
             groups[group] = groups.get(group, 0)+parameter.numel()
     certificate = dict(
         mapping_version=MAPPING_VERSION, mode='P_only_no_TIID_no_D',
-        cutoff_clock_policy=CUTOFF_CLOCK_POLICY,
+        cutoff_clock_policy=CUTOFF_CLOCK_POLICY if clock_offset_slots == 2 else 'last_published_history_slot',
         prediction_inputs=['historical_flow', 'historical_nominal_tod_dow', 'candidate_directed_graph'],
         prediction_equivalence='same_weights_B3R_spatial_report_enabled_false_tiid_report_enabled_false',
-        equivalence_clock_condition='legacy_report_cutoff_clock_equals_last_history_clock_plus_two_slots',
+        equivalence_clock_condition='reference_cutoff_clock_equals_last_history_clock_plus_'+str(clock_offset_slots)+'_slots',
         parent_state_sha256=parent_hash, retained_shared_state_sha256=tensor_state_hash(copied),
         retained_shared_state_specification={name: dict(shape=list(value.shape), dtype=str(value.dtype))
                                              for name, value in copied.items()},
