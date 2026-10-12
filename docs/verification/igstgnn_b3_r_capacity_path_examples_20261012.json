@@ -1,0 +1,113 @@
+{
+  "schema": "b3_r_capacity_path_examples_v1",
+  "date": "2026-10-12",
+  "status": "LOCAL_SYNTHETIC_CAPACITY_PATH_EXAMPLES_PASS",
+  "scope": "local examples on the existing B3 exchange_step, not integrated B3-R validation",
+  "device": "cpu",
+  "dtype": "float64",
+  "torch_version": "2.8.0+cu126",
+  "sources_sha256": {
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93"
+  },
+  "script_sha256": "b656592c0b659ecaf2e4eba4395db8aadf67ddcdea2a2520f9544f24edb12de4",
+  "cases": {
+    "endpoint_minimum_masks_node_change": {
+      "before": [
+        0.3,
+        0.8
+      ],
+      "after": [
+        0.3,
+        0.6
+      ],
+      "edge_before": 0.3,
+      "edge_after": 0.3,
+      "gradient_before": [
+        1.0,
+        0.0
+      ]
+    },
+    "sending_budget_cancels_capacity_change": [
+      {
+        "capacity": 0.4,
+        "proposal": 0.9,
+        "flux": 0.1,
+        "total_flux_derivative_wrt_capacity": 0.0,
+        "capacity_cap_triggered": true
+      },
+      {
+        "capacity": 0.2,
+        "proposal": 0.9,
+        "flux": 0.1,
+        "total_flux_derivative_wrt_capacity": 0.0,
+        "capacity_cap_triggered": true
+      }
+    ],
+    "receiving_budget_cancels_capacity_change": [
+      {
+        "capacity": 0.4,
+        "proposal": 0.9,
+        "flux": 0.09999999999999998,
+        "total_flux_derivative_wrt_capacity": 2.7755575615628914e-17,
+        "capacity_cap_triggered": true
+      },
+      {
+        "capacity": 0.2,
+        "proposal": 0.9,
+        "flux": 0.09999999999999998,
+        "total_flux_derivative_wrt_capacity": 5.551115123125783e-17,
+        "capacity_cap_triggered": true
+      }
+    ],
+    "capacity_sensitive_positive": {
+      "capacity": 0.2,
+      "proposal": 0.7,
+      "flux": 0.2,
+      "total_flux_derivative_wrt_capacity": 1.0,
+      "capacity_cap_triggered": true,
+      "finite_difference_derivative": 1.000000000001
+    },
+    "shared_sending_cancels_common_factor": [
+      {
+        "common_capacity_factor": 1.0,
+        "flux": [
+          0.06666666666666667,
+          0.03333333333333333
+        ],
+        "first_edge_derivative_wrt_factor": 0.0
+      },
+      {
+        "common_capacity_factor": 0.5,
+        "flux": [
+          0.06666666666666667,
+          0.03333333333333333
+        ],
+        "first_edge_derivative_wrt_factor": 0.0
+      }
+    ],
+    "conditioned_proposal_can_reverse_local_monotonicity": {
+      "constructed_proposal": "sigmoid(1-2*C), not a trained network",
+      "rows": [
+        {
+          "capacity": 0.8,
+          "proposal": 0.35434369377420455,
+          "flux": 0.35434369377420455,
+          "total_flux_derivative_wrt_capacity": -0.4575684809133146,
+          "capacity_cap_triggered": false
+        },
+        {
+          "capacity": 0.7,
+          "proposal": 0.401312339887548,
+          "flux": 0.401312339887548,
+          "total_flux_derivative_wrt_capacity": -0.4805214914830583,
+          "capacity_cap_triggered": false
+        }
+      ]
+    }
+  },
+  "full_main_forecast_loss_checked": false,
+  "b3_r_model_implemented": false,
+  "real_data_or_checkpoints_read": false,
+  "server_run_changed": false
+}
