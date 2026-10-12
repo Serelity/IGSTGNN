@@ -1,0 +1,87 @@
+{
+  "status": "B3R_STRENGTH_G11_LOCAL_ENGINEERING_PASS",
+  "date": "2026-10-12",
+  "comparison_head": "1299c84",
+  "test_total": 49,
+  "all_tests_passed": true,
+  "test_runs": [
+    {
+      "command": "python -X utf8 -m unittest tests.test_b3_r_strength_model -v",
+      "count": 12,
+      "seconds": 10.776
+    },
+    {
+      "command": "python -X utf8 -m unittest tests.test_b3_r_strength_runner -v",
+      "count": 7,
+      "seconds": 24.145
+    },
+    {
+      "command": "python -X utf8 -m unittest tests.test_b3_r tests.test_b3_r_gate_model tests.test_b3_r_gate_runner",
+      "count": 30,
+      "seconds": 31.878
+    }
+  ],
+  "bash_syntax_passed": true,
+  "frozen_B3R_and_G10_files_unchanged": true,
+  "new_trainer_cli": {
+    "command": "python -X utf8 -u experiments/chronological/train_b3_r_strength.py --check --device cpu --threads 1",
+    "run": "experiments/chronological_runs/contra_b3rg11_check_20261012_231854_78734c",
+    "status": "B3RSTRENGTH_PAIRED_STAGE_COMPLETE",
+    "rows": 4,
+    "nodes": 496,
+    "batch_size": 2,
+    "completed_epochs": {
+      "B3R": 1,
+      "B3R_HALF": 1,
+      "B3R_GATE": 1,
+      "B3R_NO_D": 1
+    },
+    "initialization": "B3RSTRENGTH_INITIALIZATION_PAIR_PASS",
+    "nonzero_D_gate_prediction_and_capacity_exact": true,
+    "no_D_gradient_keys": {
+      "report_spatial_state.D.0.weight": null,
+      "report_spatial_state.D.0.bias": null,
+      "report_spatial_state.D.2.weight": null,
+      "report_spatial_state.D.2.bias": null
+    },
+    "no_D_strength_status": "not_computed",
+    "scope": "engineering_only"
+  },
+  "original_B3R_replication": {
+    "old_checkpoint": "experiments/chronological_runs/contra_b3rg_original_control_replication_20261012_01/B3R/last.pt",
+    "new_checkpoint": "experiments/chronological_runs/contra_b3rg11_check_20261012_231854_78734c/B3R/last.pt",
+    "exact_fields": [
+      "arm",
+      "completed_epoch",
+      "model_state",
+      "optimizer_state",
+      "scheduler_state",
+      "best_metric",
+      "best_model_state",
+      "wait",
+      "global_updates",
+      "rng_policy",
+      "torch_rng",
+      "cuda_rng"
+    ],
+    "shared_history_numeric_fields_exact": true,
+    "excluded_history_fields": [
+      "seconds",
+      "mechanisms.schema"
+    ]
+  },
+  "server_new_model_gain_verified": false,
+  "new_model_probe_adapted": false,
+  "test_read": false,
+  "predictive_gain_claim": false,
+  "files_sha256": {
+    ".gitattributes": "e9695c29f6c472eabcd0473eb579c7d43bbdd7f691ec38eda9b5eb4dd40eab4e",
+    "src/models/incident_spatial_strength.py": "3fba3ed6c49d014c74969bf80bafba681c9bc83049c48b5b6dda0c1b66e42dc3",
+    "experiments/chronological/train_b3_r_strength.py": "61a834225ba61ca458f30197e015db1d070e974c42b985bc20c41ed8c38672bb",
+    "experiments/chronological/internal_spatial_b3_r_strength_g11.json": "0aa77b1196f124609e540cade07d9b50b768938ff3c785fd024373a0bbd711f4",
+    "experiments/chronological/run_b3_r_strength.sh": "8f86273b65cffe3d52142265a0be90b16721a7d4689ebffc75f203354c9d421a",
+    "tests/test_b3_r_strength_model.py": "2ffe87a72606779b8d632ddb9b8036d5eb81df2ca6a06560a6cf0dc998c07360",
+    "tests/test_b3_r_strength_runner.py": "7a32acef7d1aa15665dc0e06c25e4f535750c82e06e5dbdb4cff66fba71bc296",
+    "docs/igstgnn_b3_r_strength_g11_20261012.md": "e48993161aecb005bd2dcd6e71de00a5c927c69becffa07f89efebf3af51ab68"
+  }
+}
