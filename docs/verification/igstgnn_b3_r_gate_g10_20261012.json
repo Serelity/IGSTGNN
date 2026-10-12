@@ -1,0 +1,77 @@
+{
+  "status": "B3R_GATE_G10_LOCAL_ENGINEERING_PASS",
+  "date": "2026-10-12",
+  "environment": {
+    "torch": "2.8.0+cu126",
+    "device": "cpu",
+    "threads": 1
+  },
+  "tests": {
+    "count": 50,
+    "seconds": 29.815,
+    "passed": true,
+    "command": "python -X utf8 -m unittest tests.test_b3_r_gate_model tests.test_b3_r_gate_runner tests.test_b3_r_joint_gain tests.test_b3_r tests.test_b3_r_gain_analysis -v"
+  },
+  "bash_syntax_passed": true,
+  "frozen_training_files_unchanged_against_head": true,
+  "new_trainer_cli": {
+    "run": "experiments/chronological_runs/contra_b3rg_check_20261012_220538_8b14e8",
+    "status": "B3RGATE_PAIRED_STAGE_COMPLETE",
+    "rows": 4,
+    "nodes": 496,
+    "batch_size": 2,
+    "completed_epochs": {
+      "B3R": 1,
+      "B3R_HALF": 1,
+      "B3R_GATE": 1
+    }
+  },
+  "original_control_replication": {
+    "source_checkpoint": "experiments/chronological_runs/contra_b3rg_original_control_replication_20261012_01/B3R/last.pt",
+    "comparison_checkpoint": "experiments/chronological_runs/contra_b3rg_check_20261012_220538_8b14e8/B3R/last.pt",
+    "exact_checkpoint_fields": [
+      "arm",
+      "completed_epoch",
+      "model_state",
+      "optimizer_state",
+      "scheduler_state",
+      "best_metric",
+      "best_model_state",
+      "wait",
+      "global_updates",
+      "rng_policy",
+      "torch_rng",
+      "cuda_rng"
+    ],
+    "common_history_numeric_values_exact": true,
+    "excluded_history_fields": [
+      "seconds",
+      "mechanisms.schema"
+    ],
+    "new_diagnostic_fields_allowed": true
+  },
+  "joint_cli": {
+    "source": "experiments/chronological_runs/contra_b3r_check_20261012_151258_9ea59c/b3r_path_probe_20261012_203501_7f98dd",
+    "output": "experiments/chronological_runs/contra_b3r_check_20261012_151258_9ea59c/b3r_joint_gain_20261012_220324_ba5082",
+    "status": "B3R_JOINT_GAIN_ANALYSIS_PASS",
+    "csv_rows": 117,
+    "source_artifacts_preserved": true,
+    "new_inference_calls": 0,
+    "scope": "engineering_only"
+  },
+  "server_full_validation_analyzed_locally": false,
+  "new_model_predictive_gain_claim": false,
+  "files_sha256": {
+    ".gitattributes": "da00e22872ec2d0fa3d4c3264f43e1dbb3acce39d2ebd4cce47db3ce8a8a591f",
+    "src/models/incident_spatial_attenuation.py": "237fd132ff7150c8e35b7ddd2cf8e00090913f867ae10fbdf403420fff89b5db",
+    "experiments/chronological/train_b3_r_gate.py": "bfabb8471ae243d694f4ec33aa09261e1b58b92e06d4cc257c1bdc3d705f1f13",
+    "experiments/chronological/internal_spatial_b3_r_gate_v1.json": "6db18f7ffd01205c309623591e70609b98cdc371c3152330c5966a9bb0766889",
+    "experiments/chronological/run_b3_r_gate.sh": "04e7222415d7f22ee7a1f8d71b4b5120fcb302a2b00e38ac37ae5c4989e28683",
+    "experiments/chronological/analyze_b3_r_joint_gain.py": "3b623b654b728e87e40c450af51b3671aaa169bcaffe48a682d9c401287f1ade",
+    "experiments/chronological/run_b3_r_joint_gain.sh": "53e717fd250d1a29a887c6eeca04ffb69bdeae2ea899e7c52b8021d3ff200ecc",
+    "tests/test_b3_r_gate_model.py": "9b48133518ce388f39d2522aaaecab1554a5aad30fe80fc8cef388d0b96be5b0",
+    "tests/test_b3_r_gate_runner.py": "5b4eb207e3b89b0ef8f6ae3c1a2b545795353338f7fa843b38e610fb6a0e67b1",
+    "tests/test_b3_r_joint_gain.py": "b79cbf92befd98877c9e52b4c68e0e5f5a854b5e934e003cf733dd978db99e99",
+    "docs/igstgnn_b3_r_gate_g10_20261012.md": "b22df3a24c4b0cb815ea920c099f82a25e8d74c6091602604265b7b66160e109"
+  }
+}
