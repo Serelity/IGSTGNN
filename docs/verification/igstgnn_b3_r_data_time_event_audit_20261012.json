@@ -1,0 +1,65 @@
+{
+  "schema": "b3r_development_time_event_audit_v1",
+  "status": "OFFLINE_AUDIT_RECORDED_WITH_MISSING_EVIDENCE",
+  "blocking_contract_conflict": false,
+  "scope": "conditional_offline_screening",
+  "main_training_ready": false,
+  "online_time_audit_pass": false,
+  "unseen_event_generalization_certified": false,
+  "train_rows": 3604,
+  "validation_rows": 917,
+  "stations": 496,
+  "checks": {
+    "nominal_windows_and_age": {
+      "status": "confirmed",
+      "failures": [],
+      "evidence": "development manifests; reader also validates context clocks/age"
+    },
+    "report_time_semantics": {
+      "status": "missing",
+      "evidence": "report_time field does not certify first publication time"
+    },
+    "cutoff_report_version": {
+      "status": "assumed",
+      "certified_initial_report": false,
+      "evidence": [
+        "Recorded freeway/direction/postmile known at first report",
+        "Publisher-declared nominal calendar; no certified timezone/DST"
+      ],
+      "missing": "versioned positions and publication/ingestion timestamps"
+    },
+    "training_label_nominal_order": {
+      "status": "confirmed",
+      "max_train_target_time": "2023-08-31T21:35:00",
+      "min_validation_cutoff": "2023-09-01T01:55:00"
+    },
+    "label_publication_latency": {
+      "status": "missing",
+      "evidence": "no certified latency/availability timestamps"
+    },
+    "shared_target_slots": {
+      "status": "confirmed",
+      "shared_nominal_time_slots": 0,
+      "shared_potential_station_slot_records": 0,
+      "examples": [],
+      "evidence": "nominal target timestamps and common station axis; not observation publication times"
+    },
+    "cross_split_event_ids": {
+      "status": "confirmed",
+      "shared_ids": [],
+      "shared_count": 0,
+      "train_unique_ids": 3604,
+      "validation_unique_ids": 917,
+      "evidence": "package incident_id equality; identity source/online availability not certified"
+    },
+    "event_identity_provenance": {
+      "status": "missing",
+      "evidence": "package ID equality alone does not certify unseen-event generalization"
+    },
+    "timezone_dst": {
+      "status": "assumed",
+      "evidence": "publisher nominal calendar; no certified timezone/DST"
+    }
+  },
+  "test_read": false
+}

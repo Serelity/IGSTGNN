@@ -1,0 +1,42 @@
+test_diagnostics_once_per_forward_exact_coverage_and_off_not_computed (tests.test_b3_r.ModelTests) ... ok
+test_expected_zero_response_under_saturated_budget_and_nonbottleneck_endpoint (tests.test_b3_r.ModelTests) ... ok
+test_full_forecast_mae_starts_d_then_hidden_task_gradients (tests.test_b3_r.ModelTests) ... ok
+test_initial_prediction_mapping_common_parameters_and_buffers (tests.test_b3_r.ModelTests) ... ok
+test_no_report_region_is_unavailable_and_bottlenecks_separate_open_edges (tests.test_b3_r.ModelTests) ... ok
+test_nonzero_delta_mask_and_spatial_off_skip_d_but_preserve_tiid (tests.test_b3_r.ModelTests) ... ok
+test_open_internal_empty_capacity_maps_and_gradient_bottleneck (tests.test_b3_r.ModelTests) ... ok
+test_audit_separates_missing_evidence_from_observed_nominal_conflict (tests.test_b3_r.RunnerTests) ... ok
+test_isolated_loop_leaves_original_globals_intact_and_off_is_distinct_identity (tests.test_b3_r.RunnerTests) ... ok
+test_new_checkpoint_resume_matches_continuous_and_rejects_cross_mode_before_mutation (tests.test_b3_r.RunnerTests) ... {"arm": "B3R", "epoch": 1, "train_mae_macro": 1.0001316169897716, "validation_mae_macro": 1.2438806494077046, "best_metric": 1.2438806494077046, "seconds": 0.4199369999987539}
+{"arm": "B3R", "epoch": 2, "train_mae_macro": 1.2142374416192372, "validation_mae_macro": 1.061214119195938, "best_metric": 1.061214119195938, "seconds": 0.40064730000085547}
+{"arm": "B3R", "epoch": 1, "train_mae_macro": 1.0001316169897716, "validation_mae_macro": 1.2438806494077046, "best_metric": 1.2438806494077046, "seconds": 0.4084891999991669}
+{"arm": "B3R", "epoch": 2, "train_mae_macro": 1.2142374416192372, "validation_mae_macro": 1.061214119195938, "best_metric": 1.061214119195938, "seconds": 0.4032530000004044}
+{"arm": "B3R", "status": "ALREADY_COMPLETE_FOR_REQUEST", "completed_epoch": 2}
+ok
+test_b2_clipping_and_flux_gradient_are_separate (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_closed_zero_empty_isolated_and_reordered_graphs (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_equal_in_out_changes_throughput_with_zero_displacement (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_fixed_proposal_capacity_gradient_and_readout_detects_throughput (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_invalid_configuration_leaves_native_unchanged (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_invalid_latent_values_rejected (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_main_prediction_report_gradient_when_only_hard_capacity_path_is_available (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_native_b1_identity_and_b2_b3_parameter_pairing (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_report_access_and_all_spatial_calls_and_main_loss_gradients (tests.test_incident_spatial.IncidentSpatialTests) ... G:\paper\IGSTGNN_open_source\code\tests\test_incident_spatial.py:118: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:836.)
+  self.assertGreater(float((off['prediction']-all_off).abs().max()), 0.)
+ok
+test_split_shares_sending_and_merge_shares_receiving_independent_hand_solution (tests.test_incident_spatial.IncidentSpatialTests) ... ok
+test_bad_checkpoint_identity_fails_before_state_mutation (tests.test_internal_spatial_training.TrainingTests) ... ok
+test_five_layers_all_forecast_calls_and_empty_metrics (tests.test_internal_spatial_training.TrainingTests) ... ok
+test_gpu_name_is_audit_field_and_protocol_controls_resume (tests.test_internal_spatial_training.TrainingTests) ... ok
+test_resume_next_epoch_matches_continuous_including_optimizer_and_scheduler (tests.test_internal_spatial_training.TrainingTests) ... {"arm": "B3", "epoch": 1, "train_mae_macro": 1.0292460918426514, "validation_mae_macro": 1.2534787058830261, "best_metric": 1.2534787058830261, "seconds": 0.4029387000009592}
+{"arm": "B3", "epoch": 2, "train_mae_macro": 1.2428877005974452, "validation_mae_macro": 1.0955973267555237, "best_metric": 1.0955973267555237, "seconds": 0.40242440000292845}
+{"arm": "B3", "epoch": 1, "train_mae_macro": 1.0292460918426514, "validation_mae_macro": 1.2534787058830261, "best_metric": 1.2534787058830261, "seconds": 0.40184080000108224}
+{"arm": "B3", "epoch": 2, "train_mae_macro": 1.2428877005974452, "validation_mae_macro": 1.0955973267555237, "best_metric": 1.0955973267555237, "seconds": 0.4102263999993738}
+{"arm": "B3", "status": "ALREADY_COMPLETE_FOR_REQUEST", "completed_epoch": 2}
+ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 11.950s
+
+OK

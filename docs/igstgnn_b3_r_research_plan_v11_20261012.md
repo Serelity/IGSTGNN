@@ -1,6 +1,6 @@
 # IGSTGNN B3-R研究方案 V1.1：报告条件容量修正与受限空间传播
 
-日期：2026-10-12。状态：研究设计与开发规格；B3-R模型、训练器及真实数据效果尚未验证。本方案吸收用户[研究方案审核与修改建议](verification/igstgnn_b3_r_research_plan_user_review_20261012.md)，作为下一阶段开发依据。
+日期：2026-10-12。状态：研究设计与开发规格；首版模型和独立训练入口已交付，完整主损失受控梯度及真实数据小批量工程验收通过，见[代码与运行说明](igstgnn_b3_r_run_20261012.md)。服务器完整首轮及预测效果尚未验证。本方案吸收用户[研究方案审核与修改建议](verification/igstgnn_b3_r_research_plan_user_review_20261012.md)，作为下一阶段开发依据。
 
 用户本次建议原文件SHA256：`54db2696beb9e5d444e53dc7edfc343e57cc057ca48006decde9277e3c94eb4f`。前置材料为[报告更新建议](verification/igstgnn_b3_r_user_suggestion_20261012.md)、[B3-R审核与深化方案](igstgnn_b3_r_review_and_development_20261012.md)及[现有IS1.1实现协议](igstgnn_internal_spatial_is11_run_20261011.md)。与旧审核文字冲突处，以本方案为准。
 
@@ -165,7 +165,7 @@ $$
 | 多出边比例抵消 | 共享发送预算饱和，候选容量共同按比例缩放 | 分配比例及最终交换可能不变，不能预期每条边都响应。 |
 | 总作用不保证单调 | q(C)自身可随C下降而上升，且q<C、收发预算宽松 | 满足硬上限仍可能出现容量下降、最终f上升。 |
 
-本轮已用未修改的B3算子完成六组合成核验，见[结果JSON](verification/igstgnn_b3_r_capacity_path_examples_20261012.json)及[复现脚本](verification/verify_b3_r_capacity_path_examples_20261012.py)。最后一例的q为人为构造的`sigmoid(1-2*C)`，不是训练网络实测。上述结果只验证局部算子和解析边界，完整B3-R主损失验收尚未完成。
+本轮已用未修改的B3算子完成六组合成核验，见[结果JSON](verification/igstgnn_b3_r_capacity_path_examples_20261012.json)及[复现脚本](verification/verify_b3_r_capacity_path_examples_20261012.py)。最后一例的q为人为构造的`sigmoid(1-2*C)`，不是训练网络实测。上述结果只验证局部算子和解析边界；随后开发已通过完整B3-R主损失受控启动检查，见[工程验收](verification/igstgnn_b3_r_implementation_20261012.json)，不扩展为真实数据收益。
 
 ### 6.2 完整主损失的梯度启动检查
 
@@ -266,7 +266,7 @@ TIID保持ON，历史交换继续工作。D读取历史，关闭它也减少有�
 
 当前旧四组向100轮运行继续使用原源码和协议。新版本不覆写原运行依赖的源文件；如确需公共改动，先确保旧运行能从固定快照恢复。此处固定的是源码，保留模块参数仍训练。
 
-本文中的产物名是开发交付要求，不代表已经存在；新训练入口未交付前不提供虚构的服务器运行命令。
+各任务以实际验收记录为准。首版已交付`train_b3_r.py`与`run_b3_r.sh`，运行方式见[服务器指令](igstgnn_b3_r_run_20261012.md)；服务器完整首轮与后续探针尚未完成。
 
 ## 10. 结果如何反馈模块设计
 
@@ -300,6 +300,8 @@ TIID保持ON，历史交换继续工作。D读取历史，关闭它也减少有�
 
 已完成：现有源码与协议核对、[P/D局部公式和参数核验](verification/igstgnn_b3_r_review_20261012.json)、[原B3模块合成审查](verification/igstgnn_b3_module_audit_20261012.json)、本次六组容量路径例子、修订研究方案。
 
-尚待完成：服务器清单级时间/事件证据、B3-R完整模型接入、主预测损失的受控梯度验收、服务器新训练及效果比较。已有旧B3的70轮单种子结果仅提供探索性背景，不转换为B3-R证据。
+首版开发已完成：B3-R完整模型接入、显式公共初始化、主预测MAE受控两步梯度、新诊断、开发清单审查器及独立训练/恢复入口；真实496站首4条train/val的三组小批量工程检查通过。恢复测试确认模型/优化器/scheduler与连续训练一致，旧B0—B3源码与协议保持原样。详见[代码交付说明](igstgnn_b3_r_run_20261012.md)。
+
+尚待完成：服务器完整首轮、清单级审查记录回传及缺失时间/版本证据、同检查点ON/OFF/ON探针、共同预算和OFF效果比较。已有旧B3的70轮单种子结果仅提供探索性背景，不转换为B3-R证据。
 
 审核方法采用`scientific-critical-thinking`与`experimental-design`技能组织证据边界、对照和验收。工具来源：Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065)。该引用说明审核工具来源，不是本模型有效性的依据。

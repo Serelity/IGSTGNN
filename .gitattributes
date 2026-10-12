@@ -6,6 +6,7 @@ experiments/chronological/submit_incident_capacity_network.sh text eol=lf
 experiments/chronological/run_incident_capacity_training.sh text eol=lf
 experiments/chronological/submit_incident_capacity_training.sh text eol=lf
 experiments/chronological/run_internal_spatial.sh text eol=lf
+experiments/chronological/run_b3_r.sh text eol=lf
 experiments/chronological/report_metadata_m42/* text eol=lf
 experiments/chronological/report_metadata/* text eol=lf
 experiments/chronological/physics_metadata/* text eol=lf
