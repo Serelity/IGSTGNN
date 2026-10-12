@@ -1,0 +1,75 @@
+{
+  "status": "B3R_MODULE_FACTORIAL_ENGINEERING_VERIFICATION_PASS",
+  "date": "2026-10-13",
+  "new_tests_passed": 17,
+  "related_tests_passed": 55,
+  "integration_checks": [
+    {
+      "directory": "experiments/chronological_runs/contra_b3rg11_check_20261012_231854_78734c/module_factorial_B3R_20261013_014853_1f170b",
+      "arm": "B3R",
+      "status": "B3R_MODULE_FACTORIAL_PROBE_PASS",
+      "windows": 4,
+      "stations": 496,
+      "best_epoch": 1,
+      "original_batch_partition": [
+        2,
+        2
+      ],
+      "full_on_replay_pass": true,
+      "final_on_exactly_restored": true,
+      "source_artifacts_preserved": true,
+      "training_updates": 0,
+      "test_read": false,
+      "generated_file_count": 9
+    },
+    {
+      "directory": "experiments/chronological_runs/contra_b3r_check_20261012_151258_9ea59c/module_factorial_B3R_20261013_014853_19472c",
+      "arm": "B3R",
+      "status": "B3R_MODULE_FACTORIAL_PROBE_PASS",
+      "windows": 4,
+      "stations": 496,
+      "best_epoch": 1,
+      "original_batch_partition": [
+        2,
+        2
+      ],
+      "full_on_replay_pass": true,
+      "final_on_exactly_restored": true,
+      "source_artifacts_preserved": true,
+      "training_updates": 0,
+      "test_read": false,
+      "generated_file_count": 9
+    },
+    {
+      "directory": "experiments/chronological_runs/contra_b3rg11_check_20261012_231854_78734c/module_factorial_B3R_GATE_20261013_015038_c6d110",
+      "arm": "B3R_GATE",
+      "status": "B3R_MODULE_FACTORIAL_PROBE_PASS",
+      "windows": 4,
+      "stations": 496,
+      "best_epoch": 1,
+      "original_batch_partition": [
+        2,
+        2
+      ],
+      "full_on_replay_pass": true,
+      "final_on_exactly_restored": true,
+      "source_artifacts_preserved": true,
+      "training_updates": 0,
+      "test_read": false,
+      "generated_file_count": 9
+    }
+  ],
+  "bash_syntax_check": "passed",
+  "original_model_and_training_source_modified": false,
+  "formal_server_917_window_probe": "PENDING_USER_EXECUTION",
+  "predictive_gain_claim": false,
+  "retrained_redundancy_claim": false,
+  "source_sha256": {
+    "experiments/chronological/probe_b3_r_modules.py": "5c32422596736fd9c19b39722566ffe2af68850585f9bb9df3a42f46e387a603",
+    "experiments/chronological/b3_r_module_metrics.py": "41f63983c885beee6ba8b8d2d21d1e297ae6d852d1837cc18dd6b07467520d76",
+    "experiments/chronological/run_b3_r_module_probe.sh": "cb1edd2327f8136fc6b9053b89ff7d1b8d9e42a40c9679569ac97a1226e6cdc9",
+    "tests/test_b3_r_module_probe.py": "319aa1050adb75d056fc7a8fb9c29bc1aabbddd1f8215ce8843ec3a3733553c3",
+    "tests/test_b3_r_module_metrics.py": "bc1d4875681483e627d24cf40e6e0a13ab01314e55ef0fab6c9ad8a759286dd8",
+    "docs/igstgnn_b3_r_module_factorial_20261013.md": "472a1432b9bab3f70aad483061e334b0b7b20af35b0f8445546f23cd20a8c8a0"
+  }
+}
