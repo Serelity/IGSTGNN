@@ -1,0 +1,36 @@
+{
+  "schema": "b3_r_suggestion_math_review_v1",
+  "date": "2026-10-12",
+  "status": "LOCAL_MATH_AND_PARAMETER_REVIEW_PASS",
+  "scope": "standalone P/D prototype only, not repository model integration or real forecast/training acceptance",
+  "suggestion_path": "G:\\paper\\研究方案\\IGSTGNN_B3-R_报告条件残差更新_修改建议_20261012.md",
+  "suggestion_sha256": "33695f559c37d11b6a6dd880bff4857a57acc5e4cc742825cfde8db5eb5d1654",
+  "old_report_boundary_parameters": 7428,
+  "new_report_boundary_parameters": 4848,
+  "removed_parameters": 2580,
+  "full_model_parameters_from_archived_B3_total": 455780,
+  "checks": {
+    "torch.float32": {
+      "baseline_A_to_minus_P_abs_max": 8.940696716308594e-08,
+      "initial_spatial_report_on_off_abs_max": 0.0,
+      "unsupported_nodes_equal_base": true,
+      "capacity_bounds_finite": true,
+      "first_step_hidden_task_gradient_l1": 0.0,
+      "first_step_output_task_gradient_l1": 48.35564041137695,
+      "second_step_hidden_task_gradient_l1": 414.0146179199219
+    },
+    "torch.float64": {
+      "baseline_A_to_minus_P_abs_max": 1.1102230246251565e-16,
+      "initial_spatial_report_on_off_abs_max": 0.0,
+      "unsupported_nodes_equal_base": true,
+      "capacity_bounds_finite": true,
+      "first_step_hidden_task_gradient_l1": 0.0,
+      "first_step_output_task_gradient_l1": 35.88274082195899,
+      "second_step_hidden_task_gradient_l1": 308.4232700185234
+    }
+  },
+  "main_forecast_gradient_verified": false,
+  "new_trainer_implemented": false,
+  "real_dataset_or_checkpoints_read": false,
+  "server_run_altered": false
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "b3_module_audit_synthetic_algebra_v1",
+  "date": "2026-10-12",
+  "scope": "synthetic algebra only; no dataset, checkpoint, training or predictive claim",
+  "git_head": "71c378eecc9080996930eb9bef206b713b1bddaf",
+  "torch_version": "2.8.0+cu126",
+  "dtype": "float64",
+  "seed": 20261012,
+  "sources_sha256": {
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+    "experiments/chronological/train_internal_spatial.py": "371f03212141d6cb2d8599fcc8daa0804c4f87fc75e283fd885312b69b6663d4",
+    "experiments/chronological/internal_spatial_is11.json": "ddc254413a24285609e94767bb04962bb79e340fe3da2ad74114f786bf69284c"
+  },
+  "cases": {
+    "single_pass_fork": {
+      "state": [
+        1,
+        1,
+        0
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "proposal": [
+        1,
+        1
+      ],
+      "edge_capacity": [
+        1,
+        1
+      ],
+      "actual_flux": [
+        0,
+        0.5
+      ],
+      "feasible_larger_flux": [
+        0,
+        1
+      ],
+      "unused_source_budget": 0.5,
+      "interpretation": "feasible proportional policy; not a maximum-throughput solver; not automatically a bug"
+    },
+    "readout_redundancy": {
+      "eta": 0.5,
+      "steps": 2,
+      "identity": "delta = mean_inflow - mean_outflow",
+      "identity_abs_max": 1.1102230246251565e-16,
+      "compressed_readout_abs_max": 8.881784197001252e-16,
+      "old_input_width": 12,
+      "equivalent_input_width": 8,
+      "parameters_reducible_per_layer": 128
+    },
+    "proposal_redundancy": {
+      "identity": "[h_i,h_j,x_i,x_j,C,x_i,1-x_j] first affine can be folded to [h_i,h_j,x_i,x_j,C]",
+      "first_affine_abs_max": 5.551115123125783e-16,
+      "parameters_reducible_per_layer": 128
+    },
+    "adoption_nonidentifiability": {
+      "prior": 0.5,
+      "first": {
+        "adoption": 0.2,
+        "candidate": 1.0,
+        "posterior": 0.6
+      },
+      "second": {
+        "adoption": 0.5,
+        "candidate": 0.7,
+        "posterior": 0.6
+      },
+      "interpretation": "gate magnitude is not calibrated confidence"
+    },
+    "no_hard_edge_cap": {
+      "random_cases": 20,
+      "node_budgets_preserve_bounds_and_balance": true,
+      "interpretation": "supports design of a bounded control with C retained as a proposal feature, but no explicit edge min(q,C); this variant is not implemented"
+    }
+  }
+}
