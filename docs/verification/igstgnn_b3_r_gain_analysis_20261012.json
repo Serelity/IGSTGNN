@@ -1,0 +1,30 @@
+{
+  "status": "B3R_GAIN_ANALYSIS_LOCAL_ENGINEERING_PASS",
+  "date": "2026-10-12",
+  "tests": {
+    "count": 11,
+    "seconds": 2.637,
+    "passed": true,
+    "command": "python -X utf8 -m unittest discover -s tests -p test_b3_r_gain_analysis.py -v"
+  },
+  "bash_syntax_passed": true,
+  "frozen_training_files_unchanged_against_head": true,
+  "real_saved_engineering_probe_cli": {
+    "source": "experiments\\chronological_runs\\contra_b3r_check_20261012_151258_9ea59c\\b3r_path_probe_20261012_203501_7f98dd",
+    "output": "experiments\\chronological_runs\\contra_b3r_check_20261012_151258_9ea59c\\b3r_gain_analysis_20261012_213110_594d1b",
+    "rows": 4,
+    "nodes": 496,
+    "source_scope": "engineering_only",
+    "source_artifacts_preserved": true,
+    "new_inference_calls": 0,
+    "on_mae_macro": 172.9796185435787,
+    "off_mae_macro": 172.97977856859086
+  },
+  "files_sha256": {
+    "experiments/chronological/analyze_b3_r_path_probe.py": "c18f4da60898ad1b1070e66e27abc252b2e38bc4d1d8cf66c4edd6c665c35244",
+    "experiments/chronological/run_b3_r_gain_analysis.sh": "a0ce5bd0d771f72a3c3403e3fcf1b4617f17d26dc6bdb6ac25f674bfcc004310",
+    "tests/test_b3_r_gain_analysis.py": "fe422cae2b3736ee58a45eed0d16b15e69f5790be38586d35df9cf3ef06ef8f0"
+  },
+  "server_full_validation_analyzed_locally": false,
+  "predictive_gain_claim": false
+}
