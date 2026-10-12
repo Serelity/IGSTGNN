@@ -12,6 +12,7 @@ experiments/chronological/run_b3_r_gain_analysis.sh text eol=lf
 experiments/chronological/run_b3_r_gate.sh text eol=lf
 experiments/chronological/run_b3_r_joint_gain.sh text eol=lf
 experiments/chronological/run_b3_r_strength.sh text eol=lf
+experiments/chronological/run_model_evaluation.sh text eol=lf
 experiments/chronological/report_metadata_m42/* text eol=lf
 experiments/chronological/report_metadata/* text eol=lf
 experiments/chronological/physics_metadata/* text eol=lf

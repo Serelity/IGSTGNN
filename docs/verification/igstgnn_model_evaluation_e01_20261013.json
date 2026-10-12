@@ -1,0 +1,37 @@
+{
+  "status": "E01_ENGINEERING_VERIFICATION_PASS",
+  "date": "2026-10-13",
+  "tests_passed": 33,
+  "targeted_complete_partial_tests_passed": 2,
+  "local_run": "experiments\\chronological_runs\\contra_b3rg11_check_20261012_231854_78734c",
+  "local_evaluation": "experiments\\chronological_runs\\evaluation_e01_verified_20261013",
+  "scope": "engineering_only",
+  "validation_windows_per_arm": 4,
+  "stations": 496,
+  "arms": [
+    "B3R",
+    "B3R_HALF",
+    "B3R_GATE",
+    "B3R_NO_D"
+  ],
+  "common_epoch": 1,
+  "new_inference_calls": 0,
+  "training_updates": 0,
+  "torch_imported": false,
+  "checkpoint_tensors_loaded": false,
+  "raw_data_read": false,
+  "test_read": false,
+  "source_artifacts_preserved": true,
+  "source_file_count": 14,
+  "generated_file_count": 16,
+  "bash_syntax_check": "passed",
+  "bash_python_cli_help": "passed",
+  "formal_server_evaluation": "PENDING_USER_EXECUTION",
+  "scientific_gain_claim": false,
+  "source_sha256": {
+    "experiments/chronological/analyze_model_evaluation.py": "6e9f662419e5df2926989ac8c076be4203905c678dbefa1a085ee7fee7ed69f9",
+    "experiments/chronological/model_evaluation_metrics.py": "b51644099d19f22d11cc2017283496cf0c7c86538dbafd158cf1bbc6d6d5791c",
+    "experiments/chronological/run_model_evaluation.sh": "b4f67c121bc1ad1defed3d5289fd1ee8412737d78b36b57ca2a689433ba21715",
+    "tests/test_model_evaluation.py": "2c3edf7e94109eb923656b883b01c121ce6be1aa96dcc171aadff2b55b7e4821"
+  }
+}
