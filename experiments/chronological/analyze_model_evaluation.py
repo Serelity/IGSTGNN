@@ -24,7 +24,9 @@ except ImportError:
 
 
 SCHEMA = 'model_evaluation_e01_v1'
-SUPPORTED = {'internal_spatial_is11_run_v1', 'b3r_run_v1', 'b3r_gate_run_v1', 'b3r_strength_run_g11_v1'}
+MINIMAL_SCHEMA = 'b3r_minimal_run_v1'
+MINIMAL_CERTIFICATE = 'B3RMIN_INITIALIZATION_PAIR_PASS'
+SUPPORTED = {'internal_spatial_is11_run_v1', 'b3r_run_v1', 'b3r_gate_run_v1', 'b3r_strength_run_g11_v1', MINIMAL_SCHEMA}
 POLICY_FIELDS = ('train_samples', 'val_samples', 'stations', 'batch_size', 'max_epochs', 'patience',
                  'learning_rate', 'weight_decay', 'adam_eps', 'clip_grad_norm', 'lr_milestones',
                  'lr_gamma', 'supervised_horizons', 'selection_metric', 'min_delta')
@@ -133,7 +135,7 @@ def initialization_evidence(initialization, arms):
     if initialization is None:
         return dict(status='missing_evidence', common_initial_sha256=None)
     certificates = {'IS11_INITIALIZATION_PAIR_PASS', 'B3R_INITIALIZATION_PAIR_PASS',
-                    'B3RGATE_INITIALIZATION_PAIR_PASS', 'B3RSTRENGTH_INITIALIZATION_PAIR_PASS'}
+                    'B3RGATE_INITIALIZATION_PAIR_PASS', 'B3RSTRENGTH_INITIALIZATION_PAIR_PASS', MINIMAL_CERTIFICATE}
     require(initialization.get('status') in certificates, 'Initialization certificate did not pass')
     hashes = [initialization.get('arms', {}).get(arm, {}).get('common_initial_sha256') for arm in arms]
     require(all(isinstance(value, str) and re.fullmatch('[0-9a-f]{64}', value) for value in hashes),
@@ -176,6 +178,24 @@ def load_run(root, sources, allow_engineering, selected_arms=None):
         digest = hashlib.sha256(json.dumps(canonical, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
         require(identity['initialization_sha256'] == digest,
                 'Initialization certificate fingerprint differs from identity')
+    if identity['schema'] == MINIMAL_SCHEMA:
+        require(initialization is not None and identity.get('initialization_sha256') is not None,
+                'Minimal run requires a fingerprinted retained-state mapping certificate')
+        require(initialization.get('status') == MINIMAL_CERTIFICATE
+                and initialization.get('retained_state_exact_verified') is True
+                and initialization.get('reference_seed') == identity['seed'],
+                'Minimal retained-state mapping certificate did not pass')
+        bridge = initialization.get('reference_common_initial_sha256')
+        require(isinstance(bridge, str) and re.fullmatch('[0-9a-f]{64}', bridge),
+                'Minimal certificate lacks reference initialization fingerprint')
+        reference_sources = initialization.get('reference_source_sha256')
+        require(isinstance(reference_sources, dict) and set(INPUT_SOURCES) <= set(reference_sources)
+                and all(identity.get('source_sha256', {}).get(name) == digest
+                        for name, digest in reference_sources.items()),
+                'Minimal reference source mapping differs from recorded source')
+        initial_evidence.update(reference_common_initial_sha256=bridge,
+                                initialization_scope='exact_retained_state_from_fresh_reference',
+                                full_parameter_equality_claim=False)
     run = dict(root=root, identity=identity, protocol=protocol, initialization=initialization,
                initialization_evidence=initial_evidence, variants={})
     for arm in arms:
@@ -220,6 +240,15 @@ def compatibility(primary, reference):
     left, right = primary['identity'], reference['identity']
     initial_a = primary['initialization_evidence']['common_initial_sha256']
     initial_b = reference['initialization_evidence']['common_initial_sha256']
+    initialization_comparison = 'identical_recorded_common_parameter_fingerprint'
+    if (left['schema'] == MINIMAL_SCHEMA) != (right['schema'] == MINIMAL_SCHEMA):
+        minimal = primary if left['schema'] == MINIMAL_SCHEMA else reference
+        bridge = minimal['initialization_evidence']['reference_common_initial_sha256']
+        if left['schema'] == MINIMAL_SCHEMA:
+            initial_a = bridge
+        else:
+            initial_b = bridge
+        initialization_comparison = 'fresh_reference_fingerprint_and_exact_retained_state_mapping'
     if initial_a is None or initial_b is None:
         missing.append('common_initial_sha256')
     elif initial_a != initial_b:
@@ -247,6 +276,7 @@ def compatibility(primary, reference):
     return dict(status='incompatible' if differences else 'missing_evidence' if missing else 'conditional_comparable',
                 paired_allowed=not differences and not missing, differences=differences, missing_evidence=missing,
                 environment_changes=runtime_changes,
+                initialization_comparison=initialization_comparison,
                 interpretation='Recorded package/protocol compatibility; point targets and masks not reread; initialization not re-executed')
 
 

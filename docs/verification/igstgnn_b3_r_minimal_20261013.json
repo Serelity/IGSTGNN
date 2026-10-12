@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-13",
+  "status": "B3R_MINIMAL_ENGINEERING_VERIFIED",
+  "arm": "B3R_MIN",
+  "registered_parameters": 435856,
+  "reference_B3R_parameters": 455780,
+  "removed_parameters": 19924,
+  "prediction_inputs": ["historical_flow", "historical_calendar_clock", "retained_graph_structure"],
+  "incident_inputs_consumed": false,
+  "removed": ["TIID", "report_residual_D", "report_encoder", "incident_key_projection"],
+  "retained": ["historical_LayerNorm", "original_graph_and_temporal_backbone", "history_capacity_P", "inlet_exit", "constrained_latent_exchange", "forecast_head"],
+  "tests": [
+    {
+      "command": "python -X utf8 -m unittest tests.test_b3_r_minimal_model tests.test_b3_r_minimal_runner tests.test_b3_r_minimal_evaluation tests.test_model_evaluation tests.test_b3_r tests.test_b3_r_strength_model -q",
+      "count": 71,
+      "status": "PASS"
+    },
+    {
+      "scope": "after final recovery-environment provenance label and reference-source completeness guard",
+      "command": "python -X utf8 -m unittest tests.test_b3_r_minimal_runner tests.test_b3_r_minimal_evaluation -q",
+      "count": 9,
+      "status": "PASS"
+    }
+  ],
+  "bash_syntax": "PASS",
+  "frozen_model_and_training_sources_unchanged": true,
+  "local_training_check": {
+    "directory": "experiments/chronological_runs/contra_b3r_min_check_20261013_021430_ea4300",
+    "device": "cpu",
+    "threads": 1,
+    "stations": 496,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "completed_epochs": 1,
+    "global_updates": 2,
+    "initialization": "B3RMIN_INITIALIZATION_PAIR_PASS",
+    "both_off_reference_prediction_abs_max": 0.0,
+    "historical_capacity_abs_max": 0.0,
+    "retained_state_exact_verified": true,
+    "history_clock_matches_metadata": true,
+    "status": "ENGINEERING_CHECK_PASS",
+    "scope": "engineering_only_not_model_quality"
+  },
+  "local_evaluation_check": {
+    "directory": "experiments/chronological_runs/contra_b3r_min_check_20261013_021430_ea4300/evaluation_e01_20261013_021618_eb5e8d",
+    "reference": "experiments/chronological_runs/contra_b3rg11_check_20261012_231854_78734c",
+    "reference_arms": ["B3R", "B3R_NO_D"],
+    "status": "MODEL_EVALUATION_E01_COMPLETE",
+    "comparability": "conditional_comparable",
+    "initialization_comparison": "fresh_reference_fingerprint_and_exact_retained_state_mapping",
+    "full_parameter_hashes_equal_claim": false,
+    "new_inference_calls": 0,
+    "training_updates": 0,
+    "source_artifacts_preserved": true
+  },
+  "formal_server_training": "PENDING_USER_EXECUTION",
+  "predictive_gain_claim": false,
+  "physical_capacity_identification_claim": false,
+  "test_read": false
+}
