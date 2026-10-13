@@ -1,0 +1,57 @@
+{
+  "status": "MIN_I_LOCAL_ENGINEERING_VERIFIED",
+  "date": "2026-10-13",
+  "tests": {
+    "new_data": 8,
+    "new_model": 11,
+    "new_runner": 11,
+    "old_regression": 29,
+    "total": 59,
+    "all_passed": true
+  },
+  "engineering": {
+    "status": "MIN_I_PAIRED_STAGE_COMPLETE",
+    "device": "cpu",
+    "stations": 496,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "common_epoch": 1,
+    "run_dir": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+    "initialization_status": "MIN_I_INITIALIZATION_PAIR_PASS",
+    "parameters": {
+      "A": 435856,
+      "L": 437508,
+      "S": 438016
+    },
+    "predictive_gain_claim": false,
+    "test_evaluated": false
+  },
+  "source_sha256": {
+    "experiments/chronological/train_b3_r_minimal_paper.py": "2bf61fe9a7b230f5f98dea091de5a8a4ff761dcdbb1b2e49ce9cdc6a3cb85f33",
+    "src/utils/igstgnn_published.py": "1adaa6a026fc49008a281c51dd4d916d330286f55f6dd19cd38c227408776de5",
+    "data/xtraffic/prepare_splits.py": "a158a98e338a1db5921590b886e4d59ac59819bb2cd00a01a6f5d884e01317ba",
+    "src/utils/dataloader.py": "02476dcd8f9f6e9c327e14f8b2f7a4e4f414b273f959457f41ab73c039074852",
+    "src/utils/metrics.py": "6df3633f8f3007795116a34b2c6d494010e4a2ee6192f5b22ffd6e47b51127fe",
+    "src/utils/graph_algo.py": "49d876dac914eca4f9e75aa2fbc3903c28da8570fd50a5940ef16277cd53af19",
+    "src/base/engine.py": "d6307e55366449cc4ae93abbf08930ed7f606cb2b241828a1da20c683fd11309",
+    "src/base/model.py": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83",
+    "src/engines/igstgnn_engine.py": "330448c8d19836102e1cd59f4bd893f0ae989da0ae63ce1d6abfce5d4e272a77",
+    "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+    "experiments/chronological/train_internal_spatial.py": "371f03212141d6cb2d8599fcc8daa0804c4f87fc75e283fd885312b69b6663d4",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/incident_spatial_residual.py": "2a3ff34dc7fbc9fcab98ea82145d7bcfccf4735eda2687606d05b4da9e853ee8",
+    "src/models/incident_spatial_minimal.py": "a38735ed4a1308d75f15c71817b8e8dabdd2d897c16370743cdcba959c275ef2",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "experiments/chronological/train_min_event_budget.py": "8883300e0113321323c6c64e5de3b256e2b6eeec6d4649b91a573ddaa3c50e96",
+    "src/utils/igstgnn_published_events.py": "bcdbbe3768e0ae2d5b65b4abd49e6efc89e0a5a44218fcf0c3881d84dabbf0a8",
+    "src/models/incident_spatial_event_budget.py": "bb1af1427af54adf5822350d55074acd8bb9b815e2449e667f2343581fb7acdf"
+  },
+  "limitations": [
+    "No V100 full-batch memory or throughput measurement",
+    "No predictive gain established",
+    "Published archive event attributes have no certified as-of report timestamp",
+    "Layer/substep latent budgets are not physical future capacity trajectories"
+  ]
+}
