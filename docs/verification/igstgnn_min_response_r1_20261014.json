@@ -1,0 +1,83 @@
+{
+  "status": "MIN_RESPONSE_R1_LOCAL_VERIFIED",
+  "date": "2026-10-14",
+  "tests": {
+    "new_model": 13,
+    "new_training_and_pair_metrics": 14,
+    "new_frozen_runner": 10,
+    "new_joint_runner": 7,
+    "new_joint_report": 8,
+    "new_total": 52,
+    "existing_regression": 65,
+    "total_unique": 117,
+    "all_passed": true,
+    "continuous_vs_split_resume": "BITWISE_PASS_model_optimizer_rng_and_sample_order_tiny_fixture"
+  },
+  "bash_syntax": "PASS_both_entrypoints",
+  "independent_review": "PASS_model_plan_runner_and_reports",
+  "engineering": {
+    "source_run": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+    "run_dir": "experiments/chronological_runs/contra_min_response_joint_r1_check_20261014_final",
+    "device": "cpu",
+    "stations": 496,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "actual_bash_epoch1_then_absolute_epoch2": true,
+    "paired_stage_status": "MIN_RESPONSE_JOINT_PAIRED_STAGE_COMPLETE",
+    "common_epoch": 2,
+    "default_condition_gradient_observed": true,
+    "same_training_sample_orders": true,
+    "initial_ON_OFF_exact_source": true,
+    "source_protected_files": 50,
+    "source_MIN_training_updates": 0,
+    "runs": {
+      "state": {
+        "completed_epoch": 2,
+        "trainable_parameters": 442004,
+        "source_MIN_training_updates": 0,
+        "optimizer_updates": 4,
+        "optimizer_updates_this_invocation": 2,
+        "source_reference_preserved": true,
+        "source_artifacts_preserved": true,
+        "test_evaluated": false,
+        "condition_gradient_batches_by_epoch": [
+          2,
+          2
+        ],
+        "backbone_and_response_updated_every_epoch": true
+      },
+      "location": {
+        "completed_epoch": 2,
+        "trainable_parameters": 442052,
+        "source_MIN_training_updates": 0,
+        "optimizer_updates": 4,
+        "optimizer_updates_this_invocation": 2,
+        "source_reference_preserved": true,
+        "source_artifacts_preserved": true,
+        "test_evaluated": false,
+        "condition_gradient_batches_by_epoch": [
+          2,
+          2
+        ],
+        "backbone_and_response_updated_every_epoch": true
+      }
+    }
+  },
+  "scientific_scope": "ENGINEERING_ONLY_NO_PREDICTIVE_GAIN_CLAIM",
+  "test_evaluated": false,
+  "operational_constraints": {
+    "no_MIN_only_training_worker": true,
+    "no_git_in_bash": true,
+    "no_slurm_mem_flag": true,
+    "source_MIN_reused_read_only": true,
+    "frozen_stage_optional_diagnostic": true
+  },
+  "limitations": [
+    "No full-data GPU pilot in this local verification.",
+    "Joint candidate versus prior MIN includes extra finetuning, not pure module attribution.",
+    "State/location share support; comparison does not isolate support location value.",
+    "Latent state/budget have no certified traffic density/capacity units.",
+    "History-group mean risk penalty does not guarantee pointwise or MAPE nondegradation."
+  ]
+}
