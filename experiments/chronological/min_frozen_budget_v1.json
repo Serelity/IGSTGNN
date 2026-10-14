@@ -1,0 +1,21 @@
+{
+  "protocol_id": "contra_frozen_MIN_location_budget_pilot_v1",
+  "max_epochs": 10,
+  "learning_rate": 0.001,
+  "weight_decay": 0.00001,
+  "adam_eps": 1e-8,
+  "clip_grad_norm": 5.0,
+  "supervised_horizons": 12,
+  "curriculum": false,
+  "scheduler": "constant_learning_rate",
+  "early_stopping": false,
+  "selection_metric": "validation_pooled_masked_MAE_float64",
+  "epoch_zero_is_candidate": true,
+  "freeze_dispatch_normalized_atol": 0.000001,
+  "freeze_dispatch_normalized_rtol": 0.00001,
+  "fixed_hard_fraction": 0.1,
+  "report_inputs": "location_relation_only_no_semantic_encoder",
+  "training_mode": "backbone_eval_adapter_train",
+  "scope": "exploratory_frozen_backbone_conditional_budget_increment",
+  "test_evaluation": false
+}

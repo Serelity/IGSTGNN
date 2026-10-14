@@ -1,0 +1,88 @@
+{
+  "status": "FROZEN_MIN_LOCATION_LOCAL_VERIFIED",
+  "date": "2026-10-14",
+  "tests": {
+    "new_model": 9,
+    "new_metrics": 13,
+    "new_runner": 16,
+    "existing_MIN_I_regression": 30,
+    "total_unique": 68,
+    "all_passed": true,
+    "model_plus_regression_seconds": 32.416,
+    "runner_seconds": 62.868,
+    "continuous_vs_split_resume_bitwise": "PASS_four_station_real_backbone_fixture",
+    "epoch_zero_commit_interruption_restart": "PASS"
+  },
+  "bash_syntax": "PASS",
+  "engineering": {
+    "status": "FROZEN_MIN_LOCATION_ENGINEERING_PASS",
+    "device": "cpu",
+    "stations": 496,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "batch_partition": [
+      2,
+      2
+    ],
+    "source_run": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+    "run_dir": "experiments/chronological_runs/contra_min_frozen_check_20261014_acceptance",
+    "source_best_epoch": 1,
+    "completed_adapter_epoch": 2,
+    "public_CLI_fresh_epoch1_then_resume_epoch2": true,
+    "new_optimizer_updates_on_resume": 2,
+    "trainable_parameters": 1652,
+    "frozen_parameters": 435856,
+    "original_source_metrics_replay_passed": true,
+    "zero_ON_OFF_exactly_match_frozen_MIN": true,
+    "every_OFF_exactly_matches_frozen_MIN": true,
+    "every_ON_restoration_exact": true,
+    "frozen_state_sha256": "a79c25911add05920c110ecf799d4552a98a8a31b0144a4d4c279b6e2ec4fba5",
+    "source_artifacts_preserved": true,
+    "protected_files": 42,
+    "adapter_nonzero_gradient_every_engineering_epoch": [
+      true,
+      true
+    ],
+    "original_to_frozen_prediction_abs_max": 6.103515625E-05,
+    "original_to_frozen_normalized_abs_max": 3.827043286719345E-07,
+    "test_evaluated": false,
+    "predictive_gain_claim": false
+  },
+  "recipe": {
+    "protocol_id": "contra_frozen_MIN_location_budget_pilot_v1",
+    "max_epochs": 10,
+    "learning_rate": 0.001,
+    "weight_decay": 1E-05,
+    "adam_eps": 1E-08,
+    "clip_grad_norm": 5.0,
+    "supervised_horizons": 12,
+    "curriculum": false,
+    "scheduler": "constant_learning_rate",
+    "early_stopping": false,
+    "selection_metric": "validation_pooled_masked_MAE_float64",
+    "epoch_zero_is_candidate": true,
+    "freeze_dispatch_normalized_atol": 1E-06,
+    "freeze_dispatch_normalized_rtol": 1E-05,
+    "fixed_hard_fraction": 0.1,
+    "report_inputs": "location_relation_only_no_semantic_encoder",
+    "training_mode": "backbone_eval_adapter_train",
+    "scope": "exploratory_frozen_backbone_conditional_budget_increment",
+    "test_evaluation": false
+  },
+  "experiment_sources_sha256": {
+    "experiments/chronological/train_min_frozen_budget.py": "d0e89f94abd04a4876de5590ae4fc0f4fe96bee629819eccd37e6b2e40c1564f",
+    "experiments/chronological/min_frozen_budget_metrics.py": "9dae7dbba1b544f4ab602437e1008b7d858727e0df93e44537f77f527e39ca20",
+    "experiments/chronological/probe_min_event_budget.py": "2249119b512ed90c03ba0f058f03a0ec04b8100e0a864e87eea389a5ad77f178",
+    "experiments/chronological/min_event_budget_probe_metrics.py": "7c3b684e698b4cf9d3f2d7a90fab395d70eccad2c562ad66abc0eabc3d1cc1e6",
+    "experiments/chronological/run_min_frozen_budget.sh": "e66e9b2ea3fd34af5fdcfbb9d18f72b90498bf8754c956959b57137cb03d8175",
+    "src/models/incident_spatial_frozen_budget.py": "eb82381d11f93d808b70e8169c26abc03687f1fc000fc59ed913994ef490d170"
+  },
+  "limitations": [
+    "CPU engineering data only; formal 3909/837 CUDA ten-epoch pilot is pending server execution.",
+    "Only 1652 nominal location-adapter parameters update; this is not unique incident-content attribution.",
+    "Source metrics replay and frozen-execution bitwise reference are distinct; freeze roundoff is separately recorded.",
+    "Epoch zero remains eligible; no positive training-epoch gain means retain MIN.",
+    "No test evaluation or real traffic capacity/causal identification."
+  ]
+}
