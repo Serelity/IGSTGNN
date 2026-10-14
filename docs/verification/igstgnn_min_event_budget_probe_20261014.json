@@ -1,0 +1,78 @@
+{
+  "status": "MIN_I_VALIDATION_PROBE_LOCAL_VERIFIED",
+  "date": "2026-10-14",
+  "tests": {
+    "probe": 17,
+    "metrics": 13,
+    "existing_model": 11,
+    "existing_data": 8,
+    "existing_runner": 11,
+    "total_unique": 60,
+    "all_passed": true,
+    "probe_seconds": 25.236,
+    "model_data_runner_metrics_seconds": 22.531
+  },
+  "bash_syntax": "PASS",
+  "engineering": {
+    "status": "MIN_I_ENGINEERING_PROBE_PASS",
+    "device": "cpu",
+    "stations": 496,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "batch_partition": [
+      2,
+      2
+    ],
+    "best_epochs": {
+      "A": 1,
+      "L": 1,
+      "S": 1
+    },
+    "inference_calls": {
+      "A_ON": 2,
+      "L_ON": 6,
+      "L_OFF": 2,
+      "S_ON": 10,
+      "S_OFF": 2,
+      "S_SEMANTIC_UNK": 2,
+      "S_SEMANTIC_SHUFFLE": 2
+    },
+    "on_saved_pooled_replays": true,
+    "restored_on_bitwise_identical": true,
+    "source_artifacts_preserved": true,
+    "protected_files": 42,
+    "model_state_preserved": true,
+    "optimizer_updates": 0,
+    "test_evaluated": false,
+    "predictive_gain_claim": false,
+    "source_run": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+    "probe_dir": "experiments/chronological_runs/contra_min_i_check_20261013_dev01/min_i_probe_20261014_091028_ee3fbe"
+  },
+  "probe_source_sha256": {
+    "probe_min_event_budget.py": "2249119b512ed90c03ba0f058f03a0ec04b8100e0a864e87eea389a5ad77f178",
+    "min_event_budget_probe_metrics.py": "7c3b684e698b4cf9d3f2d7a90fab395d70eccad2c562ad66abc0eabc3d1cc1e6",
+    "run_min_event_budget_probe.sh": "7fc87a18dab485a03b47710d8927334e439d013daf9b3f64b0f2ca2b741ba88d"
+  },
+  "limitations": [
+    "CPU engineering samples only; formal 837-row CUDA validation is pending server execution.",
+    "No new training, no test evaluation, no predictive gain conclusion.",
+    "Independent trained best comparisons differ from same-checkpoint dependency.",
+    "Fixed A hard windows are conditional diagnostics; one semantic shuffle is one sensitivity check."
+  ],
+  "training_runtime": {
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "device_type": "cpu",
+    "cublas_workspace_config": ":4096:8"
+  },
+  "current_environment": {
+    "python": "3.10.16 | packaged by conda-forge | (main, Apr  3 2025, 14:14:45) [MSC v.1943 64 bit (AMD64)]",
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "device": "cpu",
+    "gpu": null,
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cublas_workspace_config": ":4096:8"
+  }
+}
