@@ -1,0 +1,55 @@
+{
+  "status": "LOCAL_LOCATION_CONTENT_PROBE_VALIDATION_PASS",
+  "date": "2026-10-14",
+  "tests": {
+    "shuffle_payload": 10,
+    "content_metrics": 11,
+    "real_five_layer_runner": 11,
+    "total_unique": 32,
+    "all_passed": true
+  },
+  "bash_syntax": "PASS",
+  "public_bash_cli": {
+    "status": "FROZEN_MIN_LOCATION_CONTENT_PROBE_PASS",
+    "output_dir": "experiments\\chronological_runs\\min_frozen_location_probe_20261014_acceptance01",
+    "validation_rows": 4,
+    "stations": 496,
+    "engineering_only": true,
+    "original_batch_partition": [
+      2,
+      2
+    ],
+    "source_best_epoch": 1,
+    "best_adapter_epoch": 2,
+    "new_inference_calls": 10,
+    "inference_calls": {
+      "real": 6,
+      "MIN": 2,
+      "shuffled": 2
+    },
+    "training_updates": 0,
+    "test_evaluated": false,
+    "exact_REAL_MIN_replay": true,
+    "exact_REAL_restoration": true,
+    "frozen_model_preserved": "MODEL_STATE_PRESERVED",
+    "source_artifacts_preserved": true,
+    "protected_inputs": 57,
+    "fixed_seed": 20261014,
+    "effective_changed_rows": 4,
+    "moved_station_vectors": 161,
+    "numerically_changed_vectors": 161,
+    "content_contribution_reconciliation": "PASS"
+  },
+  "old_training_sources_modified": false,
+  "server_formal_probe_completed": false,
+  "evidence_scope": "engineering_acceptance_not_predictive_gain_evidence",
+  "file_sha256": {
+    "experiments/chronological/probe_min_frozen_location.py": "682622b96f6ad373fea720a8ee7715901620878098cfff3f8aa1d209c422833e",
+    "experiments/chronological/min_frozen_location_shuffle.py": "df4f9ca18c0823ee8ea6c4b1b50e1fcbc316357a2929db94b4a9f1f1f94af653",
+    "experiments/chronological/min_frozen_location_probe_metrics.py": "fcbdb853ec466d47e5bfe31d26ac8760c8f28731e7f447175a592acabec157c3",
+    "experiments/chronological/run_min_frozen_location_probe.sh": "204d10078492e9db8d47cb314ce02974c67cdcc09c3c311458641e331ba921df",
+    "tests/test_min_frozen_location_probe.py": "e1b8af4245aed54a40dcd18c8bd1e52178dd8e612f33f4afa3009791b283dc02",
+    "tests/test_min_frozen_location_shuffle.py": "88ab99f7e79e445f58e751d934490b8a45d0b56541eae1b62cbd0d00a1d980fc",
+    "tests/test_min_frozen_location_probe_metrics.py": "a5ef5b90fed7205d27e890522ad707996ef9cca1de8c8c0efc87a629ccb399fa"
+  }
+}
