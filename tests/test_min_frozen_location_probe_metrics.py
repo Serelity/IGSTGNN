@@ -186,6 +186,19 @@ class LocationProbeMetricsTests(unittest.TestCase):
             self.assertIn('shuffle_audit.json', text)
         self.assertEqual(json.dumps(metadata, sort_keys=True), before)
 
+    def test_final_report_recovers_window_count_from_saved_shuffle_audit(self):
+        report = metrics.summarize_location_probe(*self.fixture())
+        # Older successful probes omitted validation_rows in the final report
+        # metadata, while their authenticated shuffle audit retained it.
+        metadata = dict(source_best_epoch=28, best_adapter_epoch=10, shuffle_seed=20261014,
+                        shuffle_audit=dict(rows=837, eligible_rows=818, effective_changed_rows=818))
+        before = json.dumps(metadata, sort_keys=True)
+        with tempfile.TemporaryDirectory(dir=HERE.parents[1]) as folder:
+            text = metrics.write_report(folder, report, metadata).read_text(encoding='utf-8')
+            self.assertIn('验证窗口：837', text)
+            self.assertNotIn('验证窗口：None', text)
+        self.assertEqual(json.dumps(metadata, sort_keys=True), before)
+
 
 if __name__ == '__main__':
     unittest.main()

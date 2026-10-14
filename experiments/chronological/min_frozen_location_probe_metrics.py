@@ -184,6 +184,8 @@ def write_report(output, analysis, metadata):
     audit = metadata.get('shuffle_audit', {})
     audit = audit if isinstance(audit, dict) else {}
     display_metadata = dict(metadata)
+    if display_metadata.get('validation_rows') is None and 'rows' in audit:
+        display_metadata['validation_rows'] = audit['rows']
     if audit:
         # The full per-window donor audit is a separate JSON artifact; retain
         # its coverage totals here without hundreds of repeated report rows.
@@ -193,7 +195,7 @@ def write_report(output, analysis, metadata):
              '固定已训练 MIN 与预算适配器，比较正确位置、一次固定置乱位置及关闭适配器的 MIN。', '',
              '这是条件离线验证集上的探索性检查点敏感性分析。没有训练更新，没有评价测试集；源文件保护结果见本次运行元数据。', '',
              '原 MIN 最佳轮次：'+str(metadata.get('source_best_epoch'))+'；适配器最佳轮次：'+str(metadata.get('best_adapter_epoch'))+
-             '；验证窗口：'+str(metadata.get('validation_rows'))+'；固定置乱 seed：'+str(metadata.get('shuffle_seed'))+'。', '',
+             '；验证窗口：'+str(display_metadata.get('validation_rows'))+'；固定置乱 seed：'+str(metadata.get('shuffle_seed'))+'。', '',
              '## 三种预测状态与配对收益', '',
              '正分支收益为 MIN 误差减该状态误差；正内容收益为置乱误差减正确位置误差。MAPE 表中为百分数，收益为百分点，JSON/CSV 均为比例。', '',
              '| 状态 | MAE pooled | RMSE pooled | MAPE % | 相对 MIN MAE收益 | 固定困难集MAE |',

@@ -267,7 +267,8 @@ def main(argv=None):
         print('Source frozen run: '+str(args.run_dir), flush=True)
         print('Probe directory: '+str(args.output_dir), flush=True)
         metadata = dict(source_best_epoch=identity['source_best_epoch'], best_adapter_epoch=saved['best_epoch'],
-                        engineering_only=identity['engineering_check'], source_artifacts_preserved=False)
+                        validation_rows=len(best['target']), engineering_only=identity['engineering_check'],
+                        training_updates=0, test_evaluated=False, scope=SCOPE, source_artifacts_preserved=False)
         offline.write_json(args.output_dir/'environment.json', frozen.legacy.environment(device))
         offline.write_json(args.output_dir/'request.json', dict(run_dir=str(args.run_dir), source_run=str(args.source_run),
             shuffle_seed=args.shuffle_seed, scope=SCOPE, batch_size=identity['batch_size'], selection='existing_best_adapter_no_reselection'))
