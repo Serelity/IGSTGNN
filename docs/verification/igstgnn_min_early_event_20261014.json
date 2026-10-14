@@ -1,0 +1,71 @@
+{
+  "status": "LOCAL_MIN_EARLY_EVENT_ENGINEERING_VERIFICATION_PASS",
+  "date": "2026-10-14",
+  "predictive_gain_claim": false,
+  "formal_server_training_completed": false,
+  "environment": {
+    "python": "3.10.16",
+    "torch": "2.8.0+cu126",
+    "numpy": "1.26.4",
+    "integration_device": "cpu",
+    "integration_threads": 1,
+    "server_target": "torch2.3.1_cu121_V100_not_executed_locally"
+  },
+  "tests": {
+    "command": "python -X utf8 -m unittest tests.test_min_event_budget_data tests.test_min_early_event_model tests.test_min_early_event_runner tests.test_min_early_event_evaluation -q",
+    "count": 39,
+    "seconds": 32.410,
+    "result": "OK",
+    "coverage": [
+      "published_event_missingness_categories_and_axes",
+      "identical_random_MIN_and_condition_initialization",
+      "bounded_single_latest_slot_injection",
+      "unchanged_prior_boundary_and_graph_inputs",
+      "STATE_ignores_accident_input",
+      "condition_and_backbone_joint_gradient_updates",
+      "exact_epoch_resume_optimizer_rng_and_sample_order",
+      "identity_drift_and_legacy_checkpoint_rejection",
+      "worker_interruption_and_lock_protection",
+      "evaluate_after_dispatch_outside_training_lock",
+      "complete_best_ON_replay_before_interventions",
+      "exact_ON_OFF_ON_restoration_and_hook_cleanup",
+      "deterministic_full_station_relation_reassignment",
+      "native_head_reassembly_and_12_forecast_readouts",
+      "common_validity_and_partition_gain_reconciliation",
+      "real_committed_training_budget_comparability"
+    ]
+  },
+  "bash_syntax": {
+    "run_min_early_event.sh": "PASS",
+    "run_min_early_event_evaluation.sh": "PASS",
+    "git_embedded": false,
+    "slurm_mem_requested": false
+  },
+  "published_data_integration": {
+    "data_sha256": "bc6c5608457f88864625d683f9a66d17bc0fc31fe5acba366b6033708a099279",
+    "run_directory": "experiments/chronological_runs/local_min_early_e1_check_20261014",
+    "stations": 496,
+    "training_samples": 4,
+    "validation_samples": 4,
+    "batch_size": 2,
+    "arms": ["STATE", "EVENT"],
+    "training_initialization": "from_scratch_joint",
+    "epochs_each": 1,
+    "updates_each": 2,
+    "parameters_each": 441324,
+    "additional_parameters_each": 5468,
+    "initialization": "MIN_EARLY_INITIALIZATION_PAIR_PASS",
+    "training": "MIN_EARLY_PAIRED_STAGE_COMPLETE",
+    "evaluation": "MIN_EARLY_EVENT_EVALUATION_PASS",
+    "evaluation_directory": "experiments/chronological_runs/local_min_early_e1_check_20261014/early_event_evaluation_20261014_225135_f5ed46",
+    "prediction_cases": 17,
+    "evaluation_training_updates": 0,
+    "replay_passed": true,
+    "on_exactly_restored": true,
+    "protected_source_files": 46,
+    "source_artifacts_preserved": true,
+    "test_evaluated": false,
+    "original_MIN_retrained": false,
+    "scope": "engineering_only_no_predictive_gain_inference"
+  }
+}
