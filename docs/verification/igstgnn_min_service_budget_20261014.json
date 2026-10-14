@@ -1,0 +1,153 @@
+{
+  "status": "MIN_SERVICE_LIMIT_LOCAL_VERIFIED",
+  "date": "2026-10-14",
+  "tests": {
+    "new_model": 11,
+    "new_metrics": 9,
+    "new_runner": 9,
+    "new_total": 29,
+    "existing_model_regression": 20,
+    "existing_frozen_runner_regression": 16,
+    "total_unique": 65,
+    "all_passed": true,
+    "final_bash_new_tests_seconds": 32.681,
+    "continuous_vs_resumed_state_optimizer_rng_order_adapter": "BITWISE_PASS_four_station_fixture"
+  },
+  "bash_syntax": "PASS",
+  "independent_review": "PASS",
+  "engineering": {
+    "source_run": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+    "run_dir": "experiments/chronological_runs/contra_min_service_check_20261014_final",
+    "device": "cpu",
+    "stations": 496,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "batch_partition": [
+      2,
+      2
+    ],
+    "initial_zero_ON_OFF_source_replay": "PASS",
+    "paired_stage_status": "MIN_SERVICE_LIMIT_PAIRED_STAGE_COMPLETE",
+    "common_epoch": 2,
+    "actual_bash_epoch1_then_epoch2_resume": true,
+    "manual_single_state_worker_resume": "PASS_previous_acceptance_directory",
+    "same_training_sample_orders": true,
+    "protected_files": 46,
+    "runs": {
+      "location": {
+        "completed_epoch": 2,
+        "trainable_parameters": 1396,
+        "frozen_parameters": 435856,
+        "global_updates": 4,
+        "optimizer_updates_this_invocation": 2,
+        "off_exactly_matches_source": true,
+        "source_artifacts_preserved": true,
+        "test_evaluated": false,
+        "predictive_gain_claim": false,
+        "nonzero_gradient_batches_by_epoch": [
+          2,
+          2
+        ],
+        "best_mechanisms": {
+          "local_substeps": 80.0,
+          "edge_positions": 1039680.0,
+          "eligible_edge_positions": 54360.0,
+          "capacity_change_abs_sum": 179.9183698296547,
+          "capacity_change_abs_max": 0.007359445095062256,
+          "flux_change_abs_sum": 18.68193531036377,
+          "flux_change_abs_max": 0.0045593976974487305,
+          "capacity_limited_count": 399364.0,
+          "base_capacity_limited_count": 398517.0,
+          "proposal_change_abs_max": 0.0,
+          "balance_abs_max": 5.7220458984375e-06,
+          "float64_balance_abs_max": 1.2069940567016602e-06,
+          "capacity_violation_max": 0.0,
+          "sending_violation_max": 5.960464477539063e-08,
+          "receiving_violation_max": 1.1920928955078125e-07
+        }
+      },
+      "state": {
+        "completed_epoch": 2,
+        "trainable_parameters": 1381,
+        "frozen_parameters": 435856,
+        "global_updates": 4,
+        "optimizer_updates_this_invocation": 2,
+        "off_exactly_matches_source": true,
+        "source_artifacts_preserved": true,
+        "test_evaluated": false,
+        "predictive_gain_claim": false,
+        "nonzero_gradient_batches_by_epoch": [
+          2,
+          2
+        ],
+        "best_mechanisms": {
+          "local_substeps": 80.0,
+          "edge_positions": 1039680.0,
+          "eligible_edge_positions": 54360.0,
+          "capacity_change_abs_sum": 183.59899163246155,
+          "capacity_change_abs_max": 0.007343471050262451,
+          "flux_change_abs_sum": 19.153924137353897,
+          "flux_change_abs_max": 0.004615157842636108,
+          "capacity_limited_count": 399393.0,
+          "base_capacity_limited_count": 398517.0,
+          "proposal_change_abs_max": 0.0,
+          "balance_abs_max": 5.7220458984375e-06,
+          "float64_balance_abs_max": 1.2069940567016602e-06,
+          "capacity_violation_max": 0.0,
+          "sending_violation_max": 5.960464477539063e-08,
+          "receiving_violation_max": 1.1920928955078125e-07
+        }
+      }
+    },
+    "risk_report_engineering_scope_visible": true
+  },
+  "recipe": {
+    "protocol_id": "contra_frozen_MIN_service_limit_pair_v1",
+    "max_epochs": 10,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "adam_eps": 1e-08,
+    "clip_grad_norm": 5.0,
+    "supervised_horizons": 12,
+    "curriculum": false,
+    "scheduler": "constant_learning_rate",
+    "early_stopping": false,
+    "selection_metric": "validation_pooled_masked_MAE_float64",
+    "epoch_zero_is_candidate": true,
+    "freeze_dispatch_normalized_atol": 1e-06,
+    "freeze_dispatch_normalized_rtol": 1e-05,
+    "fixed_hard_fraction": 0.1,
+    "adapter_hidden_width": 16,
+    "arms": [
+      "location",
+      "state"
+    ],
+    "report_inputs": "location_reads_relations_state_omits_relations_same_support_near_parameter_budget",
+    "parameter_matching": "location_width_16_state_closest_integer_width_for_active_input_parameter_count",
+    "proposal_budget": "unchanged_baseline_C0",
+    "service_budget": "bounded_signed_adapter_modifies_only_final_exchange_limit",
+    "training_mode": "backbone_eval_adapter_train",
+    "scope": "exploratory_frozen_backbone_conditional_offline_service_limit_pair",
+    "test_evaluation": false
+  },
+  "experiment_sources_sha256": {
+    "experiments/chronological/train_min_frozen_budget.py": "d0e89f94abd04a4876de5590ae4fc0f4fe96bee629819eccd37e6b2e40c1564f",
+    "experiments/chronological/min_frozen_budget_metrics.py": "9dae7dbba1b544f4ab602437e1008b7d858727e0df93e44537f77f527e39ca20",
+    "experiments/chronological/probe_min_event_budget.py": "2249119b512ed90c03ba0f058f03a0ec04b8100e0a864e87eea389a5ad77f178",
+    "experiments/chronological/min_event_budget_probe_metrics.py": "7c3b684e698b4cf9d3f2d7a90fab395d70eccad2c562ad66abc0eabc3d1cc1e6",
+    "experiments/chronological/run_min_frozen_budget.sh": "e66e9b2ea3fd34af5fdcfbb9d18f72b90498bf8754c956959b57137cb03d8175",
+    "src/models/incident_spatial_frozen_budget.py": "eb82381d11f93d808b70e8169c26abc03687f1fc000fc59ed913994ef490d170",
+    "experiments/chronological/train_min_service_budget.py": "bc4567b3f7d8b815df98f9de330e9304d1c0668380f59755bf617f8b865b9e20",
+    "experiments/chronological/min_service_budget_metrics.py": "c1279b5f7af555ae7996845bfd4321121328f8eeb942670295a1af536149efda",
+    "experiments/chronological/run_min_service_budget.sh": "a12d3dfa2c21443f467399173a7974c6c7d688425200f752988132abdfa94af6",
+    "src/models/incident_spatial_service_budget.py": "ac827ec7712c7103a4098a3a5b286bf935f147387f3b4fdc9ad70e36aa48fbdc"
+  },
+  "limitations": [
+    "CPU engineering data only; formal 3909/837 CUDA paired run remains for the server.",
+    "State retains the original incident support mask; this is not a no-incident ablation.",
+    "1396 versus 1381 active parameters and hidden-width difference remain disclosed.",
+    "Same-state shared-proposal diagnostics do not identify the full OFF trajectory or real road capacity.",
+    "No test evaluation or predictive gain claim."
+  ]
+}

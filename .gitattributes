@@ -19,6 +19,7 @@ experiments/chronological/run_min_event_budget_probe.sh text eol=lf
 experiments/chronological/run_min_frozen_budget.sh text eol=lf
 experiments/chronological/run_min_frozen_gain_analysis.sh text eol=lf
 experiments/chronological/run_min_frozen_location_probe.sh text eol=lf
+experiments/chronological/run_min_service_budget.sh text eol=lf
 experiments/chronological/report_metadata_m42/* text eol=lf
 experiments/chronological/report_metadata/* text eol=lf
 experiments/chronological/physics_metadata/* text eol=lf
