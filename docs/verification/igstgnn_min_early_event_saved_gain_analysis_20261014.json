@@ -1,0 +1,51 @@
+{
+  "status": "LOCAL_MIN_EARLY_EVENT_SAVED_GAIN_ANALYSIS_VERIFICATION_PASS",
+  "date": "2026-10-14",
+  "formal_server_prediction_analysis_completed": false,
+  "predictive_gain_claim": false,
+  "environment": {
+    "python": "3.10.16",
+    "numpy": "1.26.4",
+    "device": "cpu",
+    "torch_imported": false
+  },
+  "tests": {
+    "command": "python -X utf8 -m unittest tests.test_min_early_event_gain_metrics tests.test_min_early_event_gain_analysis -q",
+    "count": 22,
+    "seconds": 18.374,
+    "result": "OK",
+    "coverage": [
+      "same_point_T_equals_P_plus_R_and_grouped_contribution_conservation",
+      "common_STATE_bias_for_all_comparisons",
+      "pooled_and_horizon_macro_weighting_and_missing_groups",
+      "fixed_flow_bias_region_cross_groups_and_horizons",
+      "overlap_sign_cells_and_same_point_opposition",
+      "original_fixed_hard_windows_and_different_weighting",
+      "source_replay_budget_metrics_and_axis_consistency",
+      "legal_region_mask_swap_rejected_by_original_region_metrics",
+      "source_byte_preservation_and_stale_PASS_rejection",
+      "readonly_existing_run_lock_and_concurrency",
+      "subprocess_blocks_torch_models_trainers_and_raw_data_loaders"
+    ]
+  },
+  "bash_syntax": {
+    "run_min_early_event_gain_analysis.sh": "PASS",
+    "git_embedded": false,
+    "slurm_mem_requested": false,
+    "gpu_requested": false
+  },
+  "existing_archive_integration": {
+    "source": "experiments/chronological_runs/local_min_early_e1_check_20261014/early_event_evaluation_20261014_225135_f5ed46",
+    "output": "experiments/chronological_runs/local_min_early_e1_check_20261014/early_event_gain_analysis_release_check_20261014",
+    "stations": 496,
+    "validation_rows": 4,
+    "engineering_only": true,
+    "status": "MIN_EARLY_EVENT_GAIN_ANALYSIS_PASS",
+    "source_artifacts_preserved": true,
+    "source_certificate_scope": "archived_internal_consistency_not_new_checkpoint_replay",
+    "new_inference_calls": 0,
+    "optimizer_updates": 0,
+    "test_evaluated": false,
+    "scope": "engineering_only_no_formal_predictive_gain_inference"
+  }
+}
