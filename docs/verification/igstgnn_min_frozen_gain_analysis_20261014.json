@@ -1,0 +1,45 @@
+{
+  "status": "LOCAL_VALIDATION_PASS",
+  "date": "2026-10-14",
+  "scope": "offline_saved_frozen_MIN_prediction_strata_analysis",
+  "tests": {
+    "new_metrics": 16,
+    "new_runner": 18,
+    "original_paired_metrics_regression": 13,
+    "total_unique": 47,
+    "all_passed": true,
+    "runner_no_torch_import_guard_passed": true
+  },
+  "bash_syntax": "PASS",
+  "public_bash_cli": {
+    "status": "FROZEN_MIN_GAIN_ANALYSIS_PASS",
+    "validation_rows": 4,
+    "stations": 496,
+    "engineering_only": true,
+    "output_dir": "experiments\\chronological_runs\\min_frozen_gain_check_20261014_acceptance01",
+    "new_inference_calls": 0,
+    "training_updates": 0,
+    "source_artifacts_preserved": true,
+    "protected_inputs": 22,
+    "contribution_reconciliation": "PASS"
+  },
+  "formal_shape_metrics_smoke": {
+    "shape": [
+      837,
+      12,
+      496
+    ],
+    "cross_groups": 54,
+    "scope": "synthetic_numeric_test_not_formal_server_effectiveness",
+    "status": "PASS"
+  },
+  "server_formal_analysis_completed": false,
+  "old_training_source_modified": false,
+  "file_sha256": {
+    "experiments/chronological/analyze_min_frozen_gain.py": "a3b9766d9fb1871c4197d713100e2bc69e41f98a161df9dcd1f88c627fe92b01",
+    "experiments/chronological/min_frozen_gain_metrics.py": "927e733c776ef6723587ac075bb5cc99d4eb0ffcbaee628346f03ae77b01f7d1",
+    "experiments/chronological/run_min_frozen_gain_analysis.sh": "86e32b3588bbfc0a4d165cf1d579d82331276b3284a34cb2740989c6de3a3590",
+    "tests/test_min_frozen_gain_metrics.py": "32122e1c4580cb3651bce953c9c743f6e7788d4e78016fbff18f08126bd64cb0",
+    "tests/test_min_frozen_gain_runner.py": "464237260366b3e1b8b65accda8166a674bdd910ddddc60f4198c6365fc0292b"
+  }
+}
