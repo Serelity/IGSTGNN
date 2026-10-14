@@ -14,6 +14,7 @@ import numpy as np
 
 from experiments.chronological import analyze_min_frozen_gain as runner
 from experiments.chronological.min_frozen_budget_metrics import select_hard_windows, summarize_pair
+from data.xtraffic import prepare_splits
 
 
 class FrozenGainRunnerTests(unittest.TestCase):
@@ -66,6 +67,8 @@ class FrozenGainRunnerTests(unittest.TestCase):
             experiment_sources_sha256={'experiments/chronological/min_frozen_budget_metrics.py':
                 runner.sha256(runner.REPO/'experiments/chronological/min_frozen_budget_metrics.py')},
             source_identity=dict(schema='min_event_budget_published_run_v1',
+                source_sha256={'data/xtraffic/prepare_splits.py':
+                    runner.sha256(runner.REPO/'data/xtraffic/prepare_splits.py')},
                 protocol=dict(stations=4, total_samples=20, train_samples=14,
                     val_samples=3, test_samples=3, graph_sha256=runner.sha256(self.graph/'graph.json')),
                 package={path.name: runner.sha256(path) for path in self.data.iterdir()},
@@ -175,6 +178,81 @@ assert 'torch' not in sys.modules
         result = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', timeout=60)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('FROZEN_MIN_GAIN_ANALYSIS_PASS', result.stdout)
+
+    def test_metadata_uses_authenticated_shared_release_loader(self):
+        with patch.object(runner, 'load_samples', wraps=prepare_splits.load_samples) as shared_loader:
+            regions, _, audit = runner.read_metadata(self.data, self.graph, self.identity,
+                                                     self.best, self.baseline_info)
+        shared_loader.assert_called_once_with(self.data/'incident_all.npy')
+        self.assertTrue(audit['selected_original_targets_exact'])
+        self.assertTrue(regions['direct_report_nodes'][0, 0])
+
+    def test_shared_loader_retries_only_known_numpy_private_module_errors(self):
+        samples = np.array([{'payload': np.array([1., 2.], np.float32)}], dtype=object)
+        for missing in ('numpy._core', 'numpy._core.multiarray'):
+            error = ModuleNotFoundError('Simulated NumPy 1.24 private module absence', name=missing)
+            with self.subTest(missing=missing), patch.dict(sys.modules), \
+                    patch.object(prepare_splits.np, 'load', side_effect=[error, samples]) as load:
+                actual = prepare_splits.load_samples(self.data/'incident_all.npy')
+                self.assertIs(actual, samples)
+                self.assertEqual(load.call_count, 2)
+                self.assertEqual(load.call_args_list[0], load.call_args_list[1])
+                self.assertIn('numpy._core.multiarray', sys.modules)
+        unknown = ModuleNotFoundError('Unexpected dependency', name='unrelated_pickle_dependency')
+        with patch.object(prepare_splits.np, 'load', side_effect=unknown) as load:
+            with self.assertRaises(ModuleNotFoundError) as caught:
+                prepare_splits.load_samples(self.data/'incident_all.npy')
+            self.assertIs(caught.exception, unknown)
+            self.assertEqual(load.call_count, 1)
+
+    def test_real_numpy2_object_pickle_loads_when_private_module_import_is_missing(self):
+        path = self.data/'incident_all.npy'
+        original = path.read_bytes()
+        old, new = b'cnumpy.core.multiarray\n', b'cnumpy._core.multiarray\n'
+        self.assertIn(old, original)
+        # np.save uses pickle protocol 3 for object arrays here, so changing
+        # the GLOBAL module name leaves the .npy header and pickle framing valid.
+        path.write_bytes(original.replace(old, new))
+        self.refresh_release_hashes()
+        code = '''import builtins, runpy, sys
+import numpy
+missing_name = sys.argv[1]
+for name in list(sys.modules):
+    if name == 'numpy._core' or name.startswith('numpy._core.'):
+        del sys.modules[name]
+original_import = builtins.__import__
+blocked = []
+def guarded(name, *args, **kwargs):
+    if name.split('.')[0] == 'torch':
+        raise AssertionError('Compatibility analysis attempted to import torch')
+    if name.startswith('numpy._core') and name not in sys.modules:
+        blocked.append(name)
+        raise ModuleNotFoundError('Simulated NumPy 1.24 private module absence', name=missing_name)
+    return original_import(name, *args, **kwargs)
+builtins.__import__ = guarded
+sys.argv = sys.argv[2:]
+runpy.run_path(sys.argv[0], run_name='__main__')
+assert blocked == ['numpy._core.multiarray'], blocked
+assert 'numpy._core.multiarray' in sys.modules
+assert 'torch' not in sys.modules
+print('REAL_OBJECT_PICKLE_COMPATIBILITY_RETRY_PASSED')
+'''
+        for missing in ('numpy._core', 'numpy._core.multiarray'):
+            with self.subTest(missing=missing):
+                output = self.run/('compat_'+missing.replace('.', '_'))
+                command = [sys.executable, '-X', 'utf8', '-c', code, missing,
+                    str(Path(runner.__file__).resolve()), '--run-dir', str(self.run),
+                    '--data-dir', str(self.data), '--graph-dir', str(self.graph),
+                    '--output-dir', str(output)]
+                result = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', timeout=60)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('REAL_OBJECT_PICKLE_COMPATIBILITY_RETRY_PASSED', result.stdout)
+                self.assertEqual(runner.read_json(output/'summary.json')['status'], 'FROZEN_MIN_GAIN_ANALYSIS_PASS')
+
+    def test_original_shared_loader_fingerprint_cannot_be_substituted(self):
+        self.identity['source_identity']['source_sha256']['data/xtraffic/prepare_splits.py'] = 'changed'
+        runner.write_json(self.run/'identity.json', self.identity)
+        self.assert_rejected()
 
     def test_each_mismatched_shared_archive_axis_or_field_is_rejected(self):
         original = copy.deepcopy(self.best)

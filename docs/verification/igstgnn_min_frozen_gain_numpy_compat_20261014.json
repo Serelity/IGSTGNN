@@ -1,0 +1,39 @@
+{
+  "status": "LOCAL_NUMPY_NAMESPACE_COMPATIBILITY_PASS",
+  "date": "2026-10-14",
+  "server_error": "ModuleNotFoundError: No module named 'numpy._core'",
+  "fix": "Reuse unchanged training load_samples; no dependency or published-file conversion",
+  "tests": {
+    "gain_metrics": 16,
+    "gain_runner_including_compatibility": 22,
+    "total_this_fix": 38,
+    "all_passed": true,
+    "known_root_and_child_missing_module_retries": true,
+    "unknown_module_error_propagates": true,
+    "real_numpy2_style_object_pickle_is_deserialized_in_isolated_subprocesses": true,
+    "torch_import_forbidden": true
+  },
+  "real_release_engineering_acceptance": {
+    "local_numpy_version": "1.26.4",
+    "compatibility_method": "simulate_missing_numpy._core_namespace_not_an_actual_numpy_1.24_runtime",
+    "missing_namespace_imports": 1,
+    "source_run": "experiments/chronological_runs/contra_min_frozen_check_20261014_acceptance",
+    "output_dir": "experiments\\chronological_runs\\min_frozen_gain_numpy124_namespace_20261014_acceptance",
+    "validation_rows": 4,
+    "stations": 496,
+    "engineering_only": true,
+    "status": "FROZEN_MIN_GAIN_ANALYSIS_PASS",
+    "new_inference_calls": 0,
+    "training_updates": 0,
+    "protected_inputs": 23,
+    "source_artifacts_preserved": true,
+    "analysis_numerically_identical_to_previous_acceptance": true
+  },
+  "server_formal_rerun_completed": false,
+  "old_shared_training_reader_modified": false,
+  "file_sha256": {
+    "experiments/chronological/analyze_min_frozen_gain.py": "b3432735fde2cc628847d1c410e6b3bedec010e2ff7c49aee6b4977824ba120f",
+    "tests/test_min_frozen_gain_runner.py": "3f01f237ffda15f784c7f63ab6095587087f7dff5dfa5c333431cfe3bbb2bc3c",
+    "data/xtraffic/prepare_splits.py": "a158a98e338a1db5921590b886e4d59ac59819bb2cd00a01a6f5d884e01317ba"
+  }
+}

@@ -18,6 +18,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
+from data.xtraffic.prepare_splits import load_samples
 from experiments.chronological.min_frozen_budget_metrics import select_hard_windows, summarize_pair
 from experiments.chronological.min_frozen_gain_metrics import summarize_strata
 
@@ -280,7 +281,9 @@ def read_metadata(data_dir, graph_dir, identity, best, baseline_info):
     require(np.isfinite(mean) and np.isfinite(std) and std > 0, 'Invalid published normalization')
     # The authenticated author format is an object array. Its entire payload is
     # deserialized, but only selected validation records are inspected below.
-    raw = np.load(Path(data_dir)/'incident_all.npy', allow_pickle=True)
+    # Reuse the training reader: NumPy 2 object pickles name numpy._core,
+    # while the unchanged server NumPy 1.24 needs its multiarray compatibility.
+    raw = load_samples(Path(data_dir)/'incident_all.npy')
     require(raw.ndim == 1 and len(raw) == protocol['total_samples'], 'Published sample count/axis differs')
     start = int(len(raw)*.70)
     end = start+int(len(raw)*.15)
@@ -423,6 +426,9 @@ def analyze_run(args):
         for name in ('experiments/chronological/min_frozen_budget_metrics.py',):
             require(sha256(REPO/name) == identity['experiment_sources_sha256'][name], 'Original metric implementation changed')
             paths['original_code/'+name] = REPO/name
+        loader_name = 'data/xtraffic/prepare_splits.py'
+        require(sha256(REPO/loader_name) == source['source_sha256'][loader_name], 'Original published reader changed')
+        paths['original_code/'+loader_name] = REPO/loader_name
         for name in ('analyze_min_frozen_gain.py', 'min_frozen_gain_metrics.py', 'run_min_frozen_gain_analysis.sh'):
             paths['analysis_code/'+name] = HERE/name
         require(all(path.is_file() for path in paths.values()), 'A required saved input is missing')
