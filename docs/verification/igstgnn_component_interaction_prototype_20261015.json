@@ -1,0 +1,82 @@
+{
+  "schema": "min_component_score_interaction_prototype_verification_v1",
+  "date": "2026-10-15",
+  "status": "ENGINEERING_PROTOTYPE_PASS_NOT_FORMAL_TRAINING_READY",
+  "source_commit": "d95689c",
+  "primary_baseline": "original_IGSTGNN",
+  "formal_F2_evidence": "user_returned_full_report_and_mechanisms_not_locally_replayed",
+  "formal_F2_evaluation": "component_fusion_evaluation_20261015_164939_5bcf01",
+  "runtime": {
+    "python": "3.10.16",
+    "torch": "2.8.0+cu126",
+    "tests_device": "cpu"
+  },
+  "verification": {
+    "command": "python -X utf8 -m unittest tests.test_min_component_interaction tests.test_min_interaction_fusion_model tests.test_min_component_fusion_model -v",
+    "distinct_tests": 29,
+    "new_module_tests": 8,
+    "new_model_tests": 11,
+    "F2_regression_tests": 10,
+    "seconds": 10.426,
+    "exit_code": 0,
+    "independent_reviewer_new_tests": 19,
+    "independent_reviewer_seconds": 7.517,
+    "independent_reviewer_blocking_findings": 0,
+    "synthetic_optimizer_steps_in_unit_tests": true,
+    "formal_optimizer_updates": 0,
+    "new_formal_inference_calls": 0,
+    "formal_F2_checkpoint_loaded": false,
+    "test_set_evaluated": false
+  },
+  "structure": {
+    "added_parameters_at_component_dim_8": 472,
+    "total_parameters_from_prior_formal_F2_count_arithmetic_only": 441325,
+    "rank": 8,
+    "new_branches": ["history_prediction_interaction", "component_history_report_interaction"],
+    "zero_initialized_final_readouts": true,
+    "independently_center_new_scores_before_F2_tanh": true,
+    "original_bounded_transform_calls": 1,
+    "backbone_forwards": 1,
+    "original_head_forwards_when_interaction_active": 2,
+    "fixed_sum_prediction_computed_internally": true,
+    "new_persistent_state": false,
+    "new_graph_propagation": false,
+    "original_latent_exchange_retained": true,
+    "legacy_F2_report_path_retained": true,
+    "component_or_reference_prediction_detached": false,
+    "new_full_horizon_component_rank_stack": false,
+    "all_candidate_parameters_trainable": true,
+    "formal_train_evaluation_runner_added": false
+  },
+  "tested_contracts": [
+    "zero_new_readouts_exact_active_engineering_F2",
+    "both_new_branches_OFF_exact_parent_F2",
+    "fusion_OFF_equals_same_current_MIN",
+    "constant_added_scores_exact_identity_at_nonuniform_base_scores",
+    "source_state_rng_and_independent_tensor_copy",
+    "train_mode_rng_dropout_and_BN_zero_start_equivalence",
+    "same_normalized_flow_and_complete_fixed_sum_reference",
+    "twelve_slot_prediction_differences_not_averaged_to_four_blocks",
+    "readout_first_step_and_factor_second_step_gradients",
+    "reference_prediction_compact_features_and_backbone_live_gradients",
+    "report_support_zero_and_STATE_does_not_read_report",
+    "report_OFF_disables_all_report_paths_new_report_OFF_retains_legacy",
+    "one_backbone_two_active_heads_one_bound",
+    "strict_shape_dtype_finite_switch_contracts_and_serialization"
+  ],
+  "five_problem_status": {
+    "relation_information": "new_testable_interface_no_effectiveness_claim",
+    "selectivity": "primary_hypothesis_not_yet_empirically_verified",
+    "persistent_response_state": "unresolved_not_added_in_this_prototype",
+    "latent_budget_output_link": "unresolved_existing_path_unchanged",
+    "joint_adaptation": "already_present_in_F2_preserved_not_new_contribution"
+  },
+  "limitations": [
+    "CPU_contract_tests_do_not_establish_forecasting_gain",
+    "no_server_PyTorch_2_3_1_or_GPU_resource_validation",
+    "reused_F2_operations_are_snapshot_copies_guarded_by_regression_tests",
+    "prediction_minus_history_is_not_forecast_error_or_causal_incident_effect",
+    "existing_development_validation_is_exploratory",
+    "explicit_multiplicative_interaction_has_existing_literature_precedent"
+  ]
+}
