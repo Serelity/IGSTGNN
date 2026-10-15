@@ -1,0 +1,52 @@
+{
+  "files": {
+    "args.py": {
+      "bytes": 1135,
+      "git_path": "src/utils/args.py",
+      "sha256": "22b3011b652c7b14bfb499f6db6980ec580cf4fd45a996ce1bcedd6a9a8ee171"
+    },
+    "base_engine.py": {
+      "bytes": 7361,
+      "git_path": "src/base/engine.py",
+      "sha256": "d6307e55366449cc4ae93abbf08930ed7f606cb2b241828a1da20c683fd11309"
+    },
+    "base_model.py": {
+      "bytes": 547,
+      "git_path": "src/base/model.py",
+      "sha256": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83"
+    },
+    "dataloader.py": {
+      "bytes": 10351,
+      "git_path": "src/utils/dataloader.py",
+      "sha256": "1c350c7bf266d4bc64fbaaa4fb9bf519792b29e386b6f5213a9b7fcc53bc18eb"
+    },
+    "engine.py": {
+      "bytes": 6548,
+      "git_path": "src/engines/igstgnn_engine.py",
+      "sha256": "330448c8d19836102e1cd59f4bd893f0ae989da0ae63ce1d6abfce5d4e272a77"
+    },
+    "graph_algo.py": {
+      "bytes": 5760,
+      "git_path": "src/utils/graph_algo.py",
+      "sha256": "49d876dac914eca4f9e75aa2fbc3903c28da8570fd50a5940ef16277cd53af19"
+    },
+    "main_reference.py": {
+      "bytes": 5527,
+      "git_path": "experiments/IGSTGNN/main.py",
+      "sha256": "84b5c4fd210eaca52ba39dc648a7db34a307e3ba3fc9b4e00e4ed51e9bae6b26"
+    },
+    "metrics.py": {
+      "bytes": 1708,
+      "git_path": "src/utils/metrics.py",
+      "sha256": "6df3633f8f3007795116a34b2c6d494010e4a2ee6192f5b22ffd6e47b51127fe"
+    },
+    "model.py": {
+      "bytes": 35179,
+      "git_path": "src/models/igstgnn.py",
+      "sha256": "18d07e0e4a33b061ec5a69eb1f102dc5120c7cd9275b39a2637d34c43faf288b"
+    }
+  },
+  "git_reference": "558ab01",
+  "schema": "original_igstgnn_frozen_source_v1",
+  "source_only_no_historical_execution_attestation": true
+}

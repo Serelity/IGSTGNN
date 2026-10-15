@@ -1,0 +1,84 @@
+{
+  "schema": "original_igstgnn_module_evidence_inventory_v1",
+  "date": "2026-10-15",
+  "status": "EVIDENCE_INVENTORY_ONLY_NOT_NEW_ABLATION_RESULTS",
+  "reference_git": "558ab01",
+  "model_source_sha256": "18d07e0e4a33b061ec5a69eb1f102dc5120c7cd9275b39a2637d34c43faf288b",
+  "paper_source": "G:\\paper\\IGSTGNN_open_source\\论文学习\\文献库\\综述_20261007\\全文文本\\events\\igstgnn.txt",
+  "paper_text_sha256": "db583a0fcd7ffcd1a81c11cb2fa07996cf9f5a8a2e668469ce3a81555478393c",
+  "paper_scope": "author_reported_Contra_Costa_12_horizon_average_test_Table_5",
+  "paper_full": {
+    "mae": 13.43,
+    "rmse": 22.5,
+    "mape_percent": 15.84
+  },
+  "paper_ablations": [
+    {
+      "object": "ICSF",
+      "type": "module",
+      "mae": 13.52,
+      "mae_removal_cost": 0.09,
+      "rmse": 23.25,
+      "mape_percent": 16.76
+    },
+    {
+      "object": "TIID",
+      "type": "module",
+      "mae": 13.54,
+      "mae_removal_cost": 0.11,
+      "rmse": 22.83,
+      "mape_percent": 17.35
+    },
+    {
+      "object": "S",
+      "type": "input",
+      "mae": 13.52,
+      "mae_removal_cost": 0.09,
+      "rmse": 23.08,
+      "mape_percent": 16.14
+    },
+    {
+      "object": "D",
+      "type": "input",
+      "mae": 13.55,
+      "mae_removal_cost": 0.12,
+      "rmse": 23.24,
+      "mape_percent": 17.16
+    },
+    {
+      "object": "I",
+      "type": "input",
+      "mae": 13.59,
+      "mae_removal_cost": 0.16,
+      "rmse": 22.99,
+      "mape_percent": 15.8
+    }
+  ],
+  "static_bn_references": {
+    "STLocalizedConv": [
+      {
+        "method": "__init__",
+        "line": 505,
+        "access": "Store"
+      }
+    ],
+    "DistanceFunction": [
+      {
+        "method": "__init__",
+        "line": 767,
+        "access": "Store"
+      },
+      {
+        "method": "forward",
+        "line": 784,
+        "access": "Load"
+      }
+    ]
+  },
+  "registered_unused_local_bn_affine_parameters_at_5_layers_C32": 320,
+  "local_original_module_ranking": "not_available",
+  "pending_fixed_weight_unique_cases": 12,
+  "new_model_calls": 0,
+  "optimizer_updates": 0,
+  "test_evaluated": false
+}

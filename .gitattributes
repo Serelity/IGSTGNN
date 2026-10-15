@@ -29,3 +29,7 @@ experiments/chronological/report_metadata/* text eol=lf
 experiments/chronological/physics_metadata/* text eol=lf
 # Trailing empty TSV fields preserve missing source coordinates.
 experiments/chronological/physics_metadata/source_sensor_subset.tsv whitespace=-blank-at-eol
+experiments/chronological/run_original_igstgnn_baseline.sh text eol=lf
+experiments/chronological/run_original_igstgnn_module_ablation.sh text eol=lf
+# Preserve authenticated author bytes, including historical whitespace.
+experiments/chronological/original_igstgnn_558ab01/* -text -whitespace
