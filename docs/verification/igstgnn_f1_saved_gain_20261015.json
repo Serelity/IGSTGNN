@@ -1,0 +1,113 @@
+{
+  "schema": "igstgnn_f1_saved_gain_development_verification_v1",
+  "date": "2026-10-15",
+  "status": "ENGINEERING_VERIFIED_FORMAL_SAVED_GAIN_PENDING_SERVER",
+  "total_distinct_tests": 20,
+  "test_suites": [
+    {
+      "module": "tests.test_min_forecast_fusion_gain_metrics",
+      "tests": 11,
+      "status": "PASS",
+      "seconds": 5.644
+    },
+    {
+      "module": "tests.test_min_forecast_fusion_gain_analysis",
+      "tests": 9,
+      "status": "PASS",
+      "seconds": 10.813
+    }
+  ],
+  "final_report_display_revision": {
+    "targeted_fixture_test": "test_complete_archive_analysis_preserves_bytes_and_paper_baseline_scope",
+    "tests_rerun": 1,
+    "status": "PASS",
+    "seconds": 1.981,
+    "full_real_archive_integration_repeated": false
+  },
+  "bash_syntax": "PASS",
+  "local_integration": {
+    "source_evaluation": "experiments/chronological_runs/local_min_forecast_fusion_check_20261015/forecast_fusion_evaluation_release_check_20261015",
+    "output_directory": "experiments/chronological_runs/local_min_forecast_fusion_check_20261015/forecast_fusion_gain_analysis_release_check_20261015",
+    "status": "MIN_FORECAST_FUSION_GAIN_ANALYSIS_PASS",
+    "validation_rows": 4,
+    "stations": 496,
+    "engineering_only": true,
+    "new_inference_calls": 0,
+    "optimizer_updates": 0,
+    "test_evaluated": false,
+    "protected_file_count": 15,
+    "source_artifacts_preserved": true,
+    "before_equals_after": true,
+    "integration_report_predates_final_display_only_revision": true
+  },
+  "old_model_training_and_data_source_fingerprint_check": {
+    "files": 21,
+    "status": "UNCHANGED"
+  },
+  "final_code_sha256": {
+    "experiments/chronological/min_forecast_fusion_gain_metrics.py": "b7af9596d0ba48efbb11b1b25d9ff311700894e528694b54576f90ce54f29f82",
+    "experiments/chronological/analyze_min_forecast_fusion_gain.py": "d79694c19802861437cfcb6f750716520b1745cfda1534d9b69ba056d8c7918f",
+    "experiments/chronological/run_min_forecast_fusion_gain_analysis.sh": "b9f33690710f881b02c5274fc5ab042f1eccdf190c4383b1886a92ba9d791e92",
+    "tests/test_min_forecast_fusion_gain_metrics.py": "c248c0f20a285e85e4a11a21564b7c86d80cc21931786d34494e10bda5c68e84",
+    "tests/test_min_forecast_fusion_gain_analysis.py": "1b141f3b39fdc675249bbe4ab503684c23988452a452be9adbc1d69aee201622"
+  },
+  "scientific_contract": {
+    "primary_paper_baseline": "original_IGSTGNN",
+    "primary_baseline_evaluated_in_this_analysis": false,
+    "SOURCE_MIN": "intermediate_structural_control",
+    "comparisons": 12,
+    "pointwise_and_grouped_arithmetic_identities": 4,
+    "flow_current_bias_report_cross_groups": 54,
+    "current_bias_reference": "EVENT_FUSION_OFF",
+    "separate_source_bias_reference": "SOURCE_MIN",
+    "direction_control_predictions": [
+      "EVENT_FUSION_OFF",
+      "EVENT_REPORT_OFF"
+    ],
+    "direction_categories": 8,
+    "group_contribution_denominators": "all_nodes_valid_or_positive_target_counts",
+    "independent_causal_identification": false
+  },
+  "source_archive_before_sha256": {
+    "analysis.json": "60ac18e2dc7c8b18411c07962a1a44367de4a383b6ab29aa595277667078a028",
+    "comparability.json": "d12ec3d6e54d22b3521008923673e3f788a1faebcc16fdab06112ab8ace2d102",
+    "horizons.csv": "0af5363082293c0acc65cd44f724d6860bcc9d5b30013fa1427177be9290ad13",
+    "mechanisms.json": "7e73858a40428ed20995999bcfc4f6910fe4565c1e93f1fa36615c92c53a54ea",
+    "paired_predictions.npz": "9dd3afc2e586997a468b86286825516dc2d560b9ebca11eace8a18073966638e",
+    "preservation.json": "17dc558b7457957005fa9d29f09869c1f67d275fbef55c41e961a2b3cfafbf32",
+    "provenance.json": "81931583a795a3806c07c7f1ee29aed8fc7ba235aa7fe780f8744c8555c19707",
+    "regions.csv": "a9f76abedf71da6e72ebc5be23c53fa6eb69591dd0916f5160d285dc47d805fd",
+    "region_definitions.json": "14523f7c5945f3ed1794f5310fd7bad7a58cc2d8a85982e9d11e27a06391e1b5",
+    "replay.json": "77f396065d9f978e6efe90b02633621d2fb5c70c144def5b5d7654c43b2d8a77",
+    "report.md": "6b4f7dc36e4febcf8ef44d9ac35286f9cff12b7cadc30611cfb6fdc99de90797",
+    "strata.csv": "3856e6baa9748fb546433da0ea1cf2916c74f80e6c921d0cabb6aeeb301fc501",
+    "summary.json": "a3cbb22030aae8ce0fb17988f6805f61fc60cb27799c3c6352cec5159529ecf9",
+    "weights.csv": "79e6452d6a0069b511075ab4a2311d074965e14dfbf3e01b45f3d4f0b1c3a268",
+    "<existing_source_run_lock>": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  "source_archive_after_sha256": {
+    "analysis.json": "60ac18e2dc7c8b18411c07962a1a44367de4a383b6ab29aa595277667078a028",
+    "comparability.json": "d12ec3d6e54d22b3521008923673e3f788a1faebcc16fdab06112ab8ace2d102",
+    "horizons.csv": "0af5363082293c0acc65cd44f724d6860bcc9d5b30013fa1427177be9290ad13",
+    "mechanisms.json": "7e73858a40428ed20995999bcfc4f6910fe4565c1e93f1fa36615c92c53a54ea",
+    "paired_predictions.npz": "9dd3afc2e586997a468b86286825516dc2d560b9ebca11eace8a18073966638e",
+    "preservation.json": "17dc558b7457957005fa9d29f09869c1f67d275fbef55c41e961a2b3cfafbf32",
+    "provenance.json": "81931583a795a3806c07c7f1ee29aed8fc7ba235aa7fe780f8744c8555c19707",
+    "regions.csv": "a9f76abedf71da6e72ebc5be23c53fa6eb69591dd0916f5160d285dc47d805fd",
+    "region_definitions.json": "14523f7c5945f3ed1794f5310fd7bad7a58cc2d8a85982e9d11e27a06391e1b5",
+    "replay.json": "77f396065d9f978e6efe90b02633621d2fb5c70c144def5b5d7654c43b2d8a77",
+    "report.md": "6b4f7dc36e4febcf8ef44d9ac35286f9cff12b7cadc30611cfb6fdc99de90797",
+    "strata.csv": "3856e6baa9748fb546433da0ea1cf2916c74f80e6c921d0cabb6aeeb301fc501",
+    "summary.json": "a3cbb22030aae8ce0fb17988f6805f61fc60cb27799c3c6352cec5159529ecf9",
+    "weights.csv": "79e6452d6a0069b511075ab4a2311d074965e14dfbf3e01b45f3d4f0b1c3a268",
+    "<existing_source_run_lock>": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  "formal_evaluation_to_analyze": "experiments/chronological_runs/contra_min_forecast_fusion_f1_bs64_seed2025/forecast_fusion_evaluation_20261015_120750_e7476e",
+  "limitations": [
+    "local four-window integration is engineering verification only",
+    "formal 837-window source was reported by user and has not been independently opened locally",
+    "archived certificates are internal consistency not new checkpoint replay or historical signature",
+    "source MIN comparisons include additional adaptation and do not establish fusion training causality",
+    "original IGSTGNN primary comparison remains separate from this eight-case archive"
+  ]
+}
