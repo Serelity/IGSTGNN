@@ -1,0 +1,135 @@
+{
+  "schema": "min_forecast_fusion_f1_development_verification_v1",
+  "date": "2026-10-15",
+  "status": "ENGINEERING_VERIFIED_FORMAL_GAIN_UNTESTED",
+  "total_distinct_tests": 31,
+  "test_suites": [
+    {
+      "module": "tests.test_min_forecast_fusion_model",
+      "tests": 11,
+      "status": "PASS",
+      "seconds": 3.933
+    },
+    {
+      "module": "tests.test_min_forecast_fusion_runner",
+      "tests": 12,
+      "status": "PASS",
+      "seconds": 25.749,
+      "final_cache_check_reverified": true
+    },
+    {
+      "module": "tests.test_min_forecast_fusion_evaluation",
+      "tests": 8,
+      "status": "PASS",
+      "seconds": 8.755
+    }
+  ],
+  "suite_execution": "separate_suites_all_pass",
+  "bash_syntax": "PASS",
+  "runtime": {
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "device_type": "cpu",
+    "cublas_workspace_config": ":4096:8"
+  },
+  "formal_parameters": 440950,
+  "baseline_parameters": 435856,
+  "added_parameters": 5094,
+  "source_run": "experiments/chronological_runs/contra_min_i_check_20261013_dev01",
+  "new_run": "experiments/chronological_runs/local_min_forecast_fusion_check_20261015",
+  "engineering_only": true,
+  "train_rows": 4,
+  "validation_rows": 4,
+  "stations": 496,
+  "batch_size": 2,
+  "new_stage_epochs": {
+    "STATE": 1,
+    "EVENT": 1
+  },
+  "optimizer_updates_per_arm": {
+    "STATE": 2,
+    "EVENT": 2
+  },
+  "evaluation": {
+    "status": "MIN_FORECAST_FUSION_EVALUATION_PASS",
+    "directory": "experiments/chronological_runs/local_min_forecast_fusion_check_20261015/forecast_fusion_evaluation_release_check_20261015",
+    "cases": [
+      "STATE_ON",
+      "EVENT_ON",
+      "EVENT_REPORT_OFF",
+      "EVENT_FUSION_OFF",
+      "EVENT_UNIFORM",
+      "EVENT_SEMANTIC_UNK",
+      "EVENT_LOCATION_SHUFFLE",
+      "SOURCE_MIN"
+    ],
+    "new_inference_calls": {
+      "STATE_ON": 2,
+      "EVENT_ON": 12,
+      "EVENT_REPORT_OFF": 2,
+      "EVENT_FUSION_OFF": 2,
+      "EVENT_UNIFORM": 2,
+      "EVENT_SEMANTIC_UNK": 2,
+      "EVENT_LOCATION_SHUFFLE": 2,
+      "SOURCE_MIN": 0
+    },
+    "restored_exactly": true,
+    "files_preserved": true,
+    "protected_file_count": 48,
+    "fixed_hard_and_bias_reference": "SOURCE_MIN",
+    "optimizer_updates": 0
+  },
+  "noop": {
+    "status": "MIN_FORECAST_FUSION_NOOP_PASS",
+    "new_optimizer_updates": 0,
+    "full_source_replay_repeated": false,
+    "protected_file_count": 12,
+    "file_hashes": {
+      "source/identity.json": "6b8e96a4ca06939e4af4a34ac9cb0c1492f50f38da461afa0bd0a14614b9a3e9",
+      "source/initialization.json": "a94b821d4536654c7ef31faabe9b72daf01f956b0311e992aea8e277f17f9954",
+      "source/data_audit.json": "5bd3b2d42e7907b9dbbb70607f55c823b14a83ed02667e51f9fb1f5c4d3fe89f",
+      "source/A/last.pt": "c6eb923852adf73fd3f830aae317a8aa0e4ed18664ddf702f70d00019f9eafbe",
+      "source/A/history.json": "4d9b2886fd99f45b6ec757422f3a3c567a6c37403c5b5afb3f39792f8495c1a7",
+      "source/A/summary.json": "d3f5428e68c7672065a080c9a758f1992ac3e75a82a1c67be5fd4e5578d91c7e",
+      "run/STATE/last.pt": "0d7d9dbc69ec94053de058f4177eca9cebca0fe826c01a3b221c30b059c13e1c",
+      "run/EVENT/last.pt": "9596bb5ef007b1d5f6cb8d01150f0e44b8a27ea88c0370f9125703a1a43a0f21",
+      "run/source_reference.json": "4a925fa65059dae232549f8fa2e9d5aaa499a3ec65e5b75874ad374cde774d84",
+      "run/source_reference.npz": "a6cc0e7af32c0728901d9e1a40c1a81827cab52639cd039b29d5675286f6cce4",
+      "run/identity.json": "18adfb66a8104d8912c8fd53729078b62bb4d4bd8e12374d973062332c76118f",
+      "run/initialization.json": "b816eba136ddbf0f1f30ee082a53daa9d494bc08cde23e959180dd9f4dc187a2"
+    }
+  },
+  "source_model_retrained": false,
+  "test_evaluated": false,
+  "formal_V100_training_run": false,
+  "predictive_gain_claim": false,
+  "source_fingerprints": {
+    "experiments/chronological/train_b3_r_minimal_paper.py": "2bf61fe9a7b230f5f98dea091de5a8a4ff761dcdbb1b2e49ce9cdc6a3cb85f33",
+    "src/utils/igstgnn_published.py": "1adaa6a026fc49008a281c51dd4d916d330286f55f6dd19cd38c227408776de5",
+    "data/xtraffic/prepare_splits.py": "a158a98e338a1db5921590b886e4d59ac59819bb2cd00a01a6f5d884e01317ba",
+    "src/utils/dataloader.py": "02476dcd8f9f6e9c327e14f8b2f7a4e4f414b273f959457f41ab73c039074852",
+    "src/utils/metrics.py": "6df3633f8f3007795116a34b2c6d494010e4a2ee6192f5b22ffd6e47b51127fe",
+    "src/utils/graph_algo.py": "49d876dac914eca4f9e75aa2fbc3903c28da8570fd50a5940ef16277cd53af19",
+    "src/base/engine.py": "d6307e55366449cc4ae93abbf08930ed7f606cb2b241828a1da20c683fd11309",
+    "src/base/model.py": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83",
+    "src/engines/igstgnn_engine.py": "330448c8d19836102e1cd59f4bd893f0ae989da0ae63ce1d6abfce5d4e272a77",
+    "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+    "experiments/chronological/train_internal_spatial.py": "371f03212141d6cb2d8599fcc8daa0804c4f87fc75e283fd885312b69b6663d4",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/incident_spatial_residual.py": "2a3ff34dc7fbc9fcab98ea82145d7bcfccf4735eda2687606d05b4da9e853ee8",
+    "src/models/incident_spatial_minimal.py": "a38735ed4a1308d75f15c71817b8e8dabdd2d897c16370743cdcba959c275ef2",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "experiments/chronological/train_min_event_budget.py": "8883300e0113321323c6c64e5de3b256e2b6eeec6d4649b91a573ddaa3c50e96",
+    "src/utils/igstgnn_published_events.py": "bcdbbe3768e0ae2d5b65b4abd49e6efc89e0a5a44218fcf0c3881d84dabbf0a8",
+    "src/models/incident_spatial_event_budget.py": "bb1af1427af54adf5822350d55074acd8bb9b815e2449e667f2343581fb7acdf",
+    "experiments/chronological/train_min_forecast_fusion.py": "74837f952ab950f2e17f9a5a9228b3b6be767825f5e719f818ac168b5196541c",
+    "src/models/incident_spatial_forecast_fusion.py": "d7b2bcf3ba1ed7dc141a805475ae3ab299d83bda5ff6ac03c47bf0d294d5cfb7"
+  },
+  "limitations": [
+    "four engineering windows do not establish predictive improvement",
+    "current fusion OFF is not historical MIN after joint updates",
+    "report content directly changes only final supported-node fusion",
+    "no new physical capacity or accident propagation identification"
+  ]
+}
