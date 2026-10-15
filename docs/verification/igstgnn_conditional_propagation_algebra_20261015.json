@@ -1,0 +1,217 @@
+{
+  "schema": "min_conditional_propagation_algebra_witnesses_v1",
+  "status": "ALGEBRA_WITNESSES_PASS_NOT_INTEGRATED_MODEL",
+  "engineering_only": true,
+  "dtype": "float64",
+  "seed": 20261015,
+  "checks": [
+    {
+      "name": "report_OFF_exact_history_fallback",
+      "status": "PASS",
+      "biased_map_outputs_used": true,
+      "exact_array_equality": true
+    },
+    {
+      "name": "unavailable_exact_history_fallback",
+      "status": "PASS",
+      "biased_map_outputs_used": true,
+      "exact_array_equality": true
+    },
+    {
+      "name": "zero_report_support_exact_history_fallback",
+      "status": "PASS",
+      "biased_map_outputs_used": true,
+      "exact_array_equality": true
+    },
+    {
+      "name": "common_logit_offset_is_ineffective",
+      "status": "PASS",
+      "kernel_abs_max": 1.942890293094024e-16
+    },
+    {
+      "name": "pure_logit_homogeneous_value_blindness_counterexample",
+      "status": "PASS",
+      "message_abs_max": 8.881784197001252e-16,
+      "kernel_change_abs_max": 0.04197275836228745
+    },
+    {
+      "name": "value_delta_can_respond_with_homogeneous_history",
+      "status": "PASS",
+      "message_change_abs_max": 0.07615941559557671,
+      "scope": "constructive_expression_witness_not_learned_use"
+    },
+    {
+      "name": "value_delta_can_respond_with_zero_history",
+      "status": "PASS",
+      "message_change_abs_max": 0.07615941559557649,
+      "scope": "constructive_expression_witness_not_learned_use"
+    },
+    {
+      "name": "constructive_fixed_support_report_content_witness",
+      "status": "PASS",
+      "message_content_difference_abs_max": 0.026142376976967467,
+      "value_raw_map": "tanh(0.5 * R_i + 0.75 * R_j) * channel_direction",
+      "supported_report_values": [
+        0.25,
+        0.75
+      ],
+      "unchanged_kernel": true,
+      "scope": "synthetic_fixed_support_expression_not_learned_semantic_use"
+    },
+    {
+      "name": "source_position_report_cross_log_odds_identity",
+      "status": "PASS",
+      "event_cross_difference": -1.266718383037854,
+      "observed_cross_log_odds_change": -1.2667183830378534,
+      "residual": 4.440892098500626e-16
+    },
+    {
+      "name": "fixed_history_local_event_perturbation_bound",
+      "status": "PASS",
+      "trials": 128,
+      "bound": "2 * V * min(1, beta) + eta",
+      "maximum_excess": -0.3322788717396681,
+      "scope": "single_fixed_history_operator_no_projection_or_rollout"
+    },
+    {
+      "name": "hard_forbidden_edges_and_empty_row_contract",
+      "status": "PASS",
+      "empty_row_sum": 0.0,
+      "forbidden_nonzero_count": 0
+    },
+    {
+      "name": "disconnected_fixed_history_report_isolation",
+      "status": "PASS",
+      "outside_component_abs_max": 0.0,
+      "scope": "synthetic_fixed_graph_only_not_integrated_dynamic_graph"
+    },
+    {
+      "name": "joint_node_permutation_equivariance",
+      "status": "PASS",
+      "message_abs_max": 4.440892098500626e-16,
+      "scope": "relabel_all_node_indexed_inputs_together"
+    },
+    {
+      "name": "row_normalization_does_not_conserve_total_counterexample",
+      "status": "PASS",
+      "input_total": 1.0,
+      "output_total": 2.0,
+      "scope": "abstract_quantity_not_certified_vehicle_flow"
+    },
+    {
+      "name": "history_reduction_four_block_prefix_and_twelve_target_readout",
+      "status": "PASS",
+      "history_lengths": [
+        12,
+        10,
+        8,
+        6,
+        4,
+        2
+      ],
+      "generated_blocks": [
+        "G0",
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "recursive_source_windows": [
+        [
+          "H[-2]",
+          "H[-1]",
+          "G0"
+        ],
+        [
+          "H[-1]",
+          "G0",
+          "G1"
+        ],
+        [
+          "G0",
+          "G1",
+          "G2"
+        ]
+      ],
+      "readout_mapping": [
+        {
+          "target_step": 1,
+          "block": 0,
+          "head_channel": 0
+        },
+        {
+          "target_step": 2,
+          "block": 0,
+          "head_channel": 1
+        },
+        {
+          "target_step": 3,
+          "block": 0,
+          "head_channel": 2
+        },
+        {
+          "target_step": 4,
+          "block": 1,
+          "head_channel": 0
+        },
+        {
+          "target_step": 5,
+          "block": 1,
+          "head_channel": 1
+        },
+        {
+          "target_step": 6,
+          "block": 1,
+          "head_channel": 2
+        },
+        {
+          "target_step": 7,
+          "block": 2,
+          "head_channel": 0
+        },
+        {
+          "target_step": 8,
+          "block": 2,
+          "head_channel": 1
+        },
+        {
+          "target_step": 9,
+          "block": 2,
+          "head_channel": 2
+        },
+        {
+          "target_step": 10,
+          "block": 3,
+          "head_channel": 0
+        },
+        {
+          "target_step": 11,
+          "block": 3,
+          "head_channel": 1
+        },
+        {
+          "target_step": 12,
+          "block": 3,
+          "head_channel": 2
+        }
+      ],
+      "scope": "index_witness_no_claim_of_uniform_physical_source_spacing"
+    }
+  ],
+  "check_count": 15,
+  "formal_inference_calls": 0,
+  "optimizer_updates": 0,
+  "raw_traffic_or_target_data_read": false,
+  "checkpoint_read": false,
+  "model_imported": false,
+  "test_evaluated": false,
+  "scope": "synthetic_single_operator_algebra_and_index_witnesses_only",
+  "not_proven": [
+    "integrated_candidate_correctness",
+    "learned_report_use",
+    "global_network_contraction",
+    "rollout_stability",
+    "physical_conservation",
+    "predictive_gain",
+    "novelty"
+  ]
+}

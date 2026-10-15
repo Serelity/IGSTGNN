@@ -1,0 +1,133 @@
+{
+  "schema": "min_conditional_propagation_input_audit_v1",
+  "status": "SMALL_INPUT_AUDIT_PASS_NOT_SAMPLE_OR_MODEL_CERTIFICATION",
+  "engineering_only": true,
+  "primary_baseline": "original_IGSTGNN",
+  "observed": {
+    "release_small_file_sha256": {
+      "adj_matrix.npy": "de2a74cc981853ff81dd494d6e7d212b7ae524fb9d6079c91323e56bcb22254f",
+      "sensors.csv": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+      "incident_stats.npz": "9f6590a3d1df5a0cd59e00717e3157520a4f5b99996976a4e41ddc6fc28b224c",
+      "type_mapping.json": "6a836068bfcbea9868add90535e8efe329d684a074436ef47c5a53c257fd2a9d",
+      "desc_mapping.json": "9a2ff89b2b0057f8617652d305eee79eb3f04686d4bfc58821ed3271ae8a7b71"
+    },
+    "published_object_header": {
+      "shape": [
+        5585
+      ],
+      "dtype": "object",
+      "fortran_order": false,
+      "header_bytes_read": 128,
+      "file_bytes": 865971481,
+      "object_payload_deserialized": false,
+      "full_file_rehashed": false
+    },
+    "counts_from_header_and_frozen_rounding": {
+      "total_samples": 5585,
+      "train_samples": 3909,
+      "val_samples": 837,
+      "test_samples": 839
+    },
+    "station_axis": {
+      "count": 496,
+      "unique": 496,
+      "matches_candidate_graph_metadata": true,
+      "traffic_internal_station_axis_independently_verified": false
+    },
+    "vocabulary": {
+      "type_mapping.json": {
+        "categories": 6,
+        "unknown_index": 6
+      },
+      "desc_mapping.json": {
+        "categories": 29,
+        "unknown_index": 29
+      }
+    },
+    "scaler_metadata": {
+      "normalized": true,
+      "mean": 137.60910034179688,
+      "std": 159.4838409423828
+    },
+    "candidate_graph_sha256": "10a69e096f0157d97391929077fe5b1fd3857609334bb4cf1720e9fe68796ac4",
+    "adjacency": {
+      "shape": [
+        496,
+        496
+      ],
+      "dtype": "float64",
+      "positive_count": 13339,
+      "diagonal_positive_count": 0,
+      "symmetric_exact": false
+    }
+  },
+  "source_contract": {
+    "scope": "source_contract_not_model_instantiation",
+    "defaults": {
+      "use_pre": true,
+      "dy_graph": true,
+      "sta_graph": true
+    },
+    "builder": {
+      "num_hidden": 32,
+      "layer": 5,
+      "k_s": 2,
+      "k_t": 3,
+      "gap": 3
+    },
+    "support_banks": {
+      "predefined": 4,
+      "dynamic": 4,
+      "static": 2,
+      "self_bank": 1
+    },
+    "total_support_banks": 11,
+    "source_sha256": {
+      "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+      "src/utils/igstgnn_published.py": "1adaa6a026fc49008a281c51dd4d916d330286f55f6dd19cd38c227408776de5",
+      "src/utils/igstgnn_published_events.py": "bcdbbe3768e0ae2d5b65b4abd49e6efc89e0a5a44218fcf0c3881d84dabbf0a8",
+      "experiments/chronological/train_b3_r_minimal_paper.py": "2bf61fe9a7b230f5f98dea091de5a8a4ff761dcdbb1b2e49ce9cdc6a3cb85f33"
+    }
+  },
+  "proposed_hard_support": {
+    "rule": "I OR S OR S.T OR S_squared OR S_squared.T; S=(raw_A>0)",
+    "mixed_direction_two_step_paths_added": false,
+    "edge_positions_including_self": 34208,
+    "density": 0.13904786680541104,
+    "weak_component_sizes": [
+      496
+    ],
+    "per_family_order_positions_excluding_self": {
+      "forward_order_1": 13339,
+      "reverse_order_1": 13339,
+      "static_order_1": 16428,
+      "forward_order_2": 31061,
+      "reverse_order_2": 31061,
+      "static_order_2": 33700
+    },
+    "finite_algebraic_support_not_certified_physical_road_direction": true,
+    "dense_score_elements_first_layer_batch64": 472350720,
+    "sparse_score_elements_first_layer_batch64": 65679360,
+    "score_float32_bytes_sparse_first_layer": 262717440,
+    "planned_support_bank_positions_total": 228224,
+    "all_bank_score_elements_first_layer_batch64": 438190080,
+    "all_bank_score_float32_bytes_first_layer": 1752760320,
+    "memory_scope": "union_and_all_bank_score_arithmetic_not_full_training_peak"
+  },
+  "unknown": [
+    "per_sample_X_Y_relation_content_not_read",
+    "absolute_calendar_order_and_cross_split_overlap_not_independently_verified",
+    "relation_column_generation_formulas_and_physical_direction_not_certified",
+    "nominal_slot_continuity_and_absolute_X_to_Y_timing_not_independently_verified",
+    "first_report_field_availability_and_incident_age_or_clearance_not_certified",
+    "formal_F2_predictions_and_original_IGSTGNN_comparable_archive_not_replayed"
+  ],
+  "traffic_arrays_loaded": false,
+  "target_arrays_loaded": false,
+  "model_constructed": false,
+  "checkpoint_loaded": false,
+  "formal_inference_calls": 0,
+  "optimizer_updates": 0,
+  "test_evaluated": false,
+  "audit_script_sha256": "a61d2f3f6ce525606384026a026b3882e16663af3e56a5bf741c85ba2c5f358b"
+}
