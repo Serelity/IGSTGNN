@@ -67,7 +67,9 @@ class ConditionalMessagePropagation(nn.Module):
         counts = torch.bincount(rows, minlength=self.node_num)
         self.register_buffer('edge_offsets', torch.cat((torch.zeros(1, dtype=torch.long), counts.cumsum(0))))
         # Python offsets avoid a GPU synchronization for each receiver chunk.
-        self._edge_offsets_cpu = tuple(self.edge_offsets.tolist())
+        self.register_buffer('receiver_edge_index', torch.empty(0, dtype=torch.long), persistent=False)
+        self.register_buffer('receiver_edge_valid', torch.empty(0, dtype=torch.bool), persistent=False)
+        self._refresh_edge_offsets(None, None)
         self.register_load_state_dict_post_hook(self._refresh_edge_offsets)
         for index, graph in enumerate(old_conv.pre_defined_graph):
             self.register_buffer('predefined_{}'.format(index), graph.detach().clone())
@@ -98,6 +100,16 @@ class ConditionalMessagePropagation(nn.Module):
         # Topology is serialized, so loading a same-size but different graph
         # must also refresh the Python-only chunk boundaries.
         self._edge_offsets_cpu = tuple(self.edge_offsets.detach().cpu().tolist())
+        self._edge_degrees_cpu = tuple(self._edge_offsets_cpu[i+1]-self._edge_offsets_cpu[i]
+                                       for i in range(self.node_num))
+        width = max(self._edge_degrees_cpu)
+        packed = torch.zeros((self.node_num, width), dtype=torch.long)
+        valid = torch.zeros((self.node_num, width), dtype=torch.bool)
+        for row, degree in enumerate(self._edge_degrees_cpu):
+            packed[row, :degree] = torch.arange(self._edge_offsets_cpu[row], self._edge_offsets_cpu[row+1])
+            valid[row, :degree] = True
+        self.receiver_edge_index = packed.to(self.edge_sources.device)
+        self.receiver_edge_valid = valid.to(self.edge_sources.device)
 
     def _restore_graph(self, graph, batch, x, name, localized):
         if not isinstance(graph, torch.Tensor) or graph.device != x.device or graph.dtype != x.dtype:
@@ -160,69 +172,78 @@ class ConditionalMessagePropagation(nn.Module):
         return torch.cat((local, self.kind_embedding(kinds), self.block_embedding(blocks)), -1)
 
     @staticmethod
-    def _bank_reduce(logits, values, prior, receiver_index, receiver_count, temporal_size, self_bank):
-        """Grouped softmax and weighted sum; an empty receiver row is zero."""
-        b, q, e, kt = logits.shape
-        index = receiver_index.repeat_interleave(kt)
-        flat_logits = logits.reshape(b, q, e*kt)
-        expanded = index.view(1, 1, -1).expand(b, q, -1)
-        maxima = logits.new_full((b, q, receiver_count), -torch.inf)
-        maxima = maxima.scatter_reduce(2, expanded, flat_logits, reduce='amax', include_self=True)
-        safe_maxima = torch.where(torch.isfinite(maxima), maxima, torch.zeros_like(maxima))
-        numerator = torch.exp(flat_logits - safe_maxima.gather(2, expanded))
-        denominator = logits.new_zeros((b, q, receiver_count)).scatter_add(2, expanded, numerator)
-        coefficients = numerator / denominator.gather(2, expanded).clamp_min(torch.finfo(logits.dtype).tiny)
-        # Graph priors remain float32 under autocast.  Accumulate in the score
-        # dtype instead of scattering float32 products into float16 storage.
-        aggregate_values = values.to(logits.dtype)
-        weighted = aggregate_values.reshape(b, q, e*kt, -1) * coefficients.unsqueeze(-1)
-        result = aggregate_values.new_zeros((b, q, receiver_count, values.shape[-1]))
-        result = result.scatter_add(2, expanded.unsqueeze(-1).expand_as(weighted), weighted)
+    def _bank_reduce(logits, values, prior, temporal_size, self_bank):
+        """Receiver-packed softmax and bmm; zero banks stay exactly zero.
+
+        Receiver edges are disjoint continuous rows.  Explicit row packing
+        avoids channel-expanded scatter_add, whose deterministic CUDA path
+        otherwise sorts a very large coordinate tensor for every bank.
+        """
+        b, q, receivers, neighbors, kt = logits.shape
+        flat_logits = logits.reshape(b, q, receivers, neighbors*kt)
+        present = (prior > 0).any(-1)[:, None, :, None]
+        # An all-minus-infinity row has undefined softmax derivatives.  Give
+        # only those empty rows finite dummy logits, then gate their weights
+        # to exact zero; valid rows retain their original graph/logit scores.
+        safe_logits = torch.where(present, flat_logits, torch.zeros_like(flat_logits))
+        coefficients = torch.softmax(safe_logits, -1) * present.to(logits.dtype)
+        aggregate_values = values.to(logits.dtype).reshape(b*q*receivers, neighbors*kt, -1)
+        # In autocast, bmm would otherwise downcast float32 graph-conditioned
+        # weights and messages again.  Preserve score-dtype accumulation.
+        with torch.autocast(device_type=values.device.type, enabled=False):
+            result = torch.bmm(coefficients.reshape(b*q*receivers, 1, neighbors*kt),
+                               aggregate_values).reshape(b, q, receivers, values.shape[-1])
         if self_bank:
-            rho = prior.new_ones((b, receiver_count))
+            rho = prior.new_ones((b, receivers))
         else:
-            rho = prior.new_zeros((b, receiver_count)).scatter_add(
-                1, receiver_index.unsqueeze(0).expand(b, -1), prior) * temporal_size
+            rho = prior.sum(-1) * temporal_size
         return result * rho[:, None, :, None]
 
     def _chunk(self, values, queries, keys, times, condition, support, available,
-               weights, start, stop, edge_start, edge_stop, logit_enabled, value_enabled):
-        receivers = self.edge_receivers[edge_start:edge_stop]
-        sources = self.edge_sources[edge_start:edge_stop]
-        local_receivers = receivers-start
-        u = queries[:, :, receivers, None, :]
+               weights, start, stop, edge_start, edge_stop, logit_enabled, value_enabled,
+               collect=False):
+        width = max(self._edge_degrees_cpu[start:stop])
+        edge_index = self.receiver_edge_index[start:stop, :width]
+        valid_edge = self.receiver_edge_valid[start:stop, :width]
+        sources = self.edge_sources[edge_index]
+        u = queries[:, :, start:stop, None, None, :]
         z = keys[:, :, sources, :, :]
         base_score = (u*z).sum(-1) / math.sqrt(self.hidden_dim)
         message_values = values[:, :, sources, :, :]
-        e = torch.zeros_like(base_score)
-        dv = torch.zeros_like(message_values)
+        e = None
+        dv = None
         active_count = torch.zeros((), dtype=torch.int64, device=values.device)
         if condition is not None and (logit_enabled or value_enabled):
-            relation = torch.tanh(self.relation(torch.cat((condition[:, receivers], condition[:, sources]), -1)))
-            active = available[:, None] & (support[:, receivers] | support[:, sources])
-            gamma = active[:, None, :, None, None].to(values.dtype)
-            interaction = u*z*times[None, :, None, :, :]*relation[:, None, :, None, :]
+            receiver_condition = condition[:, start:stop, None, :].expand(-1, -1, width, -1)
+            relation = torch.tanh(self.relation(torch.cat((receiver_condition, condition[:, sources]), -1)))
+            active = (available[:, None, None] & valid_edge[None]
+                      & (support[:, start:stop, None] | support[:, sources]))
+            gamma = active[:, None, :, :, None, None].to(values.dtype)
+            interaction = u*z*times[None, :, None, None, :, :]*relation[:, None, :, :, None, :]
             if logit_enabled:
                 e = (self.beta * torch.tanh(self.event_logit(interaction)) * gamma).squeeze(-1)
             if value_enabled:
-                pair_condition = relation[:, None, :, None, :].expand_as(interaction)
+                pair_condition = relation[:, None, :, :, None, :].expand_as(interaction)
                 dv = self.eta * torch.tanh(self.event_value(torch.cat((interaction, pair_condition), -1))) * gamma
-            active_count = active.sum(dtype=torch.int64)
+            if collect:
+                active_count = active.sum(dtype=torch.int64)
         result = []
-        selected_values = message_values + dv
+        selected_values = message_values if dv is None else message_values + dv
+        selected_scores = base_score if e is None else base_score + e
         for bank in range(11):
-            prior = weights[bank, :, edge_start:edge_stop]
+            prior = weights[bank, :, edge_index] * valid_edge[None].to(weights.dtype)
             positive = prior > 0
             # Safe log keeps all strictly positive (including subnormal)
             # priors intact, and gives exactly zero derivatives to zero edges.
             log_prior = prior.masked_fill(~positive, 1).log().masked_fill(~positive, -torch.inf)
-            logits = base_score + e + log_prior[:, None, :, None]
+            logits = selected_scores + log_prior[:, None, :, :, None]
             result.append(self._bank_reduce(logits, selected_values, prior,
-                                            local_receivers, stop-start, self.k_t, bank == 0))
+                                            self.k_t, bank == 0))
         projected = self.gcn_updt(torch.cat(result, -1))
-        diagnostics = torch.stack((e.abs().amax().to(torch.float64),
-                                   dv.abs().amax().to(torch.float64),
-                                   active_count.to(torch.float64)))
+        diagnostics = (torch.stack((values.new_zeros((), dtype=torch.float64) if e is None else e.abs().amax().to(torch.float64),
+                                    values.new_zeros((), dtype=torch.float64) if dv is None else dv.abs().amax().to(torch.float64),
+                                    active_count.to(torch.float64)))
+                       if collect else values.new_empty((0,), dtype=torch.float64))
         return projected, diagnostics
 
     def forward(self, X, dynamic_graph, static_graph, *, condition=None, support=None,
@@ -267,7 +288,7 @@ class ConditionalMessagePropagation(nn.Module):
             def compute(v, u, z, t, r, m, a, w, start=start, stop=stop,
                         edge_start=edge_start, edge_stop=edge_stop):
                 return self._chunk(v, u, z, t, r, m, a, w, start, stop,
-                                   edge_start, edge_stop, logit_enabled, value_enabled)
+                                   edge_start, edge_stop, logit_enabled, value_enabled, collect)
             args = (values, queries, keys, times, condition, support, available, weights)
             if self.training and self.checkpoint_messages and torch.is_grad_enabled():
                 hidden, diagnostic = checkpoint(compute, *args, use_reentrant=False)

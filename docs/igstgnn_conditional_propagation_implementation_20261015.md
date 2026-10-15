@@ -2,6 +2,8 @@
 
 2026-10-15。论文主 baseline 为原始 IGSTGNN。本版将新算子接入五层 DIF，结构目标是让报告参与消息选择和消息内容；预测效果尚待正式实验。公式及其条件性质见[设计合同](igstgnn_conditional_propagation_contract_20261015.md)。
 
+同日已修复确定性GPU归约性能瓶颈，并增加逐批阶段0验证进度。最新45项测试通过；新运行目录使用下述 `p1_fast`，旧版d36a7c7目录保留，不能跨代码指纹直接续训。详细性能范围与数值对照见[修复记录](igstgnn_conditional_propagation_performance_fix_20261015.md)。
+
 ## 本版改动
 
 一个节点局部报告编码器将历史摘要、三列关系、类别语义和支持 M 编成 R[B,N,32]，整网复用一次。历史摘要来自 latest-normalization 之前的流量嵌入；原 static/dynamic 图来自 latest-normalization 后、尚未受到报告影响的历史。
@@ -43,7 +45,7 @@
 ```bash
 bash experiments/chronological/run_min_conditional_propagation.sh \
   --source-run experiments/chronological_runs/contra_min_i_v1_bs64_seed2025 \
-  --run-dir experiments/chronological_runs/contra_min_conditional_p1_bs64_seed2025 \
+  --run-dir experiments/chronological_runs/contra_min_conditional_p1_fast_bs64_seed2025 \
   --epochs 1
 ```
 
@@ -51,7 +53,7 @@ launcher在未处于Slurm作业内时提交任务；提交返回不表示训练�
 
 ```bash
 bash experiments/chronological/run_min_conditional_propagation_evaluation.sh \
-  --run-dir experiments/chronological_runs/contra_min_conditional_p1_bs64_seed2025
+  --run-dir experiments/chronological_runs/contra_min_conditional_p1_fast_bs64_seed2025
 ```
 
 评估保存8种新状态及可用的SOURCE_MIN归档参照，输出 `summary.json`、`report.md`、`analysis.json`、`mechanisms.json`、`comparability.json`、`replay.json`、`paired_predictions.npz` 与来源/保护记录。SOURCE_MIN仅从匹配的已有F1 `source_reference` 复用；没有归档就省略，不重新推理源模型。独立训练组差异、同检查点路径依赖与真实事故因果须区分。

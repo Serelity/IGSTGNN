@@ -2,6 +2,7 @@
 from copy import deepcopy
 import math
 import unittest
+from unittest.mock import patch
 
 import torch
 
@@ -377,6 +378,73 @@ class ConditionalPropagationTests(unittest.TestCase):
         self.assertEqual(recompute.last_details['statistics']['active_report_edges'].dtype, torch.int64)
         recompute(x2, self.dynamic, self.static)
         self.assertIsNone(recompute.last_details)
+
+    def test_deterministic_forward_uses_no_scatter_and_no_unrequested_amax(self):
+        activate(self.module)
+        previous = torch.are_deterministic_algorithms_enabled()
+        torch.use_deterministic_algorithms(True)
+        try:
+            with patch.object(torch.Tensor, 'scatter_add', side_effect=AssertionError('scatter_add forbidden')), \
+                 patch.object(torch.Tensor, 'scatter_reduce', side_effect=AssertionError('scatter_reduce forbidden')), \
+                 patch.object(torch.Tensor, 'amax', side_effect=AssertionError('unrequested diagnostic amax')):
+                result = self.module(self.x, self.dynamic, self.static, **self.report)
+                result.square().sum().backward()
+            self.assertTrue(torch.are_deterministic_algorithms_enabled())
+            self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all()) for p in self.module.parameters()))
+        finally:
+            torch.use_deterministic_algorithms(previous)
+
+    def test_padding_is_not_report_support_and_empty_rows_have_zero_gradients(self):
+        _, _, x, dynamic, static, report = fixture(n=6)
+        x.requires_grad_()
+        report['condition'].requires_grad_()
+        adjacency = torch.zeros(6, 6, dtype=x.dtype)
+        adjacency[0, 1:5] = 1.
+        old = STLocalizedConv(8, pre_defined_graph=[adjacency, adjacency.T],
+                             k_s=2, k_t=3, dropout=0., use_pre=True).double()
+        module = ConditionalMessagePropagation(old, adjacency).double().eval()
+        activate(module)
+        result = module(x, dynamic, static, **report, collect=True)
+        expected = dense_reference(module, adjacency, x, dynamic, static, report)
+        torch.testing.assert_close(result, expected, atol=2e-13, rtol=2e-13)
+        target = torch.randn_like(result)
+        inputs = [x, report['condition']] + list(module.parameters())
+        actual_gradients = torch.autograd.grad((result*target).sum(), inputs, retain_graph=True)
+        expected_gradients = torch.autograd.grad((expected*target).sum(), inputs, retain_graph=True)
+        for actual_gradient, expected_gradient in zip(actual_gradients, expected_gradients):
+            torch.testing.assert_close(actual_gradient, expected_gradient, atol=3e-12, rtol=3e-12)
+        active = report['available'][:, None] & (report['support'][:, module.edge_receivers]
+                                                | report['support'][:, module.edge_sources])
+        self.assertEqual(int(module.last_details['statistics']['active_report_edges']), int(active.sum()))
+        self.assertFalse(module.receiver_edge_valid.all())
+        self.assertFalse(any('receiver_edge' in name for name in module.state_dict()))
+        # Load the same persisted topology into a constructor with differently
+        # ordered row degrees: derived padding must be rebuilt after loading.
+        order = torch.tensor([5, 1, 2, 3, 4, 0])
+        other_adjacency = adjacency[order][:, order]
+        other_old = STLocalizedConv(8, pre_defined_graph=[other_adjacency, other_adjacency.T],
+                                   k_s=2, k_t=3, dropout=0., use_pre=True).double()
+        other = ConditionalMessagePropagation(other_old, other_adjacency).double().eval()
+        other.load_state_dict(module.state_dict(), strict=True)
+        self.assertTrue(torch.equal(other.receiver_edge_index, module.receiver_edge_index))
+        self.assertTrue(torch.equal(other.receiver_edge_valid, module.receiver_edge_valid))
+        self.assertTrue(torch.equal(other(x, dynamic, static, **report), result))
+
+    def test_bank_reduce_retains_subnormal_prior_and_safe_empty_row(self):
+        prior = torch.tensor([[[1e-310, 0.], [0., 0.]]], dtype=torch.float64,
+                             requires_grad=True)
+        positive = prior > 0
+        log_prior = prior.masked_fill(~positive, 1).log().masked_fill(~positive, -torch.inf)
+        logits = log_prior[:, None, :, :, None].expand(1, 1, 2, 2, 3)
+        values = torch.ones(1, 1, 2, 2, 3, 8, dtype=torch.float64, requires_grad=True)
+        result = self.module._bank_reduce(logits, values, prior, 3, False)
+        self.assertTrue(torch.equal(result[0, 0, 1], torch.zeros(8, dtype=result.dtype)))
+        self.assertTrue(bool((result[0, 0, 0] > 0).all()))
+        torch.testing.assert_close(result[0, 0, 0], torch.full((8,), 3e-310, dtype=result.dtype),
+                                   atol=0., rtol=1e-12)
+        result.sum().backward()
+        self.assertTrue(bool(torch.isfinite(prior.grad).all()))
+        self.assertTrue(bool(torch.isfinite(values.grad).all()))
 
     @unittest.skipUnless(torch.cuda.is_available(), 'CUDA unavailable')
     def test_device_contract_and_float32_cuda(self):

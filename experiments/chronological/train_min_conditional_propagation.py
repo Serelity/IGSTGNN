@@ -211,9 +211,40 @@ def merge_statistics(total, statistics):
             total[key] = total.get(key, 0.)+value
 
 
+class _ValidationProgressLoader:
+    """Observe the unchanged iterator around the parent's validation body.
+
+    The parent has inverse-transformed predictions and copied both arrays to
+    CPU before it requests the next batch. Resuming this generator therefore
+    marks that batch completed without a new forward or explicit CUDA sync.
+    """
+    def __init__(self, loader, arm, phase):
+        self.loader, self.arm, self.phase = loader, arm, phase
+        self.total, self.completed, self.active_batch = loader.num_batch, 0, None
+        self.started = time.perf_counter()
+
+    def emit(self, status, **extra):
+        print(json.dumps(dict(event='validation_progress', arm=self.arm, phase=self.phase,
+            status=status, completed=self.completed, total=self.total,
+            elapsed_seconds=time.perf_counter()-self.started, **extra), allow_nan=False), flush=True)
+
+    def get_iterator(self):
+        for index, batch in enumerate(self.loader.get_iterator(), 1):
+            self.active_batch = index
+            self.emit('batch_start', batch=index)
+            yield batch
+            self.completed = index
+            self.active_batch = None
+            self.emit('batch_completed', batch=index)
+
+    def __getattr__(self, name):
+        return getattr(self.loader, name)
+
+
 class PropagationEngine(IGSTGNN_Engine):
     def __init__(self, arm, **kwargs):
         self.arm, self.collect_diagnostics, self.diagnostics = arm, False, {}
+        self.validation_phase = 'validation'
         super().__init__(**kwargs)
         self._cl_len = self._horizon
 
@@ -235,10 +266,20 @@ class PropagationEngine(IGSTGNN_Engine):
 
     def evaluate(self, mode):
         require(mode == 'val', 'This stage never evaluates test')
+        original = self._dataloader
+        progress = _ValidationProgressLoader(original['val_loader'], self.arm, self.validation_phase)
+        self._dataloader = dict(original, val_loader=progress)
         self.collect_diagnostics, self.diagnostics = True, {}
         try:
-            return super().evaluate(mode)
+            progress.emit('phase_start')
+            result = super().evaluate(mode)
+            progress.emit('phase_end')
+            return result
+        except BaseException as error:
+            progress.emit('phase_failed', active_batch=progress.active_batch, error_type=type(error).__name__)
+            raise
         finally:
+            self._dataloader = original
             self.collect_diagnostics = False
 
 
@@ -323,6 +364,7 @@ def train_arm(args, arm, protocol, data, identity, graph, logger, source=None, a
     model, _ = build_arm(args, arm, len(data.station_ids), graph, args.device, source, adjacency)
     engine = make_engine(args, arm, protocol, data, model, logger)
     if saved is None:
+        engine.validation_phase = 'stage_zero'
         values = engine.evaluate('val')
         require(np.isfinite(values).all(), 'Nonfinite own stage zero')
         stage0 = dict(zip(('validation_mae', 'validation_mape', 'validation_rmse'), map(float, values)))
@@ -355,6 +397,7 @@ def train_arm(args, arm, protocol, data, identity, graph, logger, source=None, a
             torch.cuda.reset_peak_memory_stats()
         started = time.perf_counter()
         train = engine.train_batch()
+        engine.validation_phase = 'epoch_'+str(epoch)
         val = engine.evaluate('val')
         require(np.isfinite([*train, *val]).all(), 'Nonfinite candidate metrics')
         if val[0] < best:

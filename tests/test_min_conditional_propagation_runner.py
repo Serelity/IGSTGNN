@@ -123,6 +123,80 @@ class ConditionalPropagationRunnerTests(unittest.TestCase):
                 engine._update_curriculum_length()
                 self.assertEqual(engine._cl_len, 12)
 
+    def test_validation_progress_preserves_parent_metrics_rng_order_and_calls(self):
+        args, source, _ = self.setup_run('progress')
+        data = self.data()
+        model, _ = training.build_arm(args, 'EVENT', 4, self.g, 'cpu', source, self.adjacency)
+        engine = training.make_engine(args, 'EVENT', self.protocol, data, model, self.logger)
+        original = engine._dataloader
+        order = original['val_loader'].order.copy()
+        numpy_rng, torch_rng = np.random.get_state(), torch.get_rng_state().clone()
+        with patch.object(engine, '_predict', wraps=engine._predict) as calls:
+            expected = training.IGSTGNN_Engine.evaluate(engine, 'val')
+            self.assertEqual(calls.call_count, original['val_loader'].num_batch)
+        output = io.StringIO()
+        engine.validation_phase = 'stage_zero'
+        with redirect_stdout(output), patch.object(engine, '_predict', wraps=engine._predict) as calls:
+            actual = engine.evaluate('val')
+            self.assertEqual(calls.call_count, original['val_loader'].num_batch)
+        self.assertEqual(expected, actual)
+        self.assertIs(engine._dataloader, original)
+        self.assertFalse(engine.collect_diagnostics)
+        self.equal_nested(numpy_rng, np.random.get_state())
+        self.equal_nested(torch_rng, torch.get_rng_state())
+        np.testing.assert_array_equal(order, original['val_loader'].order)
+        messages = [json.loads(line) for line in output.getvalue().splitlines()]
+        count = original['val_loader'].num_batch
+        self.assertEqual([m['status'] for m in messages], ['phase_start']+
+            [status for _ in range(count) for status in ('batch_start', 'batch_completed')]+['phase_end'])
+        self.assertEqual(messages[1]['batch'], 1)
+        self.assertEqual(messages[1]['completed'], 0)
+        self.assertEqual(messages[-1]['completed'], count)
+        self.assertTrue(all(m['arm'] == 'EVENT' and m['phase'] == 'stage_zero' and m['total'] == count
+            and m['elapsed_seconds'] >= 0 for m in messages))
+
+    def test_validation_progress_exception_restores_loader_and_next_phase(self):
+        args, source, _ = self.setup_run('progress_exception')
+        model, _ = training.build_arm(args, 'HISTORY', 4, self.g, 'cpu', source, self.adjacency)
+        engine = training.make_engine(args, 'HISTORY', self.protocol, self.data(), model, self.logger)
+        original = engine._dataloader
+        output = io.StringIO()
+        engine.validation_phase = 'epoch_3'
+        with redirect_stdout(output), patch.object(engine, '_predict', side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                engine.evaluate('val')
+        messages = [json.loads(line) for line in output.getvalue().splitlines()]
+        self.assertEqual([m['status'] for m in messages], ['phase_start', 'batch_start', 'phase_failed'])
+        self.assertEqual(messages[-1]['active_batch'], 1)
+        self.assertEqual(messages[-1]['completed'], 0)
+        self.assertEqual(messages[-1]['error_type'], 'KeyboardInterrupt')
+        self.assertIs(engine._dataloader, original)
+        self.assertFalse(engine.collect_diagnostics)
+        output = io.StringIO()
+        engine.validation_phase = 'epoch_4'
+        with redirect_stdout(output):
+            result = engine.evaluate('val')
+        messages = [json.loads(line) for line in output.getvalue().splitlines()]
+        self.assertEqual(messages[-1]['status'], 'phase_end')
+        self.assertTrue(all(m['phase'] == 'epoch_4' for m in messages))
+        self.assertTrue(np.isfinite(result).all())
+
+    def test_train_arm_sets_stage_zero_and_epoch_validation_phases(self):
+        args, source, identity = self.setup_run('progress_phases')
+        output = io.StringIO()
+        with redirect_stdout(output), redirect_stderr(io.StringIO()):
+            training.train_arm(args, 'HISTORY', self.protocol, self.data(), identity, self.g, self.logger, source, self.adjacency)
+        messages = []
+        for line in output.getvalue().splitlines():
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if value.get('event') == 'validation_progress':
+                messages.append(value)
+        self.assertEqual([m['phase'] for m in messages if m['status'] == 'phase_start'], ['stage_zero', 'epoch_1'])
+        self.assertEqual([m['phase'] for m in messages if m['status'] == 'phase_end'], ['stage_zero', 'epoch_1'])
+
     def test_exact_resume_noop_and_common_training_order(self):
         orders = {}
         for arm in training.ARMS:
