@@ -1,0 +1,109 @@
+{
+  "schema": "min_conditional_propagation_implementation_verification_v1",
+  "status": "IMPLEMENTATION_ENGINEERING_CHECK_PASS",
+  "date": "2026-10-15",
+  "runtime": {
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "engineering_device": "cpu",
+    "gpu_unit_tests_executed": true
+  },
+  "tests": {
+    "command": "python -X utf8 -m unittest tests.test_incident_conditional_propagation tests.test_min_conditional_propagation_model tests.test_min_conditional_propagation_runner -v",
+    "total": 39,
+    "kernel": 20,
+    "integration": 10,
+    "runner": 9,
+    "elapsed_seconds": 68.558,
+    "passed": true,
+    "independent_review_no_remaining_blockers": true
+  },
+  "syntax": {
+    "py_compile_passed": true,
+    "bash_n_both_launchers_passed": true
+  },
+  "code_sha256": {
+    "src/models/incident_conditional_propagation.py": "d9ec43ad70cbb2e15bbb76c4abf8bc33ff05f712cba84c3bfa370b94f1753022",
+    "src/models/incident_spatial_conditional_propagation.py": "ae7e0f2a9b7caeafd74a8e5bad58d1be5040896bb2977c2a8803f11e2d9bc5b6",
+    "experiments/chronological/train_min_conditional_propagation.py": "2776104df16c1259e2696eded0af15415a703c91adb57e39013cdaec2a30c3c0",
+    "experiments/chronological/evaluate_min_conditional_propagation.py": "6a9c0f0ddceea6028cb8d98c9c85b98f9e678f7486621890a686798706d96780",
+    "experiments/chronological/min_conditional_propagation_v1.json": "d995de8cbcae2580af6cbc326a6aedb660669568ac2295a29b3fe623d65381c7",
+    "tests/test_incident_conditional_propagation.py": "3d60e38d9956160b525a79b325e14c10465e3be81920ff58632678903ebe0a55",
+    "tests/test_min_conditional_propagation_model.py": "8b9598f0a97d099d9024b424d58df251a11db2f9a65a5b55ea5fbf5f395972b8",
+    "tests/test_min_conditional_propagation_runner.py": "3e191e0e48f1b8fb66123aba26cc1f36f2a0cec811055ed3d7580eb54ede5c43"
+  },
+  "actual_published_engineering": {
+    "run_dir": "experiments/chronological_runs/local_min_conditional_final_check_20261015",
+    "evaluation_dir": "experiments/chronological_runs/local_min_conditional_final_check_20261015/conditional_propagation_evaluation_20261015_194759_d64335",
+    "stations": 496,
+    "hidden_dim": 32,
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "receiver_chunk_size": 32,
+    "checkpoint_messages": true,
+    "own_stage_zero_identical": true,
+    "completed_epochs": {
+      "HISTORY": 1,
+      "M_ONLY": 1,
+      "EVENT": 1
+    },
+    "global_updates": {
+      "HISTORY": 2,
+      "M_ONLY": 2,
+      "EVENT": 2
+    },
+    "parameter_count": 433481,
+    "parent_pure_MIN_parameter_count": 435856,
+    "parameter_difference": -2375,
+    "same_completed_budget": true,
+    "cases": [
+      "HISTORY_ON",
+      "M_ONLY_ON",
+      "EVENT_ON",
+      "EVENT_REPORT_OFF",
+      "EVENT_LOGIT_OFF",
+      "EVENT_VALUE_OFF",
+      "EVENT_SEMANTIC_UNK",
+      "EVENT_LOCATION_SHUFFLE",
+      "SOURCE_MIN"
+    ],
+    "inference_attempts": {
+      "HISTORY_ON": 2,
+      "M_ONLY_ON": 2,
+      "EVENT_ON": 4,
+      "EVENT_REPORT_OFF": 2,
+      "EVENT_LOGIT_OFF": 2,
+      "EVENT_VALUE_OFF": 2,
+      "EVENT_SEMANTIC_UNK": 2,
+      "EVENT_LOCATION_SHUFFLE": 2,
+      "SOURCE_MIN": 0
+    },
+    "evaluation_optimizer_updates": 0,
+    "on_exactly_restored": true,
+    "source_artifacts_preserved": true,
+    "candidate_artifacts_preserved": true,
+    "archived_source_not_new_replay": true,
+    "artifacts_sha256": {
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/identity.json": "42f21e41dd5e8c892b5de11dbca39ae48ae3f2edf47585c27995a1b9cf4f8d0e",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/initialization.json": "59d7a07a8e61e867fb8705db2e6fccf38f0e6dea7ab29525402cc171b6ffeafe",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/latest_stage.json": "e8c10c6adfa91d864974c95c0271f9209e05d452906b3eb0ffd102128a92b083",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/conditional_propagation_evaluation_20261015_194759_d64335/summary.json": "121c51b19bee9cb06e768ddb9bbfd4c8944b1982d74233c2299fd0a9ada9fa76",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/conditional_propagation_evaluation_20261015_194759_d64335/replay.json": "5609727a2ba1ea89607b24ab29d7b259c4a67b390edc6fc1a185330a57256ccb",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/conditional_propagation_evaluation_20261015_194759_d64335/preservation.json": "b52dbd95b106db547b4892a395898fe8eae890267d4bf4a3044603b1789603d9",
+      "experiments/chronological_runs/local_min_conditional_final_check_20261015/conditional_propagation_evaluation_20261015_194759_d64335/paired_predictions.npz": "2931e69e88096aecf94f1cc4c0bf0d9ee6b85db6c24fccbe0f2e115f4e3b8949"
+    }
+  },
+  "limitations": {
+    "predictive_gain_claim": false,
+    "formal_training_run": false,
+    "test_evaluated": false,
+    "test_payload_deserialized_by_inherited_loader": true,
+    "primary_baseline": "original_IGSTGNN_not_present_in_this_archive",
+    "full_model_AMP_supported": false,
+    "server_torch23_V100_certified": false,
+    "formal_batch64_resources_certified": false,
+    "old_MIN_stage_zero_equivalence": false,
+    "graph_order_expansion_still_per_kernel_call": true
+  }
+}

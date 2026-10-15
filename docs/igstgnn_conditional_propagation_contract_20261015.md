@@ -1,6 +1,6 @@
 # 事故条件消息传播：数据与理论合同
 
-_2026-10-15；承接模块职责重设计与理论审查。状态：设计合同已具体化，完整模型尚未实现。_
+_2026-10-15；承接模块职责重设计与理论审查。状态：合同已实现；实现、工程验证和运行方法见[开发记录](igstgnn_conditional_propagation_implementation_20261015.md)。_
 
 ---
 
@@ -22,7 +22,7 @@ F2 同检查点融合 MAE pooled 收益约 +0.09413、分量内容读取收益�
 
 ## 📋 数据事实与缺失信息
 
-本轮直接读取原发布包的小型文件、邻接矩阵和对象数组头，没有反序列化交通对象、读取真实 X/Y、加载检查点或访问服务器。[实际输入审计](verification/igstgnn_conditional_propagation_inputs_20261015.json)与[审计脚本](../experiments/chronological/audit_min_conditional_propagation_inputs.py)可复核。
+合同审计阶段直接读取原发布包的小型文件、邻接矩阵和对象数组头，没有反序列化交通对象、读取真实 X/Y、加载检查点或访问服务器。[实际输入审计](verification/igstgnn_conditional_propagation_inputs_20261015.json)与[审计脚本](../experiments/chronological/audit_min_conditional_propagation_inputs.py)可复核。下表保留该阶段的证据范围；后续开发已另做4样本、496站点工程检查，见开发记录。
 
 | 信息 | 本轮证据级别 | 具体合同 |
 |---|---|---|
@@ -54,7 +54,7 @@ M[b,i] = available[b] AND (sum_c abs(relation[b,i,c]) > 0)
 ```mermaid
 flowchart LR
     accTitle: Conditional Message Propagation Contract
-    accDescr: 一个共享报告编码同时条件化DIF内部消息选择与内容；DIF残差进入INH，两类预测特征经过原读出。此图描述未集成的候选合同。
+    accDescr: 一个共享报告编码同时条件化DIF内部消息选择与内容；DIF残差进入INH，两类预测特征经过原读出。此图描述已实现的候选结构。
     history[交通历史] --> encoding[历史状态编码]
     report[报告关系与类别] --> condition[共享报告编码]
     encoding --> condition
@@ -110,7 +110,7 @@ A_hard = I OR S OR S.T OR bool(S @ S) OR bool(S.T @ S.T)
 
 原 learned static 图通常稠密，dynamic mask 是 `adjs+1e-7`；改成硬支持是独立的结构改变，不只是数值修补。它保留双向一/二阶候选与多 bank，牺牲部分旧远程依赖。raw A 的方向只用于预测依赖，不认证真实上下游。
 
-图权重在未受报告影响的完整历史上构造一次，所有层和forecast调用复用；不在事故条件残差上重新生成图。图权重经硬支持后为0的边不进 softmax，不以 epsilon 重新开边。某 bank 的空行消息定义为0；self bank 保证整个算子有本地输入。
+原始 static/dynamic 图在未受报告影响的完整历史上构造一次，所有层和forecast调用复用；不在事故条件残差上重新生成图。当前实现每次核调用仍展开 static 二阶权重并抽取各 bank 的稀疏 prior，没有实现整网 prior 缓存；“构造一次”不表示所有图阶计算只执行一次。图权重经硬支持后为0的边不进 softmax，不以 epsilon 重新开边。某 bank 的空行消息定义为0；self bank 保证整个算子有本地输入。
 
 严格局部性只陈述为：**固定同一 H、同一历史图、固定参数、eval 模式下，若报告变化导致的 delta R、delta M 仅支撑在连通分量C内，则C外输出不变**。实际type/description是样本级类别；若M覆盖多个分量，更换全局类别会同时改变这些分量的R，不属于单分量干预。原动态图读取全历史，训练 BatchNorm 存在跨节点统计；本合同不承诺一般历史扰动隔离、训练过程隔离或物理传播速度界。参数学习也可以跨全训练集共享信息。
 
@@ -189,7 +189,7 @@ R 只依赖预测截止点已有交通和批准的归档报告字段。它可以
 
 ## 🧪 实现前后验收与比较
 
-本轮先完成实际小型输入审计和独立NumPy代数检查；没有模型工厂、正式模型调用、优化器更新或测试集评价。
+本节记录实现前的小型输入审计和独立NumPy代数检查；该阶段没有模型工厂、正式模型调用、优化器更新或测试集评价。后续实现与工程测试另见[开发记录](igstgnn_conditional_propagation_implementation_20261015.md)，下表是原先列出的实现检查要求。
 
 | 必须检查 | 本轮能做的证据 | 完整模型实现后仍需做 |
 |---|---|---|
