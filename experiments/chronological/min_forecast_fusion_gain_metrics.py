@@ -41,6 +41,34 @@ IDENTITIES = {
     'model_difference_and_report': ('EVENT_vs_STATE', 'remaining_model_difference', 'report_content_dependency'),
 }
 DIRECTION_COMPARISONS = ('fusion_dependency', 'report_content_dependency')
+SUM_BLOCK_SIZE = 64
+
+
+def _sum_plan(labels, size):
+    """Bound each sequential bin accumulation to at most 64 input values."""
+    blocks = (len(labels)+SUM_BLOCK_SIZE-1)//SUM_BLOCK_SIZE
+    return labels+(np.arange(len(labels), dtype=np.int64)//SUM_BLOCK_SIZE)*size, blocks, size
+
+
+def _pairwise_bincount(weights, plan):
+    """Small sequential blocks, followed by explicit pairwise float64 merging.
+
+    Plain weighted bincount adds potentially hundreds of thousands of fractions
+    in sequence. Separate group and whole-network MAPE sums can then differ by
+    much more than the conservation tolerance even for a perfect partition.
+    The block/bin assignment is shared across fields; counts stay exact integers.
+    """
+    bins, blocks, size = plan
+    if not blocks:
+        return np.zeros(size, dtype=np.float64)
+    partial = np.bincount(bins, weights=weights, minlength=blocks*size).reshape(blocks, size)
+    while blocks > 1:
+        pairs = blocks//2
+        partial[:pairs] = partial[:pairs*2:2]+partial[1:pairs*2:2]
+        if blocks % 2:
+            partial[pairs] = partial[blocks-1]
+        blocks = pairs+blocks % 2
+    return partial[0].copy()
 
 
 def _validate(predictions, target, valid, regions, samples, stations, hard_ids, edges, response_tol):
@@ -88,8 +116,9 @@ def _groups(masks, edges):
 
 def _accumulate(acc, h, selections, sums, counts, absolute_delta):
     for offset, size, selected, labels in selections:
+        plan = _sum_plan(labels, size)
         for field, value in sums.items():
-            acc[field][offset:offset+size, h] = np.bincount(labels, weights=value[selected], minlength=size)
+            acc[field][offset:offset+size, h] = _pairwise_bincount(value[selected], plan)
         for field, value in counts.items():
             acc[field][offset:offset+size, h] = np.bincount(labels[value[selected]], minlength=size)
         np.maximum.at(acc['prediction_max'][:, h], labels+offset, absolute_delta[selected])
@@ -141,8 +170,9 @@ def analyze_predictions(predictions, target, valid, regions, sample_indices, sta
                     require((np.abs(residual) <= 1e-12+32*eps*scale).all(), 'Pointwise decomposition failed: '+key)
                     labels = (gains[first] > 0).astype(np.int8)*2+(gains[second] > 0).astype(np.int8)
                     overlap_counts[key][h] = np.bincount(labels, minlength=4)
+                    plan = _sum_plan(labels, 4)
                     for j, comparison in enumerate((total, first, second)):
-                        overlap_gains[key][h, :, j] = np.bincount(labels, weights=gains[comparison], minlength=4)
+                        overlap_gains[key][h, :, j] = _pairwise_bincount(gains[comparison], plan)
                 flow_ids = np.searchsorted(edges, y, side='right')-1
                 bias_ids = np.where(values['EVENT_FUSION_OFF'] > y, 0, np.where(values['EVENT_FUSION_OFF'] < y, 1, 2))
                 source_ids = np.where(values['SOURCE_MIN'] > y, 0, np.where(values['SOURCE_MIN'] < y, 1, 2))
@@ -158,8 +188,9 @@ def analyze_predictions(predictions, target, valid, regions, sample_indices, sta
                 selected = np.broadcast_to(fixed_rows[:, None], active.shape)[active]
                 selections.append((offsets['fixed'], 1, selected, np.zeros(int(selected.sum()), np.int64)))
                 row_ids = np.broadcast_to(np.arange(len(samples))[:, None], active.shape)[active]
+                plan = _sum_plan(row_ids, len(samples))
                 for case in BASE_CASES:
-                    window_errors[case][:, h] = np.bincount(row_ids, weights=errors[case], minlength=len(samples))
+                    window_errors[case][:, h] = _pairwise_bincount(errors[case], plan)
                 for key, (left, right, _) in COMPARISONS.items():
                     delta, gain = values[right]-values[left], gains[key]
                     sums = dict(control_absolute=errors[left], candidate_absolute=errors[right],
@@ -177,7 +208,8 @@ def analyze_predictions(predictions, target, valid, regions, sample_indices, sta
                         for offset, size, selected, labels in selections:
                             bins = labels*8+directions[selected]
                             direction_counts[key][offset:offset+size, h] = np.bincount(bins, minlength=size*8).reshape(size, 8)
-                            direction_gains[key][offset:offset+size, h] = np.bincount(bins, weights=gain[selected], minlength=size*8).reshape(size, 8)
+                            direction_gains[key][offset:offset+size, h] = _pairwise_bincount(
+                                gain[selected], _sum_plan(bins, size*8)).reshape(size, 8)
         except FloatingPointError as error:
             raise ValueError('Finite archived values overflowed float64 F1 arithmetic') from error
     require(all(np.isfinite(a).all() for acc in accumulators.values() for a in acc.values())
@@ -208,11 +240,16 @@ def analyze_predictions(predictions, target, valid, regions, sample_indices, sta
             pct_residual = pct[ids].sum(0)-pct[global_index]
             scale = acc['control_absolute'][global_index]+acc['candidate_absolute'][global_index]+1.
             pct_scale = acc['control_percentage'][global_index]+acc['candidate_percentage'][global_index]+1.
-            require((count == 0).all() and (positive == 0).all() and (np.abs(net) <= 1e-10+128*eps*scale).all()
-                    and (np.abs(pct_residual) <= 1e-10+128*eps*pct_scale).all(), 'F1 family conservation failed: '+key+' '+family)
+            net_limit, pct_limit = 1e-10+128*eps*scale, 1e-10+128*eps*pct_scale
+            require((count == 0).all() and (positive == 0).all() and (np.abs(net) <= net_limit).all()
+                    and (np.abs(pct_residual) <= pct_limit).all(), 'F1 family conservation failed: '+key+' '+family
+                    +' count_max='+str(int(np.abs(count).max()))+' positive_count_max='+str(int(np.abs(positive).max()))
+                    +' gain_sum_residual='+str(net.tolist())+' gain_sum_limit='+str(net_limit.tolist())
+                    +' percentage_sum_residual='+str(pct_residual.tolist())+' percentage_sum_limit='+str(pct_limit.tolist()))
             reconciliation[key][family] = dict(status='PASS', count_residual_per_horizon=count.tolist(),
                 maximum_absolute_gain_sum_residual=float(np.abs(net).max()),
-                maximum_absolute_percentage_gain_sum_residual=float(np.abs(pct_residual).max()))
+                maximum_absolute_percentage_gain_sum_residual=float(np.abs(pct_residual).max()),
+                gain_sum_tolerance_per_horizon=net_limit.tolist(), percentage_sum_tolerance_per_horizon=pct_limit.tolist())
     decompositions, overlap = {}, {}
     for key, (total, first, second) in IDENTITIES.items():
         acc = accumulators[total]
@@ -288,6 +325,8 @@ def analyze_predictions(predictions, target, valid, regions, sample_indices, sta
             response_tolerance_affects_response_counts_only=True, grouping_uses_targets_posthoc_only=True,
             positive_negative_parts_not_additive_across_decompositions=True,
             net_path_over_total_gain_ratio_not_computed=True, training_and_incident_causal_attribution=False,
+            weighted_summation='64_input_blocks_then_explicit_pairwise_float64_merging',
+            conservation_tolerances_changed=False,
             empty_groups='local_means_unavailable_common_denominator_zero_mass_contribution_zero',
             independence='overlapping_windows_and_points_are_not_independent_incident_replicates',
             scope='exploratory_validation_saved_predictions_no_training_no_new_inference_no_test'))
