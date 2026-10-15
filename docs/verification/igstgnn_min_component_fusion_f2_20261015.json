@@ -1,0 +1,164 @@
+{
+  "schema": "min_component_fusion_f2_development_verification_v1",
+  "date": "2026-10-15",
+  "status": "ENGINEERING_VERIFIED_FORMAL_GAIN_UNTESTED",
+  "total_distinct_tests": 31,
+  "test_suites": [
+    {
+      "modules": [
+        "tests.test_min_component_fusion_model",
+        "tests.test_min_component_fusion_runner"
+      ],
+      "tests": 20,
+      "seconds": 35.89,
+      "status": "PASS"
+    },
+    {
+      "modules": [
+        "tests.test_min_component_fusion_evaluation"
+      ],
+      "tests": 10,
+      "seconds": 15.517,
+      "status": "PASS"
+    },
+    {
+      "modules": [
+        "tests.test_min_component_fusion_scale"
+      ],
+      "tests": 1,
+      "seconds": 1.491,
+      "status": "PASS",
+      "axes": [
+        837,
+        12,
+        496
+      ],
+      "valid_points": 338686
+    }
+  ],
+  "bash_syntax": "PASS",
+  "runtime": {
+    "torch": "2.8.0+cu126",
+    "cuda": "12.6",
+    "device_type": "cpu",
+    "cublas_workspace_config": ":4096:8"
+  },
+  "formal_parameters": {
+    "CONTROL": 435856,
+    "STATE": 440853,
+    "EVENT": 440853
+  },
+  "added_parameters": 4997,
+  "engineering_only": true,
+  "train_rows": 4,
+  "validation_rows": 4,
+  "stations": 496,
+  "batch_size": 2,
+  "stage_epochs": {
+    "CONTROL": 1,
+    "STATE": 1,
+    "EVENT": 1
+  },
+  "optimizer_updates_per_arm": {
+    "CONTROL": 2,
+    "STATE": 2,
+    "EVENT": 2
+  },
+  "same_train_order": true,
+  "exact_resume_all_three_arms_verified": true,
+  "source_reference_origin": "certified_previous_F1_source_reference_reuse_not_new_replay",
+  "source_archive_bytes_preserved": true,
+  "source_full_validation_forwards": 0,
+  "fresh_initialization_source_train_example_forwards": 1,
+  "fresh_initialization_candidate_train_example_forwards": 3,
+  "evaluation": {
+    "status": "MIN_COMPONENT_FUSION_EVALUATION_PASS",
+    "directory": "experiments\\chronological_runs\\local_min_component_fusion_check_20261015\\component_fusion_evaluation_release_check_20261015",
+    "cases": [
+      "CONTROL_ON",
+      "STATE_ON",
+      "EVENT_ON",
+      "EVENT_REPORT_OFF",
+      "EVENT_FUSION_OFF",
+      "EVENT_CONTENT_OFF",
+      "EVENT_SEMANTIC_UNK",
+      "EVENT_LOCATION_SHUFFLE",
+      "SOURCE_MIN"
+    ],
+    "new_inference_calls": {
+      "CONTROL_ON": 2,
+      "STATE_ON": 2,
+      "EVENT_ON": 12,
+      "EVENT_REPORT_OFF": 2,
+      "EVENT_FUSION_OFF": 2,
+      "EVENT_CONTENT_OFF": 2,
+      "EVENT_SEMANTIC_UNK": 2,
+      "EVENT_LOCATION_SHUFFLE": 2,
+      "SOURCE_MIN": 0
+    },
+    "total_new_inference_calls": 26,
+    "optimizer_updates": 0,
+    "test_evaluated": false,
+    "on_exactly_restored": true,
+    "source_artifacts_preserved": true,
+    "protected_file_count": 60,
+    "model_preservation": {
+      "EVENT": {
+        "status": "MODEL_STATE_PRESERVED",
+        "model_state_sha256": "8685790e3a5d25f866b760214a4b4f4c0db97f6a4e08722bb6d355ab85cf8e86",
+        "mode_gradients_hooks_graph_rng_preserved": true
+      },
+      "STATE": {
+        "status": "MODEL_STATE_PRESERVED",
+        "model_state_sha256": "6e38103de1753533a9ae51b60bc12c2c59727c07c58b3f28a7ce3df97c45f0d9",
+        "mode_gradients_hooks_graph_rng_preserved": true
+      },
+      "CONTROL": {
+        "status": "MODEL_STATE_PRESERVED",
+        "model_state_sha256": "a0f88535839047ac3fd473b628009cfee86e1eeb755ad9b47007c82c7a621165",
+        "mode_gradients_hooks_graph_rng_preserved": true
+      }
+    }
+  },
+  "same_target_noop": {
+    "arm": "EVENT",
+    "optimizer_updates": 0,
+    "checkpoint_bytes_unchanged": true
+  },
+  "old_code_fingerprints_unchanged": true,
+  "old_code_file_count": 21,
+  "old_code_sha256": {
+    "experiments/chronological/train_b3_r_minimal_paper.py": "2bf61fe9a7b230f5f98dea091de5a8a4ff761dcdbb1b2e49ce9cdc6a3cb85f33",
+    "src/utils/igstgnn_published.py": "1adaa6a026fc49008a281c51dd4d916d330286f55f6dd19cd38c227408776de5",
+    "data/xtraffic/prepare_splits.py": "a158a98e338a1db5921590b886e4d59ac59819bb2cd00a01a6f5d884e01317ba",
+    "src/utils/dataloader.py": "02476dcd8f9f6e9c327e14f8b2f7a4e4f414b273f959457f41ab73c039074852",
+    "src/utils/metrics.py": "6df3633f8f3007795116a34b2c6d494010e4a2ee6192f5b22ffd6e47b51127fe",
+    "src/utils/graph_algo.py": "49d876dac914eca4f9e75aa2fbc3903c28da8570fd50a5940ef16277cd53af19",
+    "src/base/engine.py": "d6307e55366449cc4ae93abbf08930ed7f606cb2b241828a1da20c683fd11309",
+    "src/base/model.py": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83",
+    "src/engines/igstgnn_engine.py": "330448c8d19836102e1cd59f4bd893f0ae989da0ae63ce1d6abfce5d4e272a77",
+    "src/models/igstgnn.py": "07b1eb80b0b7f36ebae501a2d9f52c019ef659c3bb5dbf138f8978c47fb1831e",
+    "experiments/chronological/train_internal_spatial.py": "371f03212141d6cb2d8599fcc8daa0804c4f87fc75e283fd885312b69b6663d4",
+    "src/models/incident_response.py": "021cc27f2c06d464be2ad6c51be8f9d05b8b0da7c7f859159f294a44b24d74d8",
+    "src/models/incident_spatial.py": "42216d06cbfe6356d886cb6983efa03c189c7d0133b6eace4cbbe389fae81ab1",
+    "src/models/incident_spatial_residual.py": "2a3ff34dc7fbc9fcab98ea82145d7bcfccf4735eda2687606d05b4da9e853ee8",
+    "src/models/incident_spatial_minimal.py": "a38735ed4a1308d75f15c71817b8e8dabdd2d897c16370743cdcba959c275ef2",
+    "src/models/incident_capacity_exchange.py": "2497858b6871a6f2dc893035f47dc1568b54fc12f65bf82aa856b53a3e648a93",
+    "experiments/chronological/train_min_event_budget.py": "8883300e0113321323c6c64e5de3b256e2b6eeec6d4649b91a573ddaa3c50e96",
+    "src/utils/igstgnn_published_events.py": "bcdbbe3768e0ae2d5b65b4abd49e6efc89e0a5a44218fcf0c3881d84dabbf0a8",
+    "src/models/incident_spatial_event_budget.py": "bb1af1427af54adf5822350d55074acd8bb9b815e2449e667f2343581fb7acdf",
+    "experiments/chronological/train_min_forecast_fusion.py": "74837f952ab950f2e17f9a5a9228b3b6be767825f5e719f818ac168b5196541c",
+    "src/models/incident_spatial_forecast_fusion.py": "d7b2bcf3ba1ed7dc141a805475ae3ab299d83bda5ff6ac03c47bf0d294d5cfb7"
+  },
+  "new_code_sha256": {
+    "src/models/incident_spatial_component_fusion.py": "a39c47085a4cb1e92c627a3d99cf5e6505f07cac0dd992c6d7d68d4ffb03def2",
+    "experiments/chronological/train_min_component_fusion.py": "f73cbed4141b3b4ec6286d38a0bea9559429c86f5199b6b5754844892fa87fa2",
+    "experiments/chronological/evaluate_min_component_fusion.py": "201c6d8385f7866ec7207632a595f217b72c6c8ac6963cc85c5fff69d07274e0",
+    "experiments/chronological/min_component_fusion_v1.json": "a32ee8d704704a93341655fe63f106275a08dbee26f2e3c19c1a2006d63fcb49",
+    "experiments/chronological/run_min_component_fusion.sh": "0c41d8fe99014967788a11775f5393d24b7fc5757568c66e0b785a4bd572894d",
+    "experiments/chronological/run_min_component_fusion_evaluation.sh": "8e7cdda9b9a97028237514cf3a4a51e5ed31d654bc18c295a9d4884865e8d78b"
+  },
+  "primary_baseline": "original_IGSTGNN_not_in_engineering_archive",
+  "formal_server_training_performed": false,
+  "predictive_gain_claim": false
+}

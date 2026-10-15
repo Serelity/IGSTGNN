@@ -87,4 +87,4 @@ bash experiments/chronological/run_min_forecast_fusion_relative_probe.sh \
 
 复用已有496站四窗口工程归档完成最终集成：原八状态预测逐值复用，新增EVENT调用10次（ON回放/恢复6、EXACT2、BOUNDED2），训练更新0，未评价测试集；模型、输入、RNG及受保护源文件检查通过。原模型/训练/数据21项指纹保持不变。第一次集成期间并行编辑了新探针源码，文件保护正确阻断；冻结最终代码后另用新目录完成验收，失败目录保留。
 
-机器可读记录：[开发验证文件](verification/igstgnn_f1_relative_probe_20261015.json)。工程数值不构成正式预测效果；服务器837窗口相对权重效果仍待运行。
+机器可读记录：[开发验证文件](verification/igstgnn_f1_relative_probe_20261015.json)。工程数值不构成正式预测效果。服务器837窗口已于2026-10-15完成，见[正式结果记录](igstgnn_f1_relative_probe_results_20261015.md)；不重复安排本探针。
