@@ -15,4 +15,4 @@ if [[ -z "${SLURM_JOB_ID:-}" && "${ORIGINAL_IGSTGNN_DIRECT:-0}" != 1 ]]; then
 fi
 cd "$REPO_DIR"
 printf 'Repository: %s\nStarted: %s\nHost: %s\nSlurm job: %s\n' "$REPO_DIR" "$(date --iso-8601=seconds)" "$(hostname)" "${SLURM_JOB_ID:-direct}"
-exec "$PYTHON_BIN" -u experiments/chronological/evaluate_original_igstgnn_modules.py "$@"
+exec "$PYTHON_BIN" -u experiments/chronological/original_igstgnn_checkpoint_compat.py screen "$@"

@@ -98,6 +98,8 @@ bash experiments/chronological/run_original_igstgnn_baseline.sh --run-dir experi
 
 旧进程持锁时不会另开训练。达到目标或early-stop的续训为no-op。续训要求源码、数据、设备/运行时、配置身份一致，升级代码后不能强行续同一目录；已有阶段文件保留。
 
+PyTorch 2.3的`Counter`检查点兼容问题已通过外置驱动修复，两个bash入口自动使用。原身份所核验的训练/评估/runtime/source文件保持`ac277ea`字节，已有目录可按原命令续训，不需要放宽身份检查；见[兼容修复说明](igstgnn_original_checkpoint_compat_20261015.md)。
+
 已有原版结果也可用`--archive /absolute/result.zip`，或`--checkpoint /absolute/final_model_s2025.pt --training-log /absolute/record.log`直接筛查。两个来源互斥，不能把MIN权重当原版。
 
 主要制品为`summary.json`、`report.md`、`paired_predictions.npz`、`cases.csv`、`comparisons.csv`、`timings.csv`、`module_timings.csv`与JSON明细。自动输出到新目录并打印路径；失败保存failure，不覆盖原报告。

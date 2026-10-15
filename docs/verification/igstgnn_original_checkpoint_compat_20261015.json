@@ -1,0 +1,39 @@
+{
+  "status": "OFFICIAL_TORCH_231_RESTRICTED_READER_PROBE_PASS",
+  "source_url": "https://raw.githubusercontent.com/pytorch/pytorch/v2.3.1/torch/_weights_only_unpickler.py",
+  "source_sha256": "2fab95ce4d865e3147fd4f4b0dd33e78fee7e90d34e569136c0f5a1d64c7b166",
+  "host_torch": "2.8.0+cu126",
+  "scope": "official_2_3_1_reader_running_inside_2_8_serialization_container_not_native_server_runtime",
+  "original_error": "Unsupported class collections.Counter",
+  "compatibility_mode": "legacy_2_3_Counter_only",
+  "checkpoint_sha256": "0d1447491bd2653540a59b1808f33fad0d51432347d822ded4e0e39bf5d16726",
+  "checkpoint_preserved": true,
+  "all_state_values_equal": true,
+  "Counter_type_preserved": true,
+  "forbidden_eval_rejected": true,
+  "allowlist_restored": true,
+  "optimizer_updates": 0,
+  "test_evaluated": false,
+  "identity_files_unchanged_from_commit": "ac277ea",
+  "identity_file_sha256": {
+    "train_original_igstgnn_baseline.py": "3224ce28954b3f292c65fc3923b7c5ce9fb60595e8b94e093e21411d83e846ff",
+    "evaluate_original_igstgnn_modules.py": "91fc51569b3eac182e6a37fa2065ac55a17cbf97fbc22e789b2a67763dfb8b76",
+    "original_igstgnn_runtime.py": "19679a77e42a424415434560859f002ee33ac3ca49ea32ebd4afc464a8a1156e",
+    "original_igstgnn_source.py": "6bff38af45c1b6b5d4a4b841cf165f2915bbb172fcdf7c80a660df63fc5cb767"
+  },
+  "gpu_resume": {
+    "scope": "four_window_engineering_only",
+    "old_completed_epoch": 2,
+    "new_completed_epoch": 3,
+    "new_optimizer_updates": 2,
+    "original_identity_preserved": true
+  },
+  "engineering_screen_through_driver": "PASS",
+  "bash_syntax": "PASS",
+  "cpu_tests": {
+    "count": 66,
+    "Counter_compatibility_tests": 10,
+    "seconds": 7.853,
+    "status": "PASS"
+  }
+}
