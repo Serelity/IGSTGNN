@@ -1,0 +1,153 @@
+{
+  "schema": "original_first_layer_boundary_delay_v2_development_verification_v1",
+  "date": "2026-10-16",
+  "status": "LOCAL_IMPLEMENTATION_AND_CUDA_RESUME_VERIFIED",
+  "tests": {
+    "total": 123,
+    "passed": 120,
+    "skipped": 3,
+    "failures": 0,
+    "new_v2_tests": 19,
+    "skip_reason": "PyTorch 2.3 lacks public safe_globals APIs",
+    "log": "experiments/chronological_runs/original_edge_delay_v2_tests_20261016_final.log",
+    "log_sha256": "abdab8e155fe16543f96cdc73eae2aafa623ebca3c63c5f40a397c5e5e13c8eb"
+  },
+  "cuda_engineering": {
+    "runtime": {
+      "python_device": "cuda:0",
+      "torch": "2.3.1",
+      "numpy": "1.22.4",
+      "cuda": "12.1",
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "threads": 3,
+      "seed": 2025,
+      "dtype": "float32",
+      "deterministic_algorithms": true,
+      "tf32": false,
+      "cudnn_benchmark": false
+    },
+    "train_rows": 4,
+    "validation_rows": 4,
+    "batch_size": 2,
+    "continuous_epochs": 2,
+    "resume": "1 then resume to total 2 epochs",
+    "state_checks": {
+      "CONTROL": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "global_updates": true,
+        "curriculum_length": true,
+        "best_epoch": true,
+        "best_validation_mae": true
+      },
+      "FIXED": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "global_updates": true,
+        "curriculum_length": true,
+        "best_epoch": true,
+        "best_validation_mae": true
+      },
+      "DYNAMIC": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "global_updates": true,
+        "curriculum_length": true,
+        "best_epoch": true,
+        "best_validation_mae": true
+      }
+    },
+    "prediction_checks": {
+      "SOURCE": true,
+      "CONTROL_BEST": true,
+      "CONTROL_LAST": true,
+      "FIXED_BEST": true,
+      "FIXED_BEST_NO_ALIGN": true,
+      "FIXED_BEST_ZERO_BOUNDARY": true,
+      "FIXED_LAST": true,
+      "FIXED_LAST_NO_ALIGN": true,
+      "FIXED_LAST_ZERO_BOUNDARY": true,
+      "DYNAMIC_BEST": true,
+      "DYNAMIC_BEST_NO_ALIGN": true,
+      "DYNAMIC_BEST_ZERO_BOUNDARY": true,
+      "DYNAMIC_BEST_SHUFFLE": true,
+      "DYNAMIC_LAST": true,
+      "DYNAMIC_LAST_NO_ALIGN": true,
+      "DYNAMIC_LAST_ZERO_BOUNDARY": true,
+      "DYNAMIC_LAST_SHUFFLE": true,
+      "target": true,
+      "sample_indices": true,
+      "station_ids": true
+    },
+    "initialization_exact": true,
+    "on_exactly_restored": true,
+    "replay_passed": true,
+    "source_files_unchanged": true,
+    "legacy_audit": {
+      "pilot_run": "G:\\paper\\IGSTGNN_open_source\\code\\experiments\\chronological_runs\\original_edge_delay_check_20261016_final",
+      "identity_sha256": "2fac6d759c579771e9860c8550341ffc61de9b34467ac41bf225f89eea166fc9",
+      "completed": {
+        "CONTROL": {
+          "epochs": 2,
+          "best_epoch": 2,
+          "updates": 4
+        },
+        "FIXED": {
+          "epochs": 2,
+          "best_epoch": 2,
+          "updates": 4
+        },
+        "DYNAMIC": {
+          "epochs": 2,
+          "best_epoch": 2,
+          "updates": 4
+        }
+      },
+      "source_files_unchanged": true,
+      "backward_calls": 6,
+      "optimizer_updates": 0
+    },
+    "backward_audit_calls": 18,
+    "test_evaluated": false,
+    "formal_performance_claim": false
+  },
+  "parameter_counts": {
+    "CONTROL": 455220,
+    "FIXED": 483998,
+    "DYNAMIC": 483998,
+    "added": 28778,
+    "legacy_delay": 599090
+  },
+  "code_sha256": {
+    "experiments/chronological/original_edge_delay_v2.py": "ca27d58e05c3837aaa27398b3229a729090b64250688ce672b54e1a235ecc63a",
+    "experiments/chronological/original_edge_delay_gradient_audit.py": "7ef489906531c6f325e195800e3a225fd5ada8df33d60dc9a53c41d3d17b1dc2",
+    "experiments/chronological/train_original_edge_delay_v2.py": "7369d4d97978337241099ef2b1a354e20501cc765fd54faea78ad5599fd4ec14",
+    "experiments/chronological/run_original_edge_delay_v2.sh": "7891a30d1aae5507222cc8ae3e9ad1e20948cebf531ef78143712fd35f052e39",
+    "tests/test_original_edge_delay_v2.py": "53b9f0cb218e7032020aadf62ca59edb871f398848009822778b0dde5f8eb619",
+    "docs/igstgnn_edge_delay_v2_20261016.md": "071995dd0c7f90781a951292dc64f38b6568233c598f178d753a21228b149bc5"
+  },
+  "artifacts_sha256": {
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_verification.json": "e77629c7193267da208b65f1129d363f0ab2ef8201e73b7586b6d3e04d1ae3b4",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/summary.json": "2eb4ca9bf182c6a136241baab57ad45f05308ccbf1a517621d98ccc4ed31d852",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/preservation.json": "faed7ee71a5f736339c770a9e25d36e187b3cab43c4b1c3f335007f9bb8ddd21",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/replay.json": "bddc6cf80bad0cb7db452831623a00c9ce4e0637847654d577d30cb5024f8204",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/mechanisms.json": "06a743770bff420d2aa6da957b0e3e7f67200931461ee14ae2b48fe00f8cd24c",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/gradient_summary.csv": "037379683fb10b454ff9e9af619626be34d008dcb411a7b6ebc7162c8f90448d",
+    "experiments/chronological_runs/original_edge_delay_v2_check_20261016_final_continuous/resources.json": "be2a3a57826206a6125f6f947d5242752a0de08293b8a025ff2c13a67e683b70"
+  },
+  "old_execution_files_unchanged": true,
+  "launcher_lf": true,
+  "bash_executed_locally": false,
+  "bash_note": "Windows Git Bash startup is unavailable under the sandbox; LF and launcher source checked, no local Linux execution claimed",
+  "server_formal_training_executed": false,
+  "validation_limit": "Only four-row local engineering checks; no claim of beating baseline"
+}
