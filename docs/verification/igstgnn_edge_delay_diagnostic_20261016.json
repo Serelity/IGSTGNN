@@ -1,0 +1,94 @@
+{
+  "schema": "original_edge_delay_best_last_development_verification_v1",
+  "date": "2026-10-16",
+  "status": "LOCAL_READ_ONLY_DIAGNOSTIC_VERIFIED",
+  "tests": {
+    "total": 104,
+    "passed": 101,
+    "skipped": 3,
+    "failures": 0,
+    "new_diagnostic_tests": 19,
+    "skip_reason": "PyTorch 2.3 lacks public safe_globals APIs",
+    "log": "experiments/chronological_runs/original_edge_delay_diagnostic_tests_20261016_final.log",
+    "log_sha256": "ecb70e3dd8ca9758ed0a8ea2c1608e5107bdc7e3443ba6e8fd4d0d95637dfa14",
+    "critical_best_zero_last_one": "synthetic end-to-end unit fixture; separately loads original BEST and degraded LAST; no optimizer constructed"
+  },
+  "cuda_engineering": {
+    "run": "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified",
+    "runtime": {
+      "python_device": "cuda:0",
+      "torch": "2.3.1",
+      "numpy": "1.22.4",
+      "cuda": "12.1",
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "threads": 3,
+      "seed": 2025,
+      "dtype": "float32",
+      "deterministic_algorithms": true,
+      "tf32": false,
+      "cudnn_benchmark": false
+    },
+    "validation_rows": 4,
+    "cases": 15,
+    "new_inference_calls": {
+      "SOURCE": 2,
+      "CONTROL_BEST": 2,
+      "CONTROL_LAST": 0,
+      "FIXED_BEST": 2,
+      "FIXED_BEST_NO_ALIGN": 2,
+      "FIXED_LAST": 0,
+      "FIXED_LAST_NO_ALIGN": 0,
+      "DYNAMIC_BEST": 2,
+      "DYNAMIC_BEST_NO_ALIGN": 2,
+      "DYNAMIC_BEST_MASS_ONLY": 2,
+      "DYNAMIC_BEST_SHUFFLE": 2,
+      "DYNAMIC_BEST_RESTORED": 2,
+      "DYNAMIC_LAST": 0,
+      "DYNAMIC_LAST_NO_ALIGN": 0,
+      "DYNAMIC_LAST_MASS_ONLY": 0,
+      "DYNAMIC_LAST_SHUFFLE": 0,
+      "DYNAMIC_LAST_RESTORED": 2
+    },
+    "total_new_inference_calls": 20,
+    "optimizer_updates": 0,
+    "new_backward_calls": 0,
+    "test_evaluated": false,
+    "source_artifacts_preserved": true,
+    "on_exactly_restored": true,
+    "replay_passed": true,
+    "best_and_last_identical_in_this_existing_engineering_pilot": true,
+    "formal_performance_claim": false
+  },
+  "checks": {
+    "python_ast_parse": true,
+    "launcher_lf": true,
+    "original_verified_code_and_document_unchanged": true,
+    "historical_execution_hashes_match": true,
+    "input_files_preserved": true,
+    "coordination_lock_contents_excluded_from_hash_snapshot": true,
+    "parameter_and_buffer_drift_separated": true
+  },
+  "bash_execution": false,
+  "bash_note": "Windows Git Bash startup was previously blocked by the sandbox MSYS named-object permission; launcher source reviewed, no local shell execution claimed.",
+  "server_validation": {
+    "executed": false,
+    "required_validation_rows": 837,
+    "next_command": "bash experiments/chronological/run_original_edge_delay_diagnostic.sh --pilot-run experiments/chronological_runs/contra_original_edge_delay_pilot_s2025"
+  },
+  "code_sha256": {
+    "experiments/chronological/evaluate_original_edge_delay.py": "6982a42698ac0e18c9821e702c7d238993bb1a4ea16bfcee02db6ad84576f95b",
+    "experiments/chronological/original_edge_delay_diagnostics.py": "2d28add1e558949fef11c25158ebb2ec6ced0a2badab8c76cd2372dd5ade5646",
+    "experiments/chronological/run_original_edge_delay_diagnostic.sh": "68e16fbb27e51e892bb96f5e8b2f5e47e56db27332dffab7c156ebf2746e1f83",
+    "tests/test_original_edge_delay_diagnostics.py": "24ce2f2aec480b6be512a96a65ae2fb2f41492706d83acfc9811e90f7b3d0dd5",
+    "docs/igstgnn_edge_delay_diagnostic_20261016.md": "4518b75d1e0bffa3ce36ce243f4e5b4a963ba4507be3a6cd9e81e71340899b83"
+  },
+  "engineering_artifact_sha256": {
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/summary.json": "6de8c2822b9b503f5d805f3c56f172df09f799f735d1924c209bb9f2f93f1c77",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/replay.json": "b1e3480c98c2692099c67a280abc95dc68cbfc2746f5d0ca00834521af28d069",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/preservation.json": "4098099895265470d7d4e1e99c2c8aae6e197c1538c7bbde210274dc9b168185",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/provenance.json": "a022e90f0bfd56afab66b38c7115d2c34a54589b0bcca69ad2420286db668767",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/boundary_support.csv": "d24cc5e2ddf09b4cdaa4d11b5daa684fbd605f42de95212c174a83dc06828d26",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/lag_statistics.json": "69956ace15c6e5e5ac0b8c9f97b9dedd45cb3b88f188fe1b8296d31c619990a9",
+    "experiments/chronological_runs/original_edge_delay_diagnostic_20261016_verified/parameter_changes.json": "3e64274b663901cdae6d2e5e0690ccf66e029a8167e6bb637447d4d364f5838a"
+  }
+}
