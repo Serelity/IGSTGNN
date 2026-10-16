@@ -1,0 +1,94 @@
+{
+  "schema": "original_edge_delay_development_verification_v1",
+  "date": "2026-10-16",
+  "status": "LOCAL_DEVELOPMENT_VERIFIED",
+  "tests": {
+    "total": 85,
+    "passed": 82,
+    "skipped": 3,
+    "failures": 0,
+    "skip_reason": "PyTorch 2.3 lacks public safe_globals APIs",
+    "log": "experiments\\chronological_runs\\original_edge_delay_tests_20261016_final.log",
+    "log_sha256": "ef1b8d442be17b82caa39c2236e9a6bbb246357ef9f0c01f7d5081d432a99717"
+  },
+  "runtime": {
+    "python_device": "cuda:0",
+    "torch": "2.3.1",
+    "numpy": "1.22.4",
+    "cuda": "12.1",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "threads": 3,
+    "seed": 2025,
+    "dtype": "float32",
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cudnn_benchmark": false
+  },
+  "engineering": {
+    "run": "experiments\\chronological_runs\\original_edge_delay_check_20261016_final",
+    "validation_rows": 4,
+    "training_rows": 4,
+    "batch_size": 2,
+    "completed_epochs": {
+      "CONTROL": 2,
+      "FIXED": 2,
+      "DYNAMIC": 2
+    },
+    "optimizer_updates": {
+      "CONTROL": 4,
+      "FIXED": 4,
+      "DYNAMIC": 4
+    },
+    "final_source_files_preserved": true,
+    "source_is_small_engineering_checkpoint": true,
+    "formal_effect_claim": false,
+    "test_evaluated": false
+  },
+  "exact_cuda_resume_comparison": {
+    "CONTROL": {
+      "model_state": true,
+      "optimizer_state": true,
+      "scheduler_state": true,
+      "rng_state": true,
+      "train_order": true,
+      "global_updates": true,
+      "curriculum_length": true,
+      "best_epoch": true,
+      "best_validation_mae": true
+    },
+    "FIXED": {
+      "model_state": true,
+      "optimizer_state": true,
+      "scheduler_state": true,
+      "rng_state": true,
+      "train_order": true,
+      "global_updates": true,
+      "curriculum_length": true,
+      "best_epoch": true,
+      "best_validation_mae": true
+    },
+    "DYNAMIC": {
+      "model_state": true,
+      "optimizer_state": true,
+      "scheduler_state": true,
+      "rng_state": true,
+      "train_order": true,
+      "global_updates": true,
+      "curriculum_length": true,
+      "best_epoch": true,
+      "best_validation_mae": true
+    }
+  },
+  "comparison_note": "Final resumed pilot versus uninterrupted two-epoch pilot. Continuous entry preceded only the unrelated-directory resume guard; numeric source/engine identical.",
+  "frozen_source_manifest_sha256": "fdaf7bd006f70e86d6a1ee3069f858387a7c541149adba55a96f82b1c7879531",
+  "python_compile": true,
+  "bash_execution": false,
+  "bash_note": "Git Bash startup blocked by Windows MSYS named-object permission; LF and source reviewed, server launcher not executed locally.",
+  "code_sha256": {
+    "experiments/chronological/original_edge_delay.py": "c6d555353471292ed4c8865e4c39227e785dd8093171dfb743201bfba190a1f7",
+    "experiments/chronological/train_original_edge_delay.py": "072ad9378282c2ec8e07383d258fc07d9091c87c71b559a32f10900b6069394c",
+    "experiments/chronological/run_original_edge_delay.sh": "d7c46456f8375eba92aca743ecfaeacf3859b5581fd4f1f65f9624839e4297b7",
+    "tests/test_original_edge_delay.py": "11fa03947a051f31500575f5e0b7757d41629909d0b77b2a3db133d0bca0bde9",
+    "docs/igstgnn_edge_delay_first_round_20261016.md": "bf84484230879cf737c40359055cde384a1fe269b46d5afe6b8140eaf617cf0f"
+  }
+}
