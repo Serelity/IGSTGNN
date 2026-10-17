@@ -3,6 +3,7 @@
   "status": "IMPLEMENTED_SERVER_VALIDATION_PENDING",
   "date": "2026-10-17",
   "base_commit": "562b1d1412115c757a4dca3d71372fc1f89d1997",
+  "snapshot_scope": "development_before_publication;remote_pushed_is_historical_not_live_branch_state",
   "branch": "research/receiver-match-gw3",
   "new_training_arms": ["FIXED_UNIFORM", "MESSAGE_SELF", "RECEIVER_MATCH"],
   "reused_reference_arms": ["ORIGINAL", "STATIC", "POST_MESSAGE"],

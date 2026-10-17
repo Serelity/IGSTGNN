@@ -1,6 +1,22 @@
 # GW3 服务器运行说明
 
-当前开发版本未执行本地检查，必须先在服务器通过以下检查。代码位于独立本地分支 `research/receiver-match-gw3`；在该分支推送或完整代码传到服务器以前，不能直接从远程拉取。不要在仍运行任务的GW1/GW2目录切换分支。
+当前开发版本未执行本地检查，必须先在服务器通过以下检查。服务器使用独立分支 `research/receiver-match-gw3`。不要在仍运行任务的GW1/GW2目录切换分支。
+
+首次获取代码，在现有IGSTGNN父目录创建独立GW3目录：
+
+```bash
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN
+git clone --depth 1 --single-branch --branch research/receiver-match-gw3 https://github.com/Serelity/IGSTGNN.git IGSTGNN-GW3
+cd IGSTGNN-GW3
+```
+
+若GW3目录已在该分支，只更新它，不再clone：
+
+```bash
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-GW3
+git fetch origin
+git merge --ff-only origin/research/receiver-match-gw3
+```
 
 ## 准备
 
