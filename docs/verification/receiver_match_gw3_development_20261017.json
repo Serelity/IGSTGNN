@@ -1,0 +1,25 @@
+{
+  "schema": "gw3_development_scope_v1",
+  "status": "IMPLEMENTED_SERVER_VALIDATION_PENDING",
+  "date": "2026-10-17",
+  "base_commit": "562b1d1412115c757a4dca3d71372fc1f89d1997",
+  "branch": "research/receiver-match-gw3",
+  "new_training_arms": ["FIXED_UNIFORM", "MESSAGE_SELF", "RECEIVER_MATCH"],
+  "reused_reference_arms": ["ORIGINAL", "STATIC", "POST_MESSAGE"],
+  "matching_added_registered_parameters": 1055,
+  "user_preference": "all_tests_and_model_execution_on_server_only",
+  "local_test_runs": 0,
+  "local_model_forward_calls": 0,
+  "local_model_backward_calls": 0,
+  "local_optimizer_updates": 0,
+  "test_evaluated": false,
+  "accuracy_improvement_verified": false,
+  "remote_pushed": false,
+  "required_server_checks": [
+    "tests.test_original_receiver_match",
+    "tests.test_receiver_match_workflow",
+    "verify_original_receiver_match.py --check",
+    "verify_original_receiver_match.py --stress --batch-size 48",
+    "three_arm_five_epoch_training_and_best_last_replay"
+  ]
+}
