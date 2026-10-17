@@ -1,79 +1,76 @@
-# GW2 服务器运行
+# GW2：复用已有实验，只跑新模型
 
-仓库：https://github.com/Serelity/IGSTGNN  
-分支：`research/graph-message-gw2`  
-新目录：`/seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-GW2`
+分支：`research/graph-message-gw2`。以后不在本地执行模型检查，验证全部放服务器。
 
-从已存在的 GW1 checkout 创建独立 GW2 worktree，保留 GW1 及原开发目录。以下为首次建立新目录的命令，不用于覆盖已存在的 GW2 工作目录。检查、训练、评价全部放服务器执行；本次发布未运行本地模型检查。
+当前策略：ORIGINAL 和 STATIC 直接读取 GW1 的同预算检查点、best/last 预测归档、训练曲线和历史耗时；不训练、不重新推理。只运行 POST_LOCAL 与 POST_MESSAGE。STATIC 标注为 GW1 历史参考，不能声称它与 GW2 新归约内核逐位相同。源码会校验数据、种子、训练配置、初始化、预算、源代码和缓存 checkpoint/预测哈希；不兼容就明确报错，不自动重跑基线。
 
-## 1. 获取代码
+## 1. 已在运行的 GW2
+
+若当前日志 arm 为 ORIGINAL/STATIC，按一次 Ctrl+C 停止重复训练。若已经到 POST_LOCAL/POST_MESSAGE，让它继续至退出。完整轮次保存于 last.pt，不删除运行目录。等待当前进程退出后再更新代码。
+
+新增复用入口保留原 `train_original_graph_message.py`、模型和全部训练执行依赖的字节，因此原 a2c5b32 运行的 POST_LOCAL/POST_MESSAGE 可以继续。部分 epoch 未提交时只会按原协议重放该部分所属 epoch。
 
 ```bash
-cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-GW1
+cd /seu_share/home/huangkai/220243809/paper/IGSTGNN/IGSTGNN-GW2
 git fetch origin
-git worktree add --detach ../IGSTGNN-GW2 origin/research/graph-message-gw2
-cd ../IGSTGNN-GW2
+git merge --ff-only origin/research/graph-message-gw2
 conda activate igstgnn
 export PYTHON_BIN="$(command -v python)"
 export ORIGINAL_IGSTGNN_REPO_DIR="$PWD"
 export GW2_DATA=/seu_share/home/huangkai/220243809/paper/IGSTGNN/data/xtraffic/Contra_Costa
 export GW2_RUN=experiments/chronological_runs/contra_original_gw2_s2025
-export GW2_TAG="$(date +%Y%m%d_%H%M%S)"
-git log -1 --oneline
+export GW1_RUN=../IGSTGNN-GW1/experiments/chronological_runs/contra_original_gw1_s2025
 ```
 
-此 worktree 使用 detached HEAD 固定当前代码。正式运行时不要更新执行源码，否则原有运行的严格续训身份会拒绝接续。
+GW1_RUN 必须是之前产生 ORIGINAL 16.28849、STATIC 15.22879 的五轮 GW1 运行目录；如果当时命名不同，按实际路径修改。不能指向最佳轮次28的成熟 original_baseline 或 MIN 运行。源目录应保留 identity.json、两组 last.pt、best 检查点，以及已完成 best/last 评价的 paired_predictions.npz 和 metadata.json。
 
-## 2. 在已分配 GPU 的终端检查
-
-当前 `gpu14/gpu05` 终端需有可用 GPU 分配；登录节点不要直接运行 CUDA 检查。若尚无 GPU 分配，按集群原有流程申请后，再进入上面的 GW2 目录设置变量。
+## 2. 服务器测试与续跑
 
 ```bash
-python -c 'import torch; print("CUDA:",torch.cuda.is_available()); print("GPU:",torch.cuda.get_device_name(0) if torch.cuda.is_available() else "unavailable"); assert torch.cuda.is_available()'
+python -m unittest tests.test_graph_message_reuse -v
 ```
 
-先执行服务器回归测试和小批量恢复检查，再执行真实 batch48 前后向。输出文件名含新时间标签，不覆盖旧结果；失败时不缩小批量冒充通过。
+测试正常退出后，在已有 GPU 分配中执行：
 
 ```bash
-python -m unittest tests.test_original_graph_message tests.test_original_graph_message_runner tests.test_original_graph_message_evaluation -v
-python -u experiments/chronological/verify_original_graph_message.py --check --data-dir "$GW2_DATA" --output "experiments/chronological_runs/gw2_check_$GW2_TAG.json"
-python -u experiments/chronological/verify_original_graph_message.py --stress --batch-size 48 --data-dir "$GW2_DATA" --output "experiments/chronological_runs/gw2_batch48_$GW2_TAG.json"
+bash experiments/chronological/run_original_graph_message.sh --run-dir "$GW2_RUN" --reuse-gw1-run "$GW1_RUN" --data-dir "$GW2_DATA" --epochs 5 --seed 2025 --resume
 ```
 
-最后一条正常退出后确认状态，只有 `GW2_VERIFICATION_PASS` 才进入试跑：
+该命令只补两个新动态组未完成的轮次；若两组已完成五轮，不发生任何优化器更新，只生成复用汇总。ORIGINAL/STATIC 在本运行目录已有的部分/完整制品保留，但不用于新比较，也不继续它们。
+
+首次从未启动过 GW2 时，使用同一命令但去掉 `--resume`，运行目录必须不存在。源 GW1 两组必须恰好完成请求预算；若以后需要更长预算，仅补缺失轮次，不从头重跑已经完成的工作。
+
+默认自动在 GW1 目录中寻找匹配的 best/last 预测归档；如有需要，可显式追加：
 
 ```bash
-python -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d["status"]); print({a:{k:v.get(k) for k in ("batch_size","forward_backward_seconds","peak_allocated_bytes")} for a,v in d.get("backward",{}).items()}); assert d["status"]=="GW2_VERIFICATION_PASS"' "experiments/chronological_runs/gw2_batch48_$GW2_TAG.json"
+# 用实际路径替换下面的示例参数：
+# --gw1-best-archive "$GW1_RUN/eval_best_原标签/paired_predictions.npz"
+# --gw1-last-archive "$GW1_RUN/eval_last_原标签/paired_predictions.npz"
 ```
 
-## 3. 四组各五轮
+源缓存不存在/证书不匹配时会报错，不会偷偷重算 ORIGINAL/STATIC。不要删除以前的评估目录。
 
-ORIGINAL、STATIC、POST_LOCAL、POST_MESSAGE 均从相同原始参数初始化，沿用原损失、Adam、学习率、课程与 batch48。`--epochs 5` 是每组总完成五轮。首次训练目录必须不存在。
+已通过的 GW2 batch48 检查不重复；尚未通过时只检查两个新模型：
 
 ```bash
-bash experiments/chronological/run_original_graph_message.sh --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --epochs 5 --seed 2025
+export GW2_CHECK_TAG="$(date +%Y%m%d_%H%M%S)"
+python -u experiments/chronological/verify_original_graph_message.py --stress --batch-size 48 --arms POST_LOCAL POST_MESSAGE --data-dir "$GW2_DATA" --output "experiments/chronological_runs/gw2_new_batch48_$GW2_CHECK_TAG.json"
 ```
 
-已有 Slurm 作业分配时，上述命令前台执行，返回后才进行下一步。没有 `SLURM_JOB_ID` 时启动脚本通过 sbatch 提交，返回只表示提交成功；须等该作业完成后再评价。此时日志在 checkout 的 `original-gw2-<jobid>.out`。
+没有 Slurm 分配时启动脚本只提交 sbatch，须等作业结束后评价。已有 GPU 分配时前台执行。不要对仍在运行的同一目录重复启动。
 
-被中断后，在新 GPU 分配中进入同一目录、恢复同样环境变量，再执行：
-
-```bash
-bash experiments/chronological/run_original_graph_message.sh --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --epochs 5 --seed 2025 --resume
-```
-
-不要对仍运行的同一目录重复启动；运行锁会拒绝并发。GW1 权重不能作为 GW2 的续训检查点。
-
-## 4. 训练完成后分别评估 best 和 last
+## 3. 仅评价新模型，基线直接读缓存
 
 ```bash
 export GW2_EVAL_TAG="$(date +%Y%m%d_%H%M%S)"
-python -u experiments/chronological/evaluate_original_graph_message.py --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --checkpoint best --output-dir "$GW2_RUN/eval_best_$GW2_EVAL_TAG"
-python -u experiments/chronological/evaluate_original_graph_message.py --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --checkpoint last --output-dir "$GW2_RUN/eval_last_$GW2_EVAL_TAG"
-cat "$GW2_RUN/summary.json"
-cat "$GW2_RUN/eval_best_$GW2_EVAL_TAG/report.md"
-cat "$GW2_RUN/eval_best_$GW2_EVAL_TAG/mechanisms.json"
-cat "$GW2_RUN/eval_last_$GW2_EVAL_TAG/report.md"
+python -u experiments/chronological/evaluate_original_graph_message_reuse.py --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --checkpoint best --output-dir "$GW2_RUN/reuse_best_$GW2_EVAL_TAG"
+python -u experiments/chronological/evaluate_original_graph_message_reuse.py --run-dir "$GW2_RUN" --data-dir "$GW2_DATA" --checkpoint last --output-dir "$GW2_RUN/reuse_last_$GW2_EVAL_TAG"
+cat "$GW2_RUN/reuse_summary.json"
+cat "$GW2_RUN/reuse_best_$GW2_EVAL_TAG/report.md"
+cat "$GW2_RUN/reuse_best_$GW2_EVAL_TAG/mechanisms.json"
+cat "$GW2_RUN/reuse_last_$GW2_EVAL_TAG/report.md"
 ```
 
-需要对比 POST_MESSAGE vs ORIGINAL、vs STATIC、vs POST_LOCAL，不能只展示最优一组。五轮用于结构筛查，不证明完整预算收敛优势或超过论文测试结果；本流程不评价测试集。
+本版七状态：ORIGINAL、STATIC、POST_LOCAL、POST_MESSAGE、POST_LOCAL_UNIFORM、POST_MESSAGE_UNIFORM、POST_MESSAGE_STATIC_ONLY。STATIC_UNIFORM 从未在 GW1 测过，本次不补跑；表中不会伪造这行。metadata.json 明确记录 ORIGINAL/STATIC 新推理次数为0，历史耗时单独标注为旧会话测量。
+
+主比较仍是 POST_MESSAGE vs ORIGINAL，同时保留 vs STATIC、vs POST_LOCAL。五轮仅为结构筛查，不证明收敛优势；测试集不评价。复用证书是归档内部一致性核验，不是历史训练的外部独立认证。

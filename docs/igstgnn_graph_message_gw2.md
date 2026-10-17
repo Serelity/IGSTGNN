@@ -1,5 +1,7 @@
 # GW2：图消息感知的窗口聚合
 
+**运行策略更新：已有实验不重复。** 默认启动器已切换到复用入口：ORIGINAL 和 STATIC 读取 GW1 已完成的五轮检查点与 best/last 预测；只继续 POST_LOCAL、POST_MESSAGE 尚未完成的轮次。现有 `a2c5b32` 训练源码和 checkpoint 身份保持不变。请使用 [更新后的服务器命令](igstgnn_graph_message_gw2_server.md)，下文开发阶段的全四组命令已被替代。
+
 ## 动机与证据
 
 2026-10-17 用户回传的 GW1 四组五轮、seed2025 验证报告：ORIGINAL MAE 16.288490、STATIC 15.228789、GRAPH_CONTENT 15.461667；后者同检查点 UNIFORM 15.484475。STATIC 平均系数最大偏离 1 约 0.02633；GRAPH_CONTENT 汇总标准差最大约 0.11681。三组最优均为第 5 轮，不能视为收敛排名。
@@ -42,7 +44,7 @@ POST_MESSAGE 的 value 为该图一阶消息，POST_LOCAL 的 value 为接收节
 
 评分头权重零初始化；无公共标量输出偏置（该偏置会在 softmax 中抵消）。零初始化系数为 1。改变归约顺序后承诺数值容差恢复，**不承诺逐位相同或训练轨迹等于原模型**。构造器保护 CPU/目标 CUDA RNG，原始参数初始化保持一致。初始 encoder 梯度为零，评分头首步可学习，实际一次 Adam 更新后 encoder 可获得非零梯度。
 
-## 四组从头训练与八状态评估
+## 四组模型定义与复用策略
 
 | 训练组 | 固定偏好 | 动态评分内容 | 选择位置 |
 |---|---|---|---|
@@ -57,7 +59,7 @@ STATIC 与 GW1 STATIC 在固定参数和图 bank 下数学等价（空间常数�
 
 主比较：POST_MESSAGE vs ORIGINAL；必需对照：POST_MESSAGE vs STATIC、POST_MESSAGE vs POST_LOCAL。保留 POST_LOCAL vs STATIC 及所有负结果。
 
-评估另外保存 STATIC_UNIFORM、POST_LOCAL_UNIFORM、POST_MESSAGE_UNIFORM、POST_MESSAGE_STATIC_ONLY。各状态保留各自联合训练主干；STATIC_ONLY 仅关闭显式动态评分，不保留动态评分的训练均值，不能当作纯跨样本变化效应。均值路由和跨样本匹配打乱不在本版实现范围；本版不宣称已经证明场景匹配。
+原独立四组流程曾设计八状态。当前复用流程只保留七状态：四个主模型加 POST_LOCAL_UNIFORM、POST_MESSAGE_UNIFORM、POST_MESSAGE_STATIC_ONLY；不为补齐 STATIC_UNIFORM 而新增旧模型推理。各状态保留各自联合训练主干；STATIC_ONLY 仅关闭显式动态评分，不保留动态评分的训练均值，不能当作纯跨样本变化效应。均值路由和跨样本匹配打乱不在本版实现范围；本版不宣称已经证明场景匹配。
 
 机制统计保留历史及 forecast_1/2/3 调用阶段，固定节点与局部窗口位置后，按样本累计一、二阶矩，报告跨样本标准差 RMS。它可区分固定节点偏好和跨样本变化，但仍不等于效用、重要性或事故因果。
 
@@ -89,24 +91,25 @@ python -u experiments/chronological/verify_original_graph_message.py --stress --
   --output "experiments/chronological_runs/gw2_batch48_$GW2_TAG.json"
 
 GW2_RUN="experiments/chronological_runs/contra_original_gw2_s2025"
-bash experiments/chronological/run_original_graph_message.sh --run-dir "$GW2_RUN" --epochs 5 --seed 2025
+GW1_RUN="../IGSTGNN-GW1/experiments/chronological_runs/contra_original_gw1_s2025"
+bash experiments/chronological/run_original_graph_message.sh --run-dir "$GW2_RUN" --reuse-gw1-run "$GW1_RUN" --epochs 5 --seed 2025
 ```
 
 没有 Slurm 作业时启动脚本通过 sbatch 提交，训练退出后再运行评估；在已有 GPU 分配内则直接执行。启动脚本自动定位自身仓库，错误的仓库环境变量会报错，不会跳去原 checkout。
 
 ```bash
-python -u experiments/chronological/evaluate_original_graph_message.py --run-dir "$GW2_RUN" \
+python -u experiments/chronological/evaluate_original_graph_message_reuse.py --run-dir "$GW2_RUN" \
   --checkpoint best --output-dir "$GW2_RUN/eval_best_$GW2_TAG"
-python -u experiments/chronological/evaluate_original_graph_message.py --run-dir "$GW2_RUN" \
+python -u experiments/chronological/evaluate_original_graph_message_reuse.py --run-dir "$GW2_RUN" \
   --checkpoint last --output-dir "$GW2_RUN/eval_last_$GW2_TAG"
-cat "$GW2_RUN/summary.json"
+cat "$GW2_RUN/reuse_summary.json"
 cat "$GW2_RUN/eval_best_$GW2_TAG/report.md"
 cat "$GW2_RUN/eval_best_$GW2_TAG/mechanisms.json"
 ```
 
 断点继续同一预算用 `--resume --epochs 5`；预算扩展例如 `--resume --epochs 20`，表示总共完成 20 轮，不是额外 20 轮。已有训练未结束不要另启动同目录任务，锁会拒绝并发运行。
 
-本地工程证据另存 `docs/verification/graph_message_gw2_development_20261017.json`。工程检查只认证可运行和数值契约，不提供正式精度优越结论。
+本地工程证据另存 `docs/verification/graph_message_gw2_development_20261017.json`，仅对应复用功能开发前的版本。新增复用代码未在本地运行测试，须在服务器执行 `tests.test_graph_message_reuse`。工程检查只认证可运行和数值契约，不提供正式精度优越结论。
 
 ## 2026-10-17 本地验证范围
 

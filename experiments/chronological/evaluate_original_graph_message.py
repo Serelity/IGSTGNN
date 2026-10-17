@@ -44,8 +44,8 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def validate_archive(archive):
-    require(str(np.asarray(archive.get('schema')).item()) == SCHEMA, 'Not a GW2 prediction archive')
+def validate_archive(archive, case_names=CASES, archive_schema=SCHEMA):
+    require(str(np.asarray(archive.get('schema')).item()) == archive_schema, 'Not a GW2 prediction archive')
     require(str(np.asarray(archive.get('axis_order')).item()) == 'sample,horizon,node', 'Explicit GW2 axes required')
     y, valid = np.asarray(archive['y']), np.asarray(archive['valid'])
     require(y.ndim == 3 and y.shape[1] == 12 and y.dtype.kind == 'f' and min(y.shape) > 0,
@@ -62,14 +62,14 @@ def validate_archive(archive):
     require(np.asarray(archive['direct_support']).shape == (y.shape[0], y.shape[2])
             and np.asarray(archive['direct_support']).dtype == np.bool_, 'Invalid direct-support axis')
     predictions = {key[6:]: np.asarray(value) for key, value in archive.items() if key.startswith('pred__')}
-    require(set(predictions) == set(CASES), 'Exactly the predefined eight GW2 states are required')
+    require(set(predictions) == set(case_names), 'Exactly the predefined GW2 states are required')
     for name, p in predictions.items():
         require(p.shape == y.shape and p.dtype.kind == 'f' and np.isfinite(p).all(), 'Invalid prediction axes/values: '+name)
     return y, valid, predictions
 
 
-def report(archive, output, metadata):
-    y, valid, predictions = validate_archive(archive)
+def report(archive, output, metadata, case_names=CASES, comparisons=COMPARISONS, archive_schema=SCHEMA):
+    y, valid, predictions = validate_archive(archive, case_names, archive_schema)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     require(not (output/'analysis.json').exists() and not (output/'report.md').exists(), 'Existing analysis is preserved')
@@ -84,6 +84,7 @@ def report(archive, output, metadata):
         groups[f'flow:[{lo:g},{hi:g})'] = (y >= lo) & (y < hi)
     for name in np.unique(archive['road_labels']):
         groups['road:'+str(name)] = np.broadcast_to((archive['road_labels'] == name)[None, None], y.shape)
+    comparison_specs = comparisons
     cases, horizons, comparisons, groups_table = {}, [], {}, []
     for name, prediction in predictions.items():
         metrics = point_metrics(prediction, y, valid)
@@ -91,7 +92,7 @@ def report(archive, output, metadata):
         metrics['window_p95'] = float(np.quantile(score[complete], .95)) if complete.any() else None
         cases[name] = metrics
         horizons += [dict(case=name, **row) for row in metrics['horizons']]
-    for name, control, candidate in COMPARISONS:
+    for name, control, candidate in comparison_specs:
         pair = paired_metrics(predictions[control], predictions[candidate], y, valid)
         scores_a, complete = window_scores(predictions[control], y, valid)
         scores_b, _ = window_scores(predictions[candidate], y, valid)
@@ -121,6 +122,10 @@ def report(archive, output, metadata):
         '必须同时比较 POST_MESSAGE vs STATIC 和 POST_MESSAGE vs POST_LOCAL；两个动态组共享评分器容量与接收端选择位置。', '',
         '| 状态 | MAE pooled | MAE macro | RMSE pooled | MAPE % | 窗口 P95 |',
         '|---|---:|---:|---:|---:|---:|']
+    if metadata.get('reuse_reference'):
+        lines[3:3] = ['ORIGINAL 与 STATIC 直接复用 GW1 已有预测，本轮训练与推理调用均为零。',
+            'STATIC 是 GW1 发送端静态参考，与 GW2 静态公式数学等价，但未重新训练为同一归约内核；不可冒称本轮同实现对照。',
+            'POST_LOCAL/POST_MESSAGE 保留已有完整轮次，仅补未完成轮次。STATIC_UNIFORM 在源归档未测，本次不补跑。', '']
     fmt = lambda value: '不可用' if value is None else f'{value:.9f}'
     for name, row in cases.items():
         lines.append('| '+name+' | '+' | '.join(fmt(row[key]) if key != 'mape_pooled' else fmt(100*row[key])
@@ -133,6 +138,8 @@ def report(archive, output, metadata):
         '相同首批量、先热身两次后测量三次；CUDA 同步完整前向，不含 H2D、反归一化、统计与哈希。',
         '只描述该设备首批量的推理，不能当作训练速度或单样本延迟。训练阶段总耗时见训练 summary.json。', '',
         '| 训练组 | 批量 | 前向均值 ms | 峰值 allocated bytes |', '|---|---:|---:|---:|']
+    if metadata.get('reuse_reference'):
+        lines[-2:-2] = ['ORIGINAL/STATIC 耗时也复用 GW1 历史测量，未重新计时；不同会话的耗时不能据此直接判断加速。', '']
     for arm, cost in metadata.get('benchmarks', {}).items():
         lines.append(f"| {arm} | {cost['batch_size']} | {fmt(cost['mean_milliseconds'])} | {cost['peak_allocated_bytes']} |")
     lines += ['', '## 解释边界', '',

@@ -118,16 +118,20 @@ def main(argv=None):
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--device', default='cuda:0')
     p.add_argument('--threads', type=int, default=3)
+    p.add_argument('--arms', nargs='+', choices=ARMS, default=['POST_LOCAL', 'POST_MESSAGE'],
+        help='Backward/stress only these arms; defaults to the two new models')
     args = p.parse_args(argv)
     if args.batch_size < 1 or args.batch_size > 3909:
         p.error('batch size must be in 1..3909')
+    if len(set(args.arms)) != len(args.arms):
+        p.error('arms must be unique')
     if args.output.exists():
         raise ValueError('Verification output already exists')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     evidence = dict(schema='original_igstgnn_graph_message_verification_v1',
         status='GW2_VERIFICATION_RUNNING', engineering_only=True, optimizer_updates=0,
         test_evaluated=False, mode='stress' if args.stress else 'check',
-        requested_batch_size=args.batch_size if args.stress else 2, design=DESIGN)
+        requested_batch_size=args.batch_size if args.stress else 2, design=DESIGN, backward_arms=args.arms)
     try:
         evidence['runtime'] = configure_runtime(args.device, args.threads)
         modules = get_original_modules()
@@ -151,7 +155,7 @@ def main(argv=None):
         if torch.device(args.device).type == 'cuda':
             torch.cuda.empty_cache()
         evidence['backward'] = {}
-        for arm in ARMS:
+        for arm in args.arms:
             configure_runtime(args.device, args.threads)
             model = build_variant(build_model(data, modules, args.device), arm)
             if arm == 'ORIGINAL':
