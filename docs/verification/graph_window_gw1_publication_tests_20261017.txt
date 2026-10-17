@@ -1,0 +1,58 @@
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: only arms must be unique
+{"status": "GW1_EVALUATION_PASS", "validation_rows": 5, "engineering_only": true, "output_dir": "G:\\paper\\_publication\\igstgnn-gw1-20261017\\tests\\tmpudtssdw4\\out"}
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be in 1..100
+----------------------------------------------------------------------
+Ran 50 tests in 11.553s
+
+OK

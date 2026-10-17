@@ -1,0 +1,319 @@
+{
+  "schema": "original_igstgnn_graph_window_verification_v1",
+  "status": "GW1_VERIFICATION_PASS",
+  "engineering_only": true,
+  "optimizer_updates": 0,
+  "test_evaluated": false,
+  "mode": "check",
+  "requested_batch_size": 2,
+  "design": {
+    "version": "GW1",
+    "selected_layer": 0,
+    "router_hidden": 16,
+    "placement": "after_native_shared_window_transform_before_graph_contraction",
+    "source_order": "predefined_directions_then_dynamic_directions_then_adaptive",
+    "share_across_graph_orders": true,
+    "self_path": "unchanged",
+    "content": "current_native_gated_hidden_window_including_inherited_ICSF_context",
+    "forecast_scope": "historical_and_autoregressive_DIF_calls_in_selected_layer",
+    "separate_report_inputs": false,
+    "target_inputs": false
+  },
+  "runtime": {
+    "python_device": "cuda:0",
+    "torch": "2.8.0+cu126",
+    "numpy": "1.26.4",
+    "cuda": "12.6",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "threads": 3,
+    "seed": 2025,
+    "dtype": "float32",
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cudnn_benchmark": false
+  },
+  "data": {
+    "data_source": "author_model_ready_release",
+    "hashes": {
+      "incident_all.npy": "bc6c5608457f88864625d683f9a66d17bc0fc31fe5acba366b6033708a099279",
+      "incident_stats.npz": "9f6590a3d1df5a0cd59e00717e3157520a4f5b99996976a4e41ddc6fc28b224c",
+      "adj_matrix.npy": "de2a74cc981853ff81dd494d6e7d212b7ae524fb9d6079c91323e56bcb22254f",
+      "sensors.csv": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+      "desc_mapping.json": "9a2ff89b2b0057f8617652d305eee79eb3f04686d4bfc58821ed3271ae8a7b71",
+      "type_mapping.json": "6a836068bfcbea9868add90535e8efe329d684a074436ef47c5a53c257fd2a9d"
+    },
+    "splits": {
+      "train": {
+        "origin": "incident_all.npy author-order slice",
+        "bounds_half_open": [
+          0,
+          3909
+        ],
+        "selected_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "count": 4,
+        "batch_size": 2,
+        "partition": [
+          2,
+          2
+        ]
+      },
+      "val": {
+        "origin": "incident_all.npy author-order slice",
+        "bounds_half_open": [
+          3909,
+          4746
+        ],
+        "selected_indices": [
+          3909,
+          3910,
+          3911,
+          3912
+        ],
+        "count": 4,
+        "batch_size": 2,
+        "partition": [
+          2,
+          2
+        ]
+      }
+    },
+    "normalization": {
+      "mean": 137.60910034179688,
+      "std": 159.4838409423828,
+      "refitted": false
+    },
+    "sensor_parser": "unchanged_558ab01",
+    "test_file_opened": false,
+    "test_payload_deserialized": true,
+    "test_evaluated": false,
+    "absolute_calendar_order_independently_verified": false
+  },
+  "registered_native_parameters": 455220,
+  "source_fingerprint": "fdaf7bd006f70e86d6a1ee3069f858387a7c541149adba55a96f82b1c7879531",
+  "execution_source": {
+    "original_graph_window.py": "f6d685bfcd9d238c567c3b1dcefbcb3a21d95f06ef56ba801abd6229b1967f31",
+    "verify_original_graph_window.py": "5b37581a65887235a0b9d2ed13730c278ce12581bb07e003e8656f9ff860afbe",
+    "original_igstgnn_runtime.py": "19679a77e42a424415434560859f002ee33ac3ca49ea32ebd4afc464a8a1156e"
+  },
+  "recovery": {
+    "eval": {
+      "STATIC": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      },
+      "SHARED_DYNAMIC": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      },
+      "GRAPH_CONTENT": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      }
+    },
+    "train": {
+      "STATIC": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      },
+      "SHARED_DYNAMIC": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      },
+      "GRAPH_CONTENT": {
+        "prediction_exact": true,
+        "abs_max": 0.0,
+        "rng_exact": true,
+        "native_state_exact": true
+      }
+    }
+  },
+  "backward": {
+    "ORIGINAL": {
+      "batch_size": 2,
+      "nodes": 496,
+      "loss": 101.66903686523438,
+      "objective": "native_inverse_transform_masked_mae_all_12_leads",
+      "forward_backward_seconds": 0.340597100002924,
+      "cuda_milliseconds": 340.58587646484375,
+      "peak_allocated_bytes": 794345472,
+      "incremental_peak_allocated_bytes": 693861376,
+      "peak_reserved_bytes": 853540864,
+      "groups": {
+        "native": {
+          "parameters": 455220,
+          "with_grad": 453364,
+          "squared_norm": 107530.68335837768,
+          "finite": true
+        }
+      },
+      "optimizer_updates": 0,
+      "labels_passed_to_model": false,
+      "inputs_preserved": true,
+      "timing_scope": "train_forward_inverse_loss_backward_excludes_H2D_hash_gradient_summary",
+      "caveat": "zero_heads_intentionally_give_zero_initial_encoder_gradient",
+      "registered_parameters": 455220
+    },
+    "STATIC": {
+      "batch_size": 2,
+      "nodes": 496,
+      "loss": 101.66903686523438,
+      "objective": "native_inverse_transform_masked_mae_all_12_leads",
+      "forward_backward_seconds": 0.2619554999982938,
+      "cuda_milliseconds": 261.9324035644531,
+      "peak_allocated_bytes": 829502976,
+      "incremental_peak_allocated_bytes": 695454720,
+      "peak_reserved_bytes": 857735168,
+      "groups": {
+        "native": {
+          "parameters": 455220,
+          "with_grad": 453364,
+          "squared_norm": 107530.68335847114,
+          "finite": true
+        },
+        "static_logits": {
+          "parameters": 15,
+          "with_grad": 15,
+          "squared_norm": 0.03673373819713993,
+          "finite": true
+        },
+        "encoder": {
+          "parameters": 1552,
+          "with_grad": 0,
+          "squared_norm": 0.0,
+          "finite": true
+        },
+        "shared_head": {
+          "parameters": 51,
+          "with_grad": 0,
+          "squared_norm": 0.0,
+          "finite": true
+        },
+        "interaction_head": {
+          "parameters": 255,
+          "with_grad": 0,
+          "squared_norm": 0.0,
+          "finite": true
+        }
+      },
+      "optimizer_updates": 0,
+      "labels_passed_to_model": false,
+      "inputs_preserved": true,
+      "timing_scope": "train_forward_inverse_loss_backward_excludes_H2D_hash_gradient_summary",
+      "caveat": "zero_heads_intentionally_give_zero_initial_encoder_gradient",
+      "registered_parameters": 457093
+    },
+    "SHARED_DYNAMIC": {
+      "batch_size": 2,
+      "nodes": 496,
+      "loss": 101.66903686523438,
+      "objective": "native_inverse_transform_masked_mae_all_12_leads",
+      "forward_backward_seconds": 0.26102199999877485,
+      "cuda_milliseconds": 261.0126647949219,
+      "peak_allocated_bytes": 834757120,
+      "incremental_peak_allocated_bytes": 700708864,
+      "peak_reserved_bytes": 853540864,
+      "groups": {
+        "native": {
+          "parameters": 455220,
+          "with_grad": 453364,
+          "squared_norm": 107530.68335847114,
+          "finite": true
+        },
+        "static_logits": {
+          "parameters": 15,
+          "with_grad": 0,
+          "squared_norm": 0.0,
+          "finite": true
+        },
+        "encoder": {
+          "parameters": 1552,
+          "with_grad": 1552,
+          "squared_norm": 0.0,
+          "finite": true
+        },
+        "shared_head": {
+          "parameters": 51,
+          "with_grad": 51,
+          "squared_norm": 0.010904329895977904,
+          "finite": true
+        },
+        "interaction_head": {
+          "parameters": 255,
+          "with_grad": 0,
+          "squared_norm": 0.0,
+          "finite": true
+        }
+      },
+      "optimizer_updates": 0,
+      "labels_passed_to_model": false,
+      "inputs_preserved": true,
+      "timing_scope": "train_forward_inverse_loss_backward_excludes_H2D_hash_gradient_summary",
+      "caveat": "zero_heads_intentionally_give_zero_initial_encoder_gradient",
+      "registered_parameters": 457093
+    },
+    "GRAPH_CONTENT": {
+      "batch_size": 2,
+      "nodes": 496,
+      "loss": 101.66903686523438,
+      "objective": "native_inverse_transform_masked_mae_all_12_leads",
+      "forward_backward_seconds": 0.23502320000261534,
+      "cuda_milliseconds": 235.01145935058594,
+      "peak_allocated_bytes": 834757120,
+      "incremental_peak_allocated_bytes": 700708864,
+      "peak_reserved_bytes": 853540864,
+      "groups": {
+        "native": {
+          "parameters": 455220,
+          "with_grad": 453364,
+          "squared_norm": 107530.68335847114,
+          "finite": true
+        },
+        "static_logits": {
+          "parameters": 15,
+          "with_grad": 15,
+          "squared_norm": 0.03673373819713993,
+          "finite": true
+        },
+        "encoder": {
+          "parameters": 1552,
+          "with_grad": 1552,
+          "squared_norm": 0.0,
+          "finite": true
+        },
+        "shared_head": {
+          "parameters": 51,
+          "with_grad": 51,
+          "squared_norm": 0.010904329895977904,
+          "finite": true
+        },
+        "interaction_head": {
+          "parameters": 255,
+          "with_grad": 255,
+          "squared_norm": 0.06548860317206345,
+          "finite": true
+        }
+      },
+      "optimizer_updates": 0,
+      "labels_passed_to_model": false,
+      "inputs_preserved": true,
+      "timing_scope": "train_forward_inverse_loss_backward_excludes_H2D_hash_gradient_summary",
+      "caveat": "zero_heads_intentionally_give_zero_initial_encoder_gradient",
+      "registered_parameters": 457093
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "original_igstgnn_graph_window_publication_v1",
+  "status": "GW1_PUBLICATION_PREPARED_AND_VERIFIED",
+  "repository": "https://github.com/Serelity/IGSTGNN",
+  "branch": "research/graph-window-gw1",
+  "parent_commit": "aea9f6f0aaba26c02d90210724fe9ad577f26eb5",
+  "original_branch": "research/chronological-tiid",
+  "push_refspec": "HEAD:refs/heads/research/graph-window-gw1",
+  "push_original_branch": false,
+  "force_push": false,
+  "changes_since_development": {
+    "experiments/chronological/run_original_graph_window.sh": {
+      "development_sha256": "2f88b20f329e5b668718d56a450cbf59def9e6c08017956c9335a0cc50dbb6f5",
+      "publication_sha256": "b5de645c0b094344d9daedddbff88b0f2c97397a9651d3a26891c578af469e29"
+    },
+    "docs/igstgnn_graph_window_gw1.md": {
+      "development_sha256": "a2782978ceec11786f7b9476927f94d6c5a06dc55d3f8d9d8c5885938904c5f8",
+      "publication_sha256": "d1380cf019a8cc154df5e4dcb9dc0cf140acc09776a2fc3dcfc7504e33b78744"
+    }
+  },
+  "publication_adjustments": [
+    "launcher_resolves_own_checkout_by_default",
+    "server_worktree_commands_and_packaged_evidence_links"
+  ],
+  "inherited_dependencies": {
+    "experiments/chronological/train_original_isp.py": {
+      "local_sha256": "e1856a0cee80e571528a35e68cae014d6c98fa0e8cbf03fe5490426fbfb437c3",
+      "published_sha256": "e1856a0cee80e571528a35e68cae014d6c98fa0e8cbf03fe5490426fbfb437c3",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/original_isp.py": {
+      "local_sha256": "f33f0957095d41af2c3e248ed036a671ce8372fcc0140674d2f19ab7a19b3266",
+      "published_sha256": "f33f0957095d41af2c3e248ed036a671ce8372fcc0140674d2f19ab7a19b3266",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/original_igstgnn_runtime.py": {
+      "local_sha256": "19679a77e42a424415434560859f002ee33ac3ca49ea32ebd4afc464a8a1156e",
+      "published_sha256": "19679a77e42a424415434560859f002ee33ac3ca49ea32ebd4afc464a8a1156e",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/original_igstgnn_source.py": {
+      "local_sha256": "6bff38af45c1b6b5d4a4b841cf165f2915bbb172fcdf7c80a660df63fc5cb767",
+      "published_sha256": "6bff38af45c1b6b5d4a4b841cf165f2915bbb172fcdf7c80a660df63fc5cb767",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/train_original_igstgnn_baseline.py": {
+      "local_sha256": "3224ce28954b3f292c65fc3923b7c5ce9fb60595e8b94e093e21411d83e846ff",
+      "published_sha256": "3224ce28954b3f292c65fc3923b7c5ce9fb60595e8b94e093e21411d83e846ff",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/original_igstgnn_checkpoint_compat.py": {
+      "local_sha256": "a0a19f3f13a90b0fa0a108cb687af460e59c4bd43579912c0039c7a6e347b09f",
+      "published_sha256": "a0a19f3f13a90b0fa0a108cb687af460e59c4bd43579912c0039c7a6e347b09f",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "experiments/chronological/evaluate_unified_adapter_v03.py": {
+      "local_sha256": "b145bf32b86cfed775c1ace8783bd2464e1bfe4b266a39375e38937841d02c1d",
+      "published_sha256": "b145bf32b86cfed775c1ace8783bd2464e1bfe4b266a39375e38937841d02c1d",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "tests/test_original_isp.py": {
+      "local_sha256": "2fa0fe9f3dfeb509fff065e8f8511ba6d80b01e496879996818d6555761a7ee0",
+      "published_sha256": "2fa0fe9f3dfeb509fff065e8f8511ba6d80b01e496879996818d6555761a7ee0",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    },
+    "tests/test_original_isp_runner.py": {
+      "local_sha256": "c62c96aac5f0c9c1aea30feda4b8de716c394195a81c6593a1a0b0ed96c659f4",
+      "published_sha256": "c62c96aac5f0c9c1aea30feda4b8de716c394195a81c6593a1a0b0ed96c659f4",
+      "byte_equal": true,
+      "newline_normalized_equal": true
+    }
+  },
+  "regression_tests": {
+    "passed": 50,
+    "log": "docs/verification/graph_window_gw1_publication_tests_20261017.txt"
+  },
+  "launcher": {
+    "bash_syntax_pass": true,
+    "auto_repository_resolution_help_pass": true,
+    "log": "docs/verification/graph_window_gw1_launcher_20261017.txt"
+  },
+  "artifacts_sha256": {
+    "experiments/chronological/original_graph_window.py": "f6d685bfcd9d238c567c3b1dcefbcb3a21d95f06ef56ba801abd6229b1967f31",
+    "experiments/chronological/train_original_graph_window.py": "2db7c8086481a5bd7f36586bdf672fa55c09530f4d0255b10e6e395a519ad8a0",
+    "experiments/chronological/evaluate_original_graph_window.py": "3656e0081850ae70e31b1db5a23879fb36ca50afd73152304f25c594c6859f70",
+    "experiments/chronological/verify_original_graph_window.py": "5b37581a65887235a0b9d2ed13730c278ce12581bb07e003e8656f9ff860afbe",
+    "experiments/chronological/run_original_graph_window.sh": "b5de645c0b094344d9daedddbff88b0f2c97397a9651d3a26891c578af469e29",
+    "tests/test_original_graph_window.py": "b37a17fe15a5e62b9e894fecf89bbcef17c85d9643353cc424e03e8b8c9ef499",
+    "tests/test_original_graph_window_runner.py": "03dd2a14c45c56c8a63cb20915c642e715b1f01a809a955bf324c51ee4d58e9f",
+    "tests/test_original_graph_window_evaluation.py": "f573416458aac29efa3f5fd36bbd7acf838e1c2c8a8d15f4c5897c97a3153027",
+    "docs/igstgnn_graph_window_gw1.md": "d1380cf019a8cc154df5e4dcb9dc0cf140acc09776a2fc3dcfc7504e33b78744",
+    ".gitattributes": "1ac924558cb37f7c5cc8193f503b0e852a522244fb9d0c1f00bf2a9c9dd59ee1",
+    "docs/igstgnn_graph_window_gw1_server.md": "cb92de1c3ddceeaef82f6ee02305a332ec188b0d5ec64bf6fd3b733320552d1a",
+    "docs/verification/graph_window_gw1_publication_tests_20261017.txt": "7d5c8c40cbec719997081822d55d87411531ee0b80083dfc34aaed5527dc752f",
+    "docs/verification/graph_window_gw1_launcher_20261017.txt": "1336dd71287e7918e4407dd2b42545b5b04726199ca2de796f19fc6fdf95caae",
+    "docs/verification/graph_window_gw1_evidence_20261017/best_metadata.json": "dcbe9b488eceb9fe61fbf63e7ac5f45040c1c80dbf4e9565ae3a3554a48a5e56",
+    "docs/verification/graph_window_gw1_evidence_20261017/best_report.md": "83918f654735eccc4df0f609b0652913f52e6949e7425fbc617ad9c50d852364",
+    "docs/verification/graph_window_gw1_evidence_20261017/check.json": "6b7acdf3f2947bbd8f996011f61bf7c55b0fa62d8f7e2f051b7d3270e148c284",
+    "docs/verification/graph_window_gw1_evidence_20261017/exact_resume.json": "01b41843317ed5fb99ee375645eba54ec2d9a6fa2bc3c437079140647ae6c76e",
+    "docs/verification/graph_window_gw1_evidence_20261017/last_metadata.json": "e5b9eba1a3bd50d9756c3e0770d36e55f4e692122e41d32431454af58db0e549",
+    "docs/verification/graph_window_gw1_evidence_20261017/last_report.md": "b91452be0d76da5dc8c1573579caac27640c2f1c79eeaca3990758c06b7f7c89",
+    "docs/verification/graph_window_gw1_evidence_20261017/stress48.json": "89f6714432d84b923240565b3a191c9c2b210a67b15b2565ab1ae5c731c6ed25",
+    "docs/verification/graph_window_gw1_evidence_20261017/unit_tests.txt": "527598c9fa2dfe4e7d9dfd329208c547aad43282f59e4a0b1031e9e6354e3bba"
+  },
+  "original_development_record_is_prepublication_snapshot": true,
+  "training_updates_this_publication": 0,
+  "test_evaluated": false,
+  "data_and_checkpoints_uploaded": false,
+  "formal_gw1_accuracy_advantage_not_established": true,
+  "packaged_text_newlines": "LF; evidence JSON values unchanged"
+}

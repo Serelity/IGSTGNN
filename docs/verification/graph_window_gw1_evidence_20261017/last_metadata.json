@@ -1,0 +1,183 @@
+{
+  "schema": "original_igstgnn_graph_window_producer_v1",
+  "status": "GW1_PREDICTION_PASS",
+  "engineering_only": true,
+  "run_identity_sha256": "baa377f972d1d11a6a40dc93dd44318217fe878f6e222798477d4d34877ab484",
+  "common_completed_epochs": 2,
+  "checkpoint_roles": {
+    "ORIGINAL": {
+      "selection": "last",
+      "epoch": 2,
+      "checkpoint_sha256": "654645e2acaf421251da734e9df49bd11e45d8a23094a5ab5e79f5af9f38d400"
+    },
+    "STATIC": {
+      "selection": "last",
+      "epoch": 2,
+      "checkpoint_sha256": "d5bff71d5a605454e3ce0d3a00c4cf29cc39a15a779230ff456293ffe43f6cb6"
+    },
+    "SHARED_DYNAMIC": {
+      "selection": "last",
+      "epoch": 2,
+      "checkpoint_sha256": "15be578935f9efcf1f9eee62673e6d3c74a5a01a5d8a3a944470495416fe9b68"
+    },
+    "GRAPH_CONTENT": {
+      "selection": "last",
+      "epoch": 2,
+      "checkpoint_sha256": "e330b04c9847def2058ed9d66c9ecec9c300b265cc862ba6c96b4cd972b71865"
+    }
+  },
+  "runtime": {
+    "python_device": "cuda:0",
+    "torch": "2.8.0+cu126",
+    "numpy": "1.26.4",
+    "cuda": "12.6",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "threads": 3,
+    "seed": 2025,
+    "dtype": "float32",
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cudnn_benchmark": false
+  },
+  "validation_replay": {
+    "ORIGINAL": {
+      "actual": {
+        "mae": 111.21917724609375,
+        "rmse": 156.6779022216797,
+        "mape_fraction": 2.5962023735046387,
+        "mask_value": 0.0
+      },
+      "expected": {
+        "mae": 111.21917724609375,
+        "rmse": 156.6779022216797,
+        "mape_fraction": 2.5962026119232178
+      },
+      "passed": true,
+      "atol": 1e-05,
+      "rtol": 1e-06
+    },
+    "STATIC": {
+      "actual": {
+        "mae": 111.22030639648438,
+        "rmse": 156.67727661132812,
+        "mape_fraction": 2.596374750137329,
+        "mask_value": 0.0
+      },
+      "expected": {
+        "mae": 111.22029113769531,
+        "rmse": 156.6772918701172,
+        "mape_fraction": 2.596374988555908
+      },
+      "passed": true,
+      "atol": 1e-05,
+      "rtol": 1e-06
+    },
+    "SHARED_DYNAMIC": {
+      "actual": {
+        "mae": 111.22014617919922,
+        "rmse": 156.67630004882812,
+        "mape_fraction": 2.5964488983154297,
+        "mask_value": 0.0
+      },
+      "expected": {
+        "mae": 111.22013854980469,
+        "rmse": 156.67630004882812,
+        "mape_fraction": 2.5964488983154297
+      },
+      "passed": true,
+      "atol": 1e-05,
+      "rtol": 1e-06
+    },
+    "GRAPH_CONTENT": {
+      "actual": {
+        "mae": 111.21963500976562,
+        "rmse": 156.67689514160156,
+        "mape_fraction": 2.5963611602783203,
+        "mask_value": 0.0
+      },
+      "expected": {
+        "mae": 111.21961975097656,
+        "rmse": 156.67689514160156,
+        "mape_fraction": 2.5963611602783203
+      },
+      "passed": true,
+      "atol": 1e-05,
+      "rtol": 1e-06
+    }
+  },
+  "benchmarks": {
+    "ORIGINAL": {
+      "batch_size": 2,
+      "warmup_calls": 2,
+      "measured_calls": 3,
+      "milliseconds": [
+        56.20689999705064,
+        66.34739999935846,
+        70.07829999929527
+      ],
+      "mean_milliseconds": 64.21086666523479,
+      "peak_allocated_bytes": 199491584,
+      "scope": "synchronized_complete_forward_same_first_batch_excludes_H2D_inverse_stats_hash"
+    },
+    "STATIC": {
+      "batch_size": 2,
+      "warmup_calls": 2,
+      "measured_calls": 3,
+      "milliseconds": [
+        58.98949999755132,
+        57.16069999834872,
+        57.609199997386895
+      ],
+      "mean_milliseconds": 57.91979999776231,
+      "peak_allocated_bytes": 200198144,
+      "scope": "synchronized_complete_forward_same_first_batch_excludes_H2D_inverse_stats_hash"
+    },
+    "SHARED_DYNAMIC": {
+      "batch_size": 2,
+      "warmup_calls": 2,
+      "measured_calls": 3,
+      "milliseconds": [
+        60.68220000088331,
+        57.73080000290065,
+        58.1449999990582
+      ],
+      "mean_milliseconds": 58.85266666761405,
+      "peak_allocated_bytes": 200198144,
+      "scope": "synchronized_complete_forward_same_first_batch_excludes_H2D_inverse_stats_hash"
+    },
+    "GRAPH_CONTENT": {
+      "batch_size": 2,
+      "warmup_calls": 2,
+      "measured_calls": 3,
+      "milliseconds": [
+        59.69569999797386,
+        61.24609999824315,
+        57.94800000148825
+      ],
+      "mean_milliseconds": 59.62993333256842,
+      "peak_allocated_bytes": 200198144,
+      "scope": "synchronized_complete_forward_same_first_batch_excludes_H2D_inverse_stats_hash"
+    }
+  },
+  "source_fingerprint": "fdaf7bd006f70e86d6a1ee3069f858387a7c541149adba55a96f82b1c7879531",
+  "test_evaluated": false,
+  "optimizer_updates": 0,
+  "design": {
+    "version": "GW1",
+    "selected_layer": 0,
+    "router_hidden": 16,
+    "placement": "after_native_shared_window_transform_before_graph_contraction",
+    "source_order": "predefined_directions_then_dynamic_directions_then_adaptive",
+    "share_across_graph_orders": true,
+    "self_path": "unchanged",
+    "content": "current_native_gated_hidden_window_including_inherited_ICSF_context",
+    "forecast_scope": "historical_and_autoregressive_DIF_calls_in_selected_layer",
+    "separate_report_inputs": false,
+    "target_inputs": false
+  },
+  "producer_source": {
+    "evaluate_original_graph_window.py": "3656e0081850ae70e31b1db5a23879fb36ca50afd73152304f25c594c6859f70",
+    "evaluate_unified_adapter_v03.py": "b145bf32b86cfed775c1ace8783bd2464e1bfe4b266a39375e38937841d02c1d"
+  },
+  "archive_sha256": "372df51e3aa4e99e0913c1fc59e8b2a202625a21468aa2b26c0c4dbe5a469fb0"
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "original_igstgnn_graph_window_development_v1",
+  "status": "GW1_DEVELOPMENT_ENGINEERING_PASS",
+  "engineering_only": true,
+  "date": "2026-10-17",
+  "source_fingerprint": "fdaf7bd006f70e86d6a1ee3069f858387a7c541149adba55a96f82b1c7879531",
+  "frozen_nine_source_files_verified": true,
+  "implementation_sha256": {
+    "experiments/chronological/original_graph_window.py": "f6d685bfcd9d238c567c3b1dcefbcb3a21d95f06ef56ba801abd6229b1967f31",
+    "experiments/chronological/train_original_graph_window.py": "2db7c8086481a5bd7f36586bdf672fa55c09530f4d0255b10e6e395a519ad8a0",
+    "experiments/chronological/evaluate_original_graph_window.py": "3656e0081850ae70e31b1db5a23879fb36ca50afd73152304f25c594c6859f70",
+    "experiments/chronological/verify_original_graph_window.py": "5b37581a65887235a0b9d2ed13730c278ce12581bb07e003e8656f9ff860afbe",
+    "experiments/chronological/run_original_graph_window.sh": "2f88b20f329e5b668718d56a450cbf59def9e6c08017956c9335a0cc50dbb6f5",
+    "tests/test_original_graph_window.py": "b37a17fe15a5e62b9e894fecf89bbcef17c85d9643353cc424e03e8b8c9ef499",
+    "tests/test_original_graph_window_runner.py": "03dd2a14c45c56c8a63cb20915c642e715b1f01a809a955bf324c51ee4d58e9f",
+    "tests/test_original_graph_window_evaluation.py": "f573416458aac29efa3f5fd36bbd7acf838e1c2c8a8d15f4c5897c97a3153027",
+    "docs/igstgnn_graph_window_gw1.md": "a2782978ceec11786f7b9476927f94d6c5a06dc55d3f8d9d8c5885938904c5f8"
+  },
+  "regression": {
+    "passed": 50,
+    "log": "docs/verification/graph_window_gw1_regression_final_20261017.log",
+    "scope": "new_model_runner_evaluation_plus_original_ISP_shared_runner_regressions"
+  },
+  "bash_syntax": {
+    "passed": true,
+    "command": "bash --noprofile --norc -n experiments/chronological/run_original_graph_window.sh"
+  },
+  "runtime": {
+    "python_device": "cuda:0",
+    "torch": "2.8.0+cu126",
+    "numpy": "1.26.4",
+    "cuda": "12.6",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "threads": 3,
+    "seed": 2025,
+    "dtype": "float32",
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "cudnn_benchmark": false
+  },
+  "physical_device_total_memory_bytes": 8585216000,
+  "check": {
+    "path": "experiments/chronological_runs/graph_window_gw1_check_verified_20261017.json",
+    "native_train_eval_predictions_exact": true,
+    "dropout_rng_exact": true,
+    "native_state_exact": true,
+    "active_heads_real_masked_mae_gradients_nonzero": true,
+    "optimizer_updates": 0
+  },
+  "stress": {
+    "path": "experiments/chronological_runs/graph_window_gw1_stress48_20261017.json",
+    "requested_batch_size": 48,
+    "actual_batch_sizes": {
+      "ORIGINAL": 48,
+      "GRAPH_CONTENT": 48
+    },
+    "peak_allocated_bytes": {
+      "ORIGINAL": 13123478016,
+      "GRAPH_CONTENT": 13360580608
+    },
+    "forward_backward_seconds": {
+      "ORIGINAL": 33.71456110000145,
+      "GRAPH_CONTENT": 34.202901899996505
+    },
+    "optimizer_updates": 0,
+    "smaller_batch_fallback": false,
+    "scope": "one_train_forward_backward_at_initialization_not_full_epoch_or_server_V100_throughput",
+    "limitation": "Windows_GPU_allocation_can_exceed_physical_VRAM_via_virtualization_or_paging_not_a_native_VRAM_fit_certificate"
+  },
+  "real_data_smoke": {
+    "train_rows": 4,
+    "validation_rows": 4,
+    "nodes": 496,
+    "batch_size": 2,
+    "epochs_per_arm": 2,
+    "arms": [
+      "ORIGINAL",
+      "STATIC",
+      "SHARED_DYNAMIC",
+      "GRAPH_CONTENT"
+    ],
+    "continuous_run": "experiments/chronological_runs/graph_window_gw1_check_continuous_verified_20261017",
+    "resumed_run": "experiments/chronological_runs/graph_window_gw1_check_resumed_verified_20261017",
+    "continuous_and_resumed_optimizer_updates": 32,
+    "exact_resume": {
+      "path": "experiments/chronological_runs/graph_window_gw1_resume_comparison_20261017.json",
+      "passed": true,
+      "compared": [
+        "model",
+        "optimizer",
+        "scheduler",
+        "curriculum",
+        "RNG",
+        "train_order",
+        "metric_history",
+        "mechanisms"
+      ]
+    }
+  },
+  "evaluation": {
+    "best": {
+      "output_dir": "experiments/chronological_runs/graph_window_gw1_evaluation_check_20261017",
+      "archive_sha256": "372df51e3aa4e99e0913c1fc59e8b2a202625a21468aa2b26c0c4dbe5a469fb0",
+      "validation_rows": 4,
+      "native_replay_all_arms_passed": true,
+      "case_count": 6
+    },
+    "last": {
+      "output_dir": "experiments/chronological_runs/graph_window_gw1_evaluation_last_check_20261017",
+      "archive_sha256": "372df51e3aa4e99e0913c1fc59e8b2a202625a21468aa2b26c0c4dbe5a469fb0",
+      "validation_rows": 4,
+      "native_replay_all_arms_passed": true,
+      "case_count": 6
+    }
+  },
+  "preserved_initial_failure": {
+    "run": "experiments/chronological_runs/graph_window_gw1_check_continuous_20261017",
+    "cause": "wrapper_missing_native_param_num_interface_fixed_before_final_verified_runs",
+    "optimizer_updates_original_only": 4,
+    "retained": true
+  },
+  "actual_release_optimizer_updates_this_development": 36,
+  "unexecuted": [
+    "full_validation_837_rows_for_GW1",
+    "four_arm_five_epoch_pilot",
+    "100_epoch_multi_seed_comparison",
+    "test_evaluation"
+  ],
+  "no_accuracy_superiority_claim": true,
+  "test_evaluated": false,
+  "pushed": false
+}

@@ -1,0 +1,29 @@
+Repository: /g/paper/_publication/igstgnn-gw1-20261017
+Started: 2026-10-17T17:37:22+08:00
+Host: LAPTOP-LTJ20BPP
+Slurm job: gw1-publication-check
+usage: train_original_graph_window.py [-h] --run-dir RUN_DIR
+                                      [--data-dir DATA_DIR] [--epochs EPOCHS]
+                                      [--device DEVICE] [--threads THREADS]
+                                      [--seed SEED]
+                                      [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                                      [--resume] [--check]
+
+GW1 four-arm, from-scratch architecture pilot on the unchanged author recipe.
+--epochs is the TOTAL completed budget per arm. No early stopping, test
+loader, warmstart, learning-rate search, or validation-based architecture
+search. Partial epochs replay from the last atomic epoch checkpoint, including
+optimizer/RNG.
+
+options:
+  -h, --help            show this help message and exit
+  --run-dir RUN_DIR
+  --data-dir DATA_DIR
+  --epochs EPOCHS
+  --device DEVICE
+  --threads THREADS
+  --seed SEED
+  --only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]
+  --resume
+  --check               Four train/validation rows, batch two; engineering
+                        only

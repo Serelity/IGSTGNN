@@ -1,0 +1,58 @@
+{
+  "status": "GW1_REAL_DATA_EXACT_RESUME_PASS",
+  "engineering_only": true,
+  "continuous": "experiments\\chronological_runs\\graph_window_gw1_check_continuous_verified_20261017",
+  "resumed": "experiments\\chronological_runs\\graph_window_gw1_check_resumed_verified_20261017",
+  "arms": {
+    "ORIGINAL": {
+      "tensors": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true
+      },
+      "history_exact": true,
+      "completed_epochs": 2,
+      "global_updates": 4
+    },
+    "STATIC": {
+      "tensors": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true
+      },
+      "history_exact": true,
+      "completed_epochs": 2,
+      "global_updates": 4
+    },
+    "SHARED_DYNAMIC": {
+      "tensors": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true
+      },
+      "history_exact": true,
+      "completed_epochs": 2,
+      "global_updates": 4
+    },
+    "GRAPH_CONTENT": {
+      "tensors": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true
+      },
+      "history_exact": true,
+      "completed_epochs": 2,
+      "global_updates": 4
+    }
+  },
+  "total_optimizer_updates_both_runs": 32,
+  "test_evaluated": false
+}
