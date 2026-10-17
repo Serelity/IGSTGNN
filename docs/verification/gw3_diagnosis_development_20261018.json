@@ -1,0 +1,20 @@
+{
+  "schema": "gw3_read_only_diagnosis_development_v1",
+  "status": "IMPLEMENTED_SERVER_VALIDATION_PENDING",
+  "date": "2026-10-18",
+  "base_commit": "55645c54d6f5995e3ef77c9e414b6fb65e35ab0e",
+  "branch": "research/receiver-match-gw3",
+  "scope": "read_existing_predictions_histories_and_mechanism_JSON_only",
+  "local_test_runs": 0,
+  "local_model_forward_calls": 0,
+  "local_model_backward_calls": 0,
+  "local_optimizer_updates": 0,
+  "server_validation_pending": true,
+  "checkpoint_loading_supported": false,
+  "new_inference_supported": false,
+  "new_training_supported": false,
+  "test_evaluated": false,
+  "historical_training_execution_files_modified": false,
+  "new_server_test_module": "tests.test_receiver_match_diagnosis",
+  "entrypoint": "experiments/chronological/analyze_receiver_match_gw3.py"
+}

@@ -87,3 +87,7 @@ cat "$GW3_RUN/eval_last_$GW3_TAG/report.md"
 若best和last模型张量相同，第二条自动复用第一条的新组预测，记录new_inference_calls为0；旧三组始终为0。若模型张量不同，只评价尚未缓存的模型及其干预。不删除已有评估目录，另设时间标签即可。
 
 重点回传summary.json与两个report.md。机制统计查看mechanisms.json，分组看groups.csv，逐时距看horizons.csv。保留所有负收益；五轮结果不等同于超过原模型成熟最佳检查点。
+
+## 已完成五轮后的下一步
+
+若已完成上述训练/评估，直接使用[只读诊断工具](igstgnn_receiver_match_gw3_diagnosis.md)，复用现有制品定位相对GW2的损害。只运行新增的诊断测试与诊断命令，不重复已有检查、训练或推理。
