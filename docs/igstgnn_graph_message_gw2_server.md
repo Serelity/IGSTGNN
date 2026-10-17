@@ -73,4 +73,6 @@ cat "$GW2_RUN/reuse_last_$GW2_EVAL_TAG/report.md"
 
 本版七状态：ORIGINAL、STATIC、POST_LOCAL、POST_MESSAGE、POST_LOCAL_UNIFORM、POST_MESSAGE_UNIFORM、POST_MESSAGE_STATIC_ONLY。STATIC_UNIFORM 从未在 GW1 测过，本次不补跑；表中不会伪造这行。metadata.json 明确记录 ORIGINAL/STATIC 新推理次数为0，历史耗时单独标注为旧会话测量。
 
+两个新模型如果已有匹配的预测归档，也直接复用。best 与 last 对应同一最终轮次时，进一步核对实际模型张量哈希；只有张量一致才共享已完成的预测，不因两个 checkpoint 文件封装不同而重复推理。
+
 主比较仍是 POST_MESSAGE vs ORIGINAL，同时保留 vs STATIC、vs POST_LOCAL。五轮仅为结构筛查，不证明收敛优势；测试集不评价。复用证书是归档内部一致性核验，不是历史训练的外部独立认证。

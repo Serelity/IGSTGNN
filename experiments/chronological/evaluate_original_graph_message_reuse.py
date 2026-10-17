@@ -61,7 +61,19 @@ def existing_new_cache(run, identity, state, arm, selection, reference_archive):
             continue
         role = metadata.get('checkpoint_roles', {}).get(arm, {})
         if (role.get('selection'), role.get('epoch'), role.get('checkpoint_sha256')) != (selection, epoch, expected_sha):
-            continue
+            # Best and last often refer to the same final model. Bare best
+            # weights and the full last.pt have DIFFERENT file hashes, so
+            # establish equality using their actual model tensor hashes.
+            if not (state.get('best_epoch') == state.get('completed_epoch') == epoch
+                    and role.get('epoch') == epoch and role.get('selection') in ('best', 'last')):
+                continue
+            source_sha = (state['best_checkpoint_sha256'] if role['selection'] == 'best'
+                          else base.sha256(run/arm/'last.pt'))
+            if role.get('checkpoint_sha256') != source_sha:
+                continue
+            best_weights = train.load_checkpoint(run/arm/state['best_checkpoint_file'])
+            require(train.tensor_tree_hash(best_weights) == state['model_tensor_sha256'],
+                    'Best/last epoch agrees but model tensors differ; cached predictions cannot be shared')
         if metadata.get('validation_replay', {}).get(arm, {}).get('passed') is not True:
             continue
         archive_path = path.parent/'paired_predictions.npz'
@@ -120,9 +132,11 @@ def produce(args, output):
             for case in conditions:
                 archive['pred__'+case] = prior['pred__'+case]
                 mechanisms[case] = dict(reused=True, new_inference_calls=0, source_mechanisms_path=str(prior_dir/'mechanisms.json'))
-            roles[arm] = dict(prior_metadata['checkpoint_roles'][arm], reused_predictions=True)
-            costs[arm] = dict(prior_metadata['benchmarks'][arm], measurement_origin='GW2_cached_prior_session')
             epoch = state['best_epoch'] if args.checkpoint == 'best' else state['completed_epoch']
+            requested_sha = state['best_checkpoint_sha256'] if args.checkpoint == 'best' else base.sha256(args.run_dir/arm/'last.pt')
+            roles[arm] = dict(selection=args.checkpoint, epoch=epoch, checkpoint_sha256=requested_sha,
+                reused_predictions=True, prediction_source_role=prior_metadata['checkpoint_roles'][arm])
+            costs[arm] = dict(prior_metadata['benchmarks'][arm], measurement_origin='GW2_cached_prior_session')
             replay[arm] = dict(base.replay_metrics(prior['pred__'+arm], prior['y'], state, epoch, modules),
                 mode='cached_predictions_metric_check_not_new_checkpoint_forward', new_inference_calls=0)
             require(replay[arm]['passed'], 'Existing new-arm cache metrics differ')

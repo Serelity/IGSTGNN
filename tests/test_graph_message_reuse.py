@@ -119,6 +119,17 @@ class GraphMessageReuseTests(unittest.TestCase):
             with patch.object(evaluation.train,'model_for_arm',side_effect=AssertionError('no inference')):
                 cached=evaluation.existing_new_cache(run,{'identity_sha256':'runid'},state,'POST_MESSAGE','best',archive)
             self.assertIsNotNone(cached)
+            # Same final tensor state: reuse best predictions for last without
+            # a second model forward, despite different checkpoint file hashes.
+            import torch
+            (run/'POST_MESSAGE').mkdir()
+            (run/'POST_MESSAGE'/'last.pt').write_bytes(b'full_epoch_checkpoint')
+            weights={'w':torch.ones(2)}
+            state.update(completed_epoch=3,best_checkpoint_file='best.pt',
+                model_tensor_sha256=evaluation.train.tensor_tree_hash(weights))
+            with patch.object(evaluation.train,'load_checkpoint',return_value=weights):
+                cached_last=evaluation.existing_new_cache(run,{'identity_sha256':'runid'},state,'POST_MESSAGE','last',archive)
+            self.assertIsNotNone(cached_last)
             metadata['checkpoint_roles']['POST_MESSAGE']['epoch']=2
             (directory/'metadata.json').write_text(json.dumps(metadata),encoding='utf-8')
             self.assertIsNone(evaluation.existing_new_cache(run,{'identity_sha256':'runid'},state,'POST_MESSAGE','best',archive))
