@@ -1,0 +1,130 @@
+test_candidate_initial_capacity_and_rng_match_only_first_conv_changes (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_diagnostics_remove_fixed_node_and_window_differences_and_keep_phase (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_frozen_original_source_preserved (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_initial_native_gradients_match_with_reduction_tolerance (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_invalid_axes_and_wrapped_model_are_rejected (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_label_invariance_and_intervention_restoration (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_message_scores_respond_to_neighbor_evidence_local_control_does_not (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_model_diagnostics_tail_partition_and_call_phase (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_native_mae_learns_active_heads_then_encoder (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_nonuniform_static_commutes_with_native_gw1_sender_selection (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_packed_native_kernel_matches_general_kernel_and_upstream_graph_gradients (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_receiver_weights_and_graph_orders_match_explicit_reference (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_recovery_train_eval_rng_native_state_and_inputs (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_router_coefficients_static_control_and_zero_head_encoder_gradient (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_slot_messages_match_explicit_receiver_lag_sender_with_gradients (tests.test_original_graph_message.GraphMessageTests) ... ok
+test_exact_resume_and_identity_failure (tests.test_original_graph_message_runner.GraphMessageRunnerTests) ... ok
+test_parser_pilot_and_total_budget (tests.test_original_graph_message_runner.GraphMessageRunnerTests) ... usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} [{ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} [{ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} [{ORIGINAL,STATIC,POST_LOCAL,POST_MESSAGE} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: only arms must be unique
+ok
+test_summary_compares_equal_prefix_including_negative_results (tests.test_original_graph_message_runner.GraphMessageRunnerTests) ... ok
+test_archive_rejects_wrong_axes_masks_case_set_ids_and_values (tests.test_original_graph_message_evaluation.GraphMessageEvaluationTests) ... ok
+{"status": "GW2_EVALUATION_PASS", "validation_rows": 5, "engineering_only": true, "output_dir": "G:\\paper\\IGSTGNN_open_source\\code\\tests\\tmp17m0gjb7\\out"}
+test_cli_archive_analysis_preserves_input_and_never_produces_new_predictions (tests.test_original_graph_message_evaluation.GraphMessageEvaluationTests) ... ok
+test_native_metrics_replay_rejects_changed_predictions (tests.test_original_graph_message_evaluation.GraphMessageEvaluationTests) ... ok
+test_pair_report_retains_negative_gains_and_fixed_original_hard_ids (tests.test_original_graph_message_evaluation.GraphMessageEvaluationTests) ... ok
+test_all_candidates_recover_native_train_eval_and_dropout_rng_exactly (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_construction_preserves_rng_and_candidate_initial_tensors (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_controls_obey_information_restrictions_and_mass (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_diagnostics_weight_tail_batches_by_positions (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_frozen_original_source_preserved (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_initial_native_parameter_gradients_match_with_float_tolerance (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_invalid_source_count_and_shape_are_rejected (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_label_cannot_affect_output_and_inputs_not_mutated (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_native_masked_mae_reaches_active_heads_then_encoder (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_nonuniform_selector_matches_explicit_receiver_lag_source_reference (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_only_first_conv_is_replaced_no_other_path (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_uniform_intervention_restores_after_exception (tests.test_original_graph_window.GraphWindowTests) ... ok
+test_exact_resume_and_identity_failure (tests.test_original_graph_window_runner.GraphWindowRunnerTests) ... ok
+test_parser_pilot_and_total_budget (tests.test_original_graph_window_runner.GraphWindowRunnerTests) ... usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be a TOTAL completed budget in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--only {ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} [{ORIGINAL,STATIC,SHARED_DYNAMIC,GRAPH_CONTENT} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: only arms must be unique
+ok
+test_summary_compares_equal_prefix_including_negative_results (tests.test_original_graph_window_runner.GraphWindowRunnerTests) ... ok
+test_archive_rejects_wrong_axes_masks_case_set_ids_and_values (tests.test_original_graph_window_evaluation.GraphWindowEvaluationTests) ... ok
+{"status": "GW1_EVALUATION_PASS", "validation_rows": 5, "engineering_only": true, "output_dir": "G:\\paper\\IGSTGNN_open_source\\code\\tests\\tmpc7rsvnkp\\out"}
+test_cli_archive_analysis_preserves_input_and_never_produces_new_predictions (tests.test_original_graph_window_evaluation.GraphWindowEvaluationTests) ... ok
+test_native_metrics_replay_rejects_changed_predictions (tests.test_original_graph_window_evaluation.GraphWindowEvaluationTests) ... ok
+test_pair_report_retains_negative_gains_and_fixed_original_hard_ids (tests.test_original_graph_window_evaluation.GraphWindowEvaluationTests) ... ok
+test_fixed_recipe_and_test_free_entry (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_killed_first_epoch_resumes_epoch_zero (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_missing_arm_has_no_comparability_claim (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_parser_default_matched_pilot (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_parser_only_requires_registered_unique_subset (tests.test_original_isp_runner.ISPRunnerTests) ... usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: arms must be unique; only must be a unique subset of arms
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be in 1..100
+usage: python.exe -m unittest [-h] --run-dir RUN_DIR [--data-dir DATA_DIR]
+                              [--epochs EPOCHS] [--device DEVICE]
+                              [--threads THREADS] [--seed SEED]
+                              [--arms {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--only {ORIGINAL,STATE,STATE_PROPAGATION} [{ORIGINAL,STATE,STATE_PROPAGATION} ...]]
+                              [--resume] [--check]
+python.exe -m unittest: error: epochs must be in 1..100
+ok
+test_resume_exact_optimizer_rng_order_curriculum_and_scheduler (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_resume_rejects_identity_budget_selection_and_tensor_tampering (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_safe_load_never_unrestricted_pickle (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_same_budget_summary_uses_common_prefix (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_unregistered_original_is_not_claimed_as_in_run_baseline (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+test_validation_progress_restores_iterator_on_failure (tests.test_original_isp_runner.ISPRunnerTests) ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 30.573s
+
+OK

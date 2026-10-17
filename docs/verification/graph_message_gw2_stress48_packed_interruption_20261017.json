@@ -1,0 +1,11 @@
+{
+  "status": "LOCAL_STRESS_STOPPED_NO_VERDICT",
+  "engineering_only": true,
+  "batch_size": 48,
+  "stopped_process_id": 14880,
+  "reason": "local_8GB_GPU_shared_memory_pressure_and_no_completed_first_arm; not_a_model_correctness_verdict",
+  "source_log": "docs/verification/graph_message_gw2_stress48_packed_20261017.log",
+  "server_v100_batch48_still_required": true,
+  "optimizer_updates": 0,
+  "test_evaluated": false
+}

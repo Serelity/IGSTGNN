@@ -1,0 +1,269 @@
+{
+  "schema": "original_igstgnn_graph_message_development_v1",
+  "status": "GW2_DEVELOPMENT_VERIFIED_SERVER_BATCH48_PENDING",
+  "date": "2026-10-17",
+  "design": {
+    "version": "GW2",
+    "selected_layer": 0,
+    "router_hidden": 16,
+    "placement": "receiver_after_graph_propagation_before_slot_sum",
+    "source_order": "predefined_directions_then_dynamic_directions_then_adaptive",
+    "context": "slot_value_and_within_window_centered_contrast",
+    "message_order_for_scoring": 1,
+    "share_scorer_across_sources": true,
+    "propagation_kernel": "pack_slots_as_channels_on_native_repeated_adjacency",
+    "share_across_graph_orders": true,
+    "self_path": "unchanged",
+    "forecast_scope": "historical_and_autoregressive_DIF_calls_in_selected_layer",
+    "separate_report_inputs": false,
+    "target_inputs": false,
+    "recovery": "floating_tolerance_due_to_changed_reduction_order"
+  },
+  "engineering_only": true,
+  "registered_parameters": {
+    "original": 455220,
+    "candidates": 456291,
+    "added": 1071
+  },
+  "frozen_original_source_fingerprint": "fdaf7bd006f70e86d6a1ee3069f858387a7c541149adba55a96f82b1c7879531",
+  "source_hashes": {
+    "experiments/chronological/train_original_graph_message.py": "fa852edae7b8a376f371fa3bf68a6a24607225a0da6776eb7306d948ad592a8f",
+    "experiments/chronological/original_graph_message.py": "54f9c713a2707d074e8c888db257bd3463d59c3744dac9c6dc24f17543580212",
+    "experiments/chronological/train_original_isp.py": "e1856a0cee80e571528a35e68cae014d6c98fa0e8cbf03fe5490426fbfb437c3",
+    "experiments/chronological/original_isp.py": "f33f0957095d41af2c3e248ed036a671ce8372fcc0140674d2f19ab7a19b3266",
+    "experiments/chronological/original_igstgnn_runtime.py": "19679a77e42a424415434560859f002ee33ac3ca49ea32ebd4afc464a8a1156e",
+    "experiments/chronological/original_igstgnn_source.py": "6bff38af45c1b6b5d4a4b841cf165f2915bbb172fcdf7c80a660df63fc5cb767",
+    "experiments/chronological/train_original_igstgnn_baseline.py": "3224ce28954b3f292c65fc3923b7c5ce9fb60595e8b94e093e21411d83e846ff",
+    "experiments/chronological/original_igstgnn_checkpoint_compat.py": "a0a19f3f13a90b0fa0a108cb687af460e59c4bd43579912c0039c7a6e347b09f",
+    "experiments/chronological/verify_original_graph_message.py": "029cef179cb8223e71e5f2d7c63280dc7e9ac2a8b7f167200a2b0a2a26fedf35",
+    "experiments/chronological/evaluate_original_graph_message.py": "4b45aa161dd65fa31329f7e88eb9a183eae05acdcdd3f908abf9581b025a09b6",
+    "experiments/chronological/run_original_graph_message.sh": "5fa86b21dad183267022666d482528370a8aa32c6f235e00e52eed1934de0dc1",
+    "tests/test_original_graph_message.py": "611b384f113eed3acce4252cdcf7edff72ad83c2b7fedb70541ccfa79cd39551",
+    "tests/test_original_graph_message_runner.py": "e0f081a6a969e4b9603d32b755cd85e3daa80c24c1389bcb0a6a8edd1c18e632",
+    "tests/test_original_graph_message_evaluation.py": "569c9bb5bae24ecc58cc129197d9422a04f57efb25d4a663c530653549490564",
+    "docs/igstgnn_graph_message_gw2.md": "9f4223a7be62f44d90bb40034b84e2164c21fbc56d0b433a09bc216c6e1923ca"
+  },
+  "regression": {
+    "tests": 52,
+    "passed": true,
+    "log": "docs/verification/graph_message_gw2_regression_final_20261017.log",
+    "sha256": "a27768e3226dac578550c0510e0ac3cc2c4094e391e70895c20ed3557bc8ed33"
+  },
+  "cuda_check": {
+    "path": "experiments/chronological_runs/graph_message_gw2_check_packed_20261017.json",
+    "status": "GW2_VERIFICATION_PASS",
+    "batch_size": 2,
+    "optimizer_updates": 0,
+    "runtime": {
+      "python_device": "cuda:0",
+      "torch": "2.8.0+cu126",
+      "numpy": "1.26.4",
+      "cuda": "12.6",
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "threads": 3,
+      "seed": 2025,
+      "dtype": "float32",
+      "deterministic_algorithms": true,
+      "tf32": false,
+      "cudnn_benchmark": false
+    },
+    "recovery": {
+      "eval": {
+        "STATIC": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        },
+        "POST_LOCAL": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        },
+        "POST_MESSAGE": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        }
+      },
+      "train": {
+        "STATIC": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        },
+        "POST_LOCAL": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        },
+        "POST_MESSAGE": {
+          "prediction_exact": false,
+          "prediction_close": true,
+          "abs_max": 2.682209014892578E-07,
+          "atol": 2E-05,
+          "rtol": 2E-05,
+          "rng_exact": true,
+          "native_state_exact": true
+        }
+      }
+    },
+    "peak_allocated_bytes": {
+      "ORIGINAL": 794345472,
+      "STATIC": 876256768,
+      "POST_LOCAL": 938182144,
+      "POST_MESSAGE": 938182144
+    }
+  },
+  "real_data_engineering_runs": {
+    "continuous": {
+      "path": "experiments/chronological_runs/graph_message_gw2_continuous_20261017",
+      "training_status": "GW2_TRAINING_PASS",
+      "common_completed_epochs": 2,
+      "train_rows": 4,
+      "validation_rows": 4,
+      "batch_size": 2,
+      "global_updates": {
+        "ORIGINAL": 4,
+        "STATIC": 4,
+        "POST_LOCAL": 4,
+        "POST_MESSAGE": 4
+      },
+      "evaluation": "experiments/chronological_runs/graph_message_gw2_continuous_20261017/eval_best",
+      "evaluation_status": "GW2_EVALUATION_PASS",
+      "cases": [
+        "ORIGINAL",
+        "STATIC",
+        "STATIC_UNIFORM",
+        "POST_LOCAL",
+        "POST_LOCAL_UNIFORM",
+        "POST_MESSAGE",
+        "POST_MESSAGE_UNIFORM",
+        "POST_MESSAGE_STATIC_ONLY"
+      ],
+      "native_replay_passed": true,
+      "engineering_only": true
+    },
+    "resumed": {
+      "path": "experiments/chronological_runs/graph_message_gw2_resumed_20261017",
+      "training_status": "GW2_TRAINING_PASS",
+      "common_completed_epochs": 2,
+      "train_rows": 4,
+      "validation_rows": 4,
+      "batch_size": 2,
+      "global_updates": {
+        "ORIGINAL": 4,
+        "STATIC": 4,
+        "POST_LOCAL": 4,
+        "POST_MESSAGE": 4
+      },
+      "evaluation": "experiments/chronological_runs/graph_message_gw2_resumed_20261017/eval_last",
+      "evaluation_status": "GW2_EVALUATION_PASS",
+      "cases": [
+        "ORIGINAL",
+        "STATIC",
+        "STATIC_UNIFORM",
+        "POST_LOCAL",
+        "POST_LOCAL_UNIFORM",
+        "POST_MESSAGE",
+        "POST_MESSAGE_UNIFORM",
+        "POST_MESSAGE_STATIC_ONLY"
+      ],
+      "native_replay_passed": true,
+      "engineering_only": true
+    }
+  },
+  "exact_resume": {
+    "path": "experiments/chronological_runs/graph_message_gw2_resume_comparison_20261017.json",
+    "status": "GW2_REAL_DATA_CUDA_EXACT_EPOCH_RESUME_PASS",
+    "arms": {
+      "ORIGINAL": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "history_exact": true,
+        "completed_epoch": 2,
+        "global_updates": 4
+      },
+      "STATIC": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "history_exact": true,
+        "completed_epoch": 2,
+        "global_updates": 4
+      },
+      "POST_LOCAL": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "history_exact": true,
+        "completed_epoch": 2,
+        "global_updates": 4
+      },
+      "POST_MESSAGE": {
+        "model_state": true,
+        "optimizer_state": true,
+        "scheduler_state": true,
+        "rng_state": true,
+        "train_order": true,
+        "history_exact": true,
+        "completed_epoch": 2,
+        "global_updates": 4
+      }
+    }
+  },
+  "final_batch48": {
+    "status": "LOCAL_STRESS_STOPPED_NO_VERDICT",
+    "passed": false,
+    "server_v100_check_required": true,
+    "record": "docs/verification/graph_message_gw2_stress48_packed_interruption_20261017.json"
+  },
+  "superseded_prototype_evidence": {
+    "path": "experiments/chronological_runs/graph_message_gw2_stress48_20261017.json",
+    "applies_to": "pre_optimization_generic_slot_kernel_not_final_packed_kernel",
+    "used_as_final_stress_pass": false
+  },
+  "launcher": {
+    "bash_syntax_passed": true,
+    "direct_help_and_repository_discovery_passed": true
+  },
+  "formal_training_executed": false,
+  "test_evaluated": false,
+  "accuracy_improvement_demonstrated": false,
+  "pushed": false,
+  "limitations": [
+    "engineering_only_four_train_and_four_validation_rows",
+    "final_batch48_not_certified_locally",
+    "no_full_budget_or_multiseed_or_test_claim",
+    "conditional_variance_not_predictive_utility",
+    "no_mean_route_or_matched_shuffle_probe_in_this_version"
+  ],
+  "record_scope": "historical_development_snapshot_before_publication; pushed=false refers to that stage",
+  "publication_note": "Only documentation and launcher line-ending attributes were updated for publication; this publication runs no local model checks. Historical source_hashes describe the development snapshot."
+}
