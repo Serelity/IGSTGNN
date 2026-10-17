@@ -1,0 +1,635 @@
+{
+  "schema": "unified_adapter_v03_development_evidence_v1",
+  "status": "ENGINEERING_INTEGRATION_COMPLETE_FORMAL_EVIDENCE_PENDING",
+  "generated_at": "2026-10-17T08:22:27.600856+00:00",
+  "engineering_only": true,
+  "formal_training_completed": false,
+  "exceeds_original_baseline_confirmed": false,
+  "independent_confirmation_completed": false,
+  "test_evaluated": false,
+  "scope": "v0.2 review remediation, local model/data/runner/evaluator/readout integration; not independent execution certification",
+  "unit_regression": {
+    "tests": 147,
+    "failures": 0,
+    "errors": 0,
+    "log": "docs/verification/unified_adapter_v03_unit_tests_20261017.txt",
+    "environment": {
+      "MKL_THREADING_LAYER": "SEQUENTIAL"
+    },
+    "modules": [
+      "tests.test_unified_adapter_runner_v03",
+      "tests.test_unified_adapter_data_v03",
+      "tests.test_unified_incident_adapter_v03",
+      "tests.test_unified_adapter_verification_v03",
+      "tests.test_unified_adapter_evaluation_v03",
+      "tests.test_unified_adapter_decision_v03",
+      "tests.test_unified_adapter_repeats_v03",
+      "tests.test_unified_incident_adapter",
+      "tests.test_unified_incident_adapter_runner",
+      "tests.test_original_isp",
+      "tests.test_original_isp_runner"
+    ],
+    "includes_expected_rejected_cli_arguments": true
+  },
+  "frozen_original_source": {
+    "verified_current": true,
+    "file_count": 9,
+    "manifest": {
+      "files": {
+        "args.py": {
+          "bytes": 1135,
+          "git_path": "src/utils/args.py",
+          "sha256": "22b3011b652c7b14bfb499f6db6980ec580cf4fd45a996ce1bcedd6a9a8ee171"
+        },
+        "base_engine.py": {
+          "bytes": 7361,
+          "git_path": "src/base/engine.py",
+          "sha256": "d6307e55366449cc4ae93abbf08930ed7f606cb2b241828a1da20c683fd11309"
+        },
+        "base_model.py": {
+          "bytes": 547,
+          "git_path": "src/base/model.py",
+          "sha256": "80115d8022303a543c8659a535c41a9ddadfdb5c2a45fe1dc28bafef5075eb83"
+        },
+        "dataloader.py": {
+          "bytes": 10351,
+          "git_path": "src/utils/dataloader.py",
+          "sha256": "1c350c7bf266d4bc64fbaaa4fb9bf519792b29e386b6f5213a9b7fcc53bc18eb"
+        },
+        "engine.py": {
+          "bytes": 6548,
+          "git_path": "src/engines/igstgnn_engine.py",
+          "sha256": "330448c8d19836102e1cd59f4bd893f0ae989da0ae63ce1d6abfce5d4e272a77"
+        },
+        "graph_algo.py": {
+          "bytes": 5760,
+          "git_path": "src/utils/graph_algo.py",
+          "sha256": "49d876dac914eca4f9e75aa2fbc3903c28da8570fd50a5940ef16277cd53af19"
+        },
+        "main_reference.py": {
+          "bytes": 5527,
+          "git_path": "experiments/IGSTGNN/main.py",
+          "sha256": "84b5c4fd210eaca52ba39dc648a7db34a307e3ba3fc9b4e00e4ed51e9bae6b26"
+        },
+        "metrics.py": {
+          "bytes": 1708,
+          "git_path": "src/utils/metrics.py",
+          "sha256": "6df3633f8f3007795116a34b2c6d494010e4a2ee6192f5b22ffd6e47b51127fe"
+        },
+        "model.py": {
+          "bytes": 35179,
+          "git_path": "src/models/igstgnn.py",
+          "sha256": "18d07e0e4a33b061ec5a69eb1f102dc5120c7cd9275b39a2637d34c43faf288b"
+        }
+      },
+      "git_reference": "558ab01",
+      "schema": "original_igstgnn_frozen_source_v1",
+      "source_only_no_historical_execution_attestation": true
+    },
+    "unmodified_in_checks": true
+  },
+  "cuda_engineering": {
+    "record": "experiments/chronological_runs/unified_adapter_v03_engineering_check_20261017_verified.json",
+    "status": "UNIFIED_ADAPTER_V03_ENGINEERING_PASS",
+    "optimizer_updates": 0,
+    "actual_batch_size": 2,
+    "train_eval_zero_initialization_exact": true,
+    "real_MAE_head_gradients_and_activated_upstream_gradients_passed": true,
+    "target_independence_and_absent_NaN_fallback_passed": true
+  },
+  "batch_48_pressure": {
+    "record": "experiments/chronological_runs/unified_adapter_v03_stress48_20261017.json",
+    "status": "UNIFIED_ADAPTER_V03_ENGINEERING_PASS",
+    "requested_batch_size": 48,
+    "actual_batch_size": 48,
+    "nodes": 496,
+    "horizon": 12,
+    "optimizer_updates": 0,
+    "device": {
+      "python_device": "cuda:0",
+      "torch": "2.8.0+cu126",
+      "numpy": "1.26.4",
+      "cuda": "12.6",
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "threads": 1,
+      "seed": 2025,
+      "dtype": "float32",
+      "deterministic_algorithms": true,
+      "tf32": false,
+      "cudnn_benchmark": false
+    },
+    "observations": {
+      "ORIGINAL": {
+        "wall_seconds": 36.314395199999126,
+        "peak_allocated_bytes": 13124994560,
+        "incremental_peak_allocated_bytes": 13013008384,
+        "peak_reserved_bytes": 15068037120
+      },
+      "BOTH": {
+        "wall_seconds": 66.45451850000245,
+        "peak_allocated_bytes": 17015409152,
+        "incremental_peak_allocated_bytes": 16875556352,
+        "peak_reserved_bytes": 19119734784
+      }
+    },
+    "boundary": "Windows RTX4060 Laptop oversubscription; no V100 throughput or physical-residency claim; server verification pending"
+  },
+  "real_small_training": {
+    "runs": [
+      {
+        "directory": "experiments/chronological_runs/unified_v03_check_continuous_20261017",
+        "summary_sha256": "174304d8fc537b79fade98af5abd8a72db824f54b6623dddf04a0713ab2634fc",
+        "fit_rows": 3,
+        "calibration_rows": 1,
+        "validation_rows": 4,
+        "batch_size": 2,
+        "epochs_per_arm": 2,
+        "arms": [
+          "ORIGINAL",
+          "TRAFFIC_CORE",
+          "H_ONLY",
+          "R_ONLY",
+          "BOTH",
+          "DIRECT"
+        ],
+        "optimizer_updates": 24
+      },
+      {
+        "directory": "experiments/chronological_runs/unified_v03_check_resumed_20261017",
+        "summary_sha256": "dc12b9e88999d5831588b1e99f2026f9942a999e8dbd0a69ee93c750f06144f7",
+        "fit_rows": 3,
+        "calibration_rows": 1,
+        "validation_rows": 4,
+        "batch_size": 2,
+        "epochs_per_arm": 2,
+        "arms": [
+          "ORIGINAL",
+          "TRAFFIC_CORE",
+          "H_ONLY",
+          "R_ONLY",
+          "BOTH",
+          "DIRECT"
+        ],
+        "optimizer_updates": 24
+      }
+    ],
+    "total_main_model_optimizer_updates": 48,
+    "exact_resume_record": "experiments/chronological_runs/unified_v03_resume_comparison_20261017.json",
+    "exact_resume_status": "EXACT_RESUME_PASS",
+    "equality_scope": [
+      "model",
+      "optimizer",
+      "scheduler",
+      "RNG",
+      "sample_order",
+      "validation_metrics",
+      "gradients_and_mechanisms"
+    ],
+    "accuracy_evidence": false
+  },
+  "prediction_pipeline": {
+    "validation_directory": "experiments/chronological_runs/unified_v03_check_predictions_20261017",
+    "validation_rows": 4,
+    "calibration_directory": "experiments/chronological_runs/unified_v03_check_calibration_20261017",
+    "calibration_rows": 1,
+    "validation_cases": [
+      "ORIGINAL",
+      "TRAFFIC_CORE",
+      "H_ONLY",
+      "R_ONLY",
+      "BOTH",
+      "BOTH_TIME_OFF",
+      "BOTH_GRAPH_OFF",
+      "BOTH_REPORT_OFF",
+      "BOTH_SEMANTIC_UNK",
+      "BOTH_SEMANTIC_SHUFFLE",
+      "DIRECT"
+    ],
+    "selected_epoch_MAE_RMSE_MAPE_replay": {
+      "ORIGINAL": {
+        "actual": {
+          "mae": 112.47580296345362,
+          "rmse": 155.91274394797247,
+          "mape_fraction": 2.784805883859312
+        },
+        "expected": {
+          "mae": 112.4758071899414,
+          "rmse": 155.91275024414062,
+          "mape_fraction": 2.7848055362701416
+        },
+        "passed": true
+      },
+      "TRAFFIC_CORE": {
+        "actual": {
+          "mae": 112.72153414061974,
+          "rmse": 156.4582038553206,
+          "mape_fraction": 2.769235635364771
+        },
+        "expected": {
+          "mae": 112.72151947021484,
+          "rmse": 156.4582061767578,
+          "mape_fraction": 2.769235610961914
+        },
+        "passed": true
+      },
+      "H_ONLY": {
+        "actual": {
+          "mae": 112.72633501876143,
+          "rmse": 156.47014156503099,
+          "mape_fraction": 2.768691120778188
+        },
+        "expected": {
+          "mae": 112.72633361816406,
+          "rmse": 156.4701385498047,
+          "mape_fraction": 2.768690824508667
+        },
+        "passed": true
+      },
+      "R_ONLY": {
+        "actual": {
+          "mae": 112.7279741477055,
+          "rmse": 156.46033486284682,
+          "mape_fraction": 2.769730324414278
+        },
+        "expected": {
+          "mae": 112.72796630859375,
+          "rmse": 156.4603271484375,
+          "mape_fraction": 2.76973032951355
+        },
+        "passed": true
+      },
+      "BOTH": {
+        "actual": {
+          "mae": 112.72698624362033,
+          "rmse": 156.46142370818424,
+          "mape_fraction": 2.7695690312634422
+        },
+        "expected": {
+          "mae": 112.72698211669922,
+          "rmse": 156.46142578125,
+          "mape_fraction": 2.769568920135498
+        },
+        "passed": true
+      },
+      "DIRECT": {
+        "actual": {
+          "mae": 112.72694266947985,
+          "rmse": 156.46102648244408,
+          "mape_fraction": 2.769590442625766
+        },
+        "expected": {
+          "mae": 112.7269287109375,
+          "rmse": 156.4610137939453,
+          "mape_fraction": 2.769590377807617
+        },
+        "passed": true
+      }
+    },
+    "producer_status": "PASS",
+    "first_three_steps_graph_off_max_absolute_response": 0.0,
+    "archive_sha_bindings_checked": true,
+    "case_specific_H_ONLY_BOTH_checkpoint_roles_checked": true
+  },
+  "auxiliary_pipeline": {
+    "decision": {
+      "record": "experiments/chronological_runs/unified_v03_check_decision_20261017/decision.json",
+      "status": "GAIN_HEAD_DESCRIPTIVE_VALIDATION_COMPLETE",
+      "runtime": {
+        "fit": {
+          "wall_seconds": 0.06164429999989807,
+          "cpu_process_seconds": 0.046875,
+          "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+          "processed_points": 4918,
+          "iterations": 1,
+          "algorithm": "closed_form_ridge_normal_equations"
+        },
+        "predict": {
+          "wall_seconds": 0.03449420000106329,
+          "cpu_process_seconds": 0.03125,
+          "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+          "processed_points": 23808,
+          "iterations": 1
+        },
+        "deployment_required_source_model_forwards": 2,
+        "deployment_source_models": [
+          "H_ONLY",
+          "BOTH"
+        ],
+        "complete_deployment_latency_measured": false,
+        "note": "LEARNED requires both separately trained model forecasts plus feature and gain-head work; auxiliary CPU time is not full model latency"
+      }
+    },
+    "risk": {
+      "record": "experiments/chronological_runs/unified_v03_check_risk_20261017/risk.json",
+      "status": "RISK_HEAD_DESCRIPTIVE_VALIDATION_COMPLETE",
+      "runtime": {
+        "H": {
+          "fit": {
+            "wall_seconds": 0.21555789999911212,
+            "cpu_process_seconds": 0.203125,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 4918,
+            "iterations": 300,
+            "minibatch_point_draws": 1228800
+          },
+          "predict": {
+            "wall_seconds": 0.005545700001675868,
+            "cpu_process_seconds": 0.0,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 23808,
+            "iterations": 1
+          }
+        },
+        "H_R": {
+          "fit": {
+            "wall_seconds": 0.20466400000077556,
+            "cpu_process_seconds": 0.203125,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 4918,
+            "iterations": 300,
+            "minibatch_point_draws": 1228800
+          },
+          "predict": {
+            "wall_seconds": 0.0076200000003154855,
+            "cpu_process_seconds": 0.015625,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 23808,
+            "iterations": 1
+          }
+        },
+        "H_R_C": {
+          "fit": {
+            "wall_seconds": 0.4239272999984678,
+            "cpu_process_seconds": 0.421875,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 4918,
+            "iterations": 300,
+            "minibatch_point_draws": 1228800
+          },
+          "predict": {
+            "wall_seconds": 0.024474599998939084,
+            "cpu_process_seconds": 0.0,
+            "scope": "auxiliary_CPU_helper_includes_archive_IO_validation_excludes_all_source_model_forwards",
+            "processed_points": 23808,
+            "iterations": 1
+          }
+        }
+      },
+      "fixed_optimizer_steps_per_condition": 300,
+      "conditions": [
+        "H",
+        "H_R",
+        "H_R_C"
+      ]
+    },
+    "calibration_rows": 1,
+    "validation_rows": 4,
+    "validation_labels_used_for_fitting": false,
+    "only_engineering_demonstration_not_useful_quality_estimate": true
+  },
+  "paired_seed_summary_check": {
+    "record": "experiments/chronological_runs/unified_v03_check_repeats_20261017/summary.json",
+    "status": "V03_PAIRED_REPEATS_INSUFFICIENT_SEEDS",
+    "seed_count": 1,
+    "formal_budget_complete": false
+  },
+  "published_metadata_audit": {
+    "record": "experiments/chronological_runs/unified_adapter_v03_stress48_20261017.json",
+    "splits": {
+      "train": {
+        "counts": {
+          "rows": 3909,
+          "reports_available": 3909,
+          "relations_available": 3909,
+          "missing_relations_with_report": 0,
+          "supported_node_positions": 146731,
+          "zero_support_rows": 0,
+          "available_zero_support_rows": 0
+        },
+        "category_histograms": {
+          "Description": {
+            "21": 113,
+            "0": 1698,
+            "2": 755,
+            "7": 160,
+            "8": 66,
+            "5": 295,
+            "3": 374,
+            "1": 89,
+            "24": 10,
+            "10": 17,
+            "15": 132,
+            "20": 5,
+            "16": 50,
+            "11": 29,
+            "19": 2,
+            "17": 42,
+            "23": 7,
+            "18": 8,
+            "25": 8,
+            "14": 13,
+            "13": 3,
+            "6": 9,
+            "9": 14,
+            "28": 1,
+            "12": 5,
+            "27": 1,
+            "26": 1,
+            "22": 2
+          },
+          "Type": {
+            "2": 211,
+            "0": 1885,
+            "1": 1600,
+            "4": 182,
+            "5": 10,
+            "3": 21
+          },
+          "Holiday": {
+            "0": 3817,
+            "1": 92
+          },
+          "position": {
+            "11": 3909
+          }
+        },
+        "category_validity": {
+          "Description": {
+            "valid": 3909
+          },
+          "Type": {
+            "valid": 3909
+          },
+          "Holiday": {
+            "valid": 3909
+          },
+          "position": {
+            "valid": 3909
+          }
+        },
+        "flag_sources": {
+          "available": {
+            "inferred_from_field_presence_not_cutoff_certified": 3909
+          },
+          "relation_available": {
+            "inferred_from_field_presence_not_cutoff_certified": 3909
+          }
+        },
+        "optional_identity_field_rows": {
+          "incident_id": 0,
+          "event_id": 0,
+          "window_start": 0,
+          "window_end": 0,
+          "forecast_cutoff": 0,
+          "report_published_at": 0,
+          "report_updated_at": 0,
+          "incident_start": 0,
+          "incident_end": 0,
+          "clearance_time": 0,
+          "absolute_timestamp": 0
+        }
+      },
+      "val": {
+        "counts": {
+          "rows": 837,
+          "reports_available": 837,
+          "relations_available": 837,
+          "missing_relations_with_report": 0,
+          "supported_node_positions": 31465,
+          "zero_support_rows": 0,
+          "available_zero_support_rows": 0
+        },
+        "category_histograms": {
+          "Description": {
+            "24": 5,
+            "0": 365,
+            "2": 133,
+            "3": 93,
+            "16": 13,
+            "1": 28,
+            "15": 31,
+            "8": 8,
+            "11": 13,
+            "5": 54,
+            "21": 26,
+            "7": 44,
+            "25": 3,
+            "17": 6,
+            "10": 2,
+            "20": 4,
+            "6": 1,
+            "23": 1,
+            "28": 1,
+            "18": 2,
+            "14": 1,
+            "9": 2,
+            "12": 1
+          },
+          "Type": {
+            "1": 330,
+            "0": 414,
+            "4": 44,
+            "2": 43,
+            "3": 4,
+            "5": 2
+          },
+          "Holiday": {
+            "0": 819,
+            "1": 18
+          },
+          "position": {
+            "11": 837
+          }
+        },
+        "category_validity": {
+          "Description": {
+            "valid": 837
+          },
+          "Type": {
+            "valid": 837
+          },
+          "Holiday": {
+            "valid": 837
+          },
+          "position": {
+            "valid": 837
+          }
+        },
+        "flag_sources": {
+          "available": {
+            "inferred_from_field_presence_not_cutoff_certified": 837
+          },
+          "relation_available": {
+            "inferred_from_field_presence_not_cutoff_certified": 837
+          }
+        },
+        "optional_identity_field_rows": {
+          "incident_id": 0,
+          "event_id": 0,
+          "window_start": 0,
+          "window_end": 0,
+          "forecast_cutoff": 0,
+          "report_published_at": 0,
+          "report_updated_at": 0,
+          "incident_start": 0,
+          "incident_end": 0,
+          "clearance_time": 0,
+          "absolute_timestamp": 0
+        }
+      }
+    },
+    "availability_cutoff_certified": false,
+    "end_time_semantics_certified": false,
+    "absolute_order_certified": false,
+    "event_independence_certified": false,
+    "interpretation": "All released train/validation rows have report/relation fields and valid categories; missing-data counterexample fixes are robustness checks, not evidence of natural missingness"
+  },
+  "remaining_evidence": [
+    "report_publication_and_clearance_as_of_semantics",
+    "absolute_calendar_and_event_overlap_identity",
+    "same_budget_full_data_training_and_paired_seeds",
+    "independent_final_confirmation_after_design_freeze",
+    "target_server_memory_and_compute_cost"
+  ],
+  "retained_design_boundaries": [
+    "open_loop_state_requires_DIRECT_comparison",
+    "first_three_steps_native_graph",
+    "high_order_graphs_remain_dense",
+    "graph_or_joint_training_total_changes_not_bounded_by_time_residual_bound",
+    "learned_adoption_requires_two_source_model_forwards",
+    "risk_readout_fixed_center_has_no_conditional_coverage_guarantee"
+  ],
+  "current_source_sha256": {
+    "experiments/chronological/evaluate_unified_adapter_v03.py": "b145bf32b86cfed775c1ace8783bd2464e1bfe4b266a39375e38937841d02c1d",
+    "experiments/chronological/predict_unified_adapter_v03.py": "50eddb8f60de6e2b87001b6e481184d5788715ea64cbf5b167f9b6410e56da53",
+    "experiments/chronological/run_unified_adapter_v03.sh": "59f124eb12eafb9cad77fe2c128db6b8baa1fc701a24985f4bc11210b51b97a9",
+    "experiments/chronological/summarize_unified_adapter_v03.py": "98d1157ab8ba40aed6549c641f472e71b0326550554aa4344cfff11affa83d52",
+    "experiments/chronological/train_unified_adapter_v03.py": "94d047c78e7d81cfa8bc4ccd6142ccba039da127856f98a25ad36977d0f1a429",
+    "experiments/chronological/unified_adapter_data_v03.py": "2b98fcfb6ce1d7dd25d35353182489023c15184e0c9246f5d7fdccda937c13e2",
+    "experiments/chronological/unified_adapter_decision_v03.py": "a724710f4bf28bb92d028cc3da24c68f6215d33b5d3d1497f16e610358288129",
+    "experiments/chronological/unified_adapter_risk_v03.py": "d8526c248dcb92d755fe6dc9bc96793ce2ea33b46497662a5e2d9b8947428761",
+    "experiments/chronological/unified_incident_adapter_v03.py": "1b27b314909735aac8adf70adc65e9daa6f31a8b02e8249a40d71f11b2969b03",
+    "experiments/chronological/verify_unified_adapter_v03.py": "bd1e1447b1efa2f58e08a05a35b72a01f516bb7240f10ffef59f41035f20efa3",
+    "tests/test_unified_adapter_data_v03.py": "5b983d40f17414bfe12fd93e97ef1074dec20e1d908af54689390f555b2cd97f",
+    "tests/test_unified_adapter_decision_v03.py": "61dbf6477a349a603fa4acdfcda7d36da6c686e27711f20b4805827dd203abe4",
+    "tests/test_unified_adapter_evaluation_v03.py": "4a73baa59656bc7693b5136991309e76656d207e802cda402a3f84ba3ee4f49e",
+    "tests/test_unified_adapter_repeats_v03.py": "ec4415765001f73ea48cd116c07e220e117d069fbe0cf3ea6a2b413e37a11f5e",
+    "tests/test_unified_adapter_runner_v03.py": "ebdc8e038a2770c90ce16041892f3203290328fd59e5c7dedfaf9631b852bb43",
+    "tests/test_unified_adapter_verification_v03.py": "fe4350d1d775b105b7b308d7204065b1ca0b6c05a6bd81e39a5b5165c4b0bfa4",
+    "tests/test_unified_incident_adapter_v03.py": "9550d98d628d48331a24c46e9737c15f27177b2b2f15053ffe3a1db7ee036e96"
+  },
+  "evidence_artifact_sha256": {
+    "experiments/chronological_runs/unified_adapter_v03_engineering_check_20261017_verified.json": "950a49d4e95a29601ca05d4f22673234f699b235b309819dba596215a6200a84",
+    "experiments/chronological_runs/unified_adapter_v03_stress48_20261017.json": "c89167dc9b0781edac9a991a9f7b9e22190d516c690b8eff3881aac6e5fc858e",
+    "experiments/chronological_runs/unified_v03_resume_comparison_20261017.json": "0cd01f3db375f8607a3836f12d86df8fe7536563e007a6498f5a0cc9a9dadadf",
+    "experiments/chronological_runs/unified_v03_check_predictions_20261017/metadata.json": "3c30e0a2b9053d612ef1ce2209d1077ab0c8fee082df8ba48c9a70da62153383",
+    "experiments/chronological_runs/unified_v03_check_predictions_20261017/replay.json": "1e1e860a6ea7c4df12273e0f7fda2218a0002005d44a427857aef5a9c0b277d4",
+    "experiments/chronological_runs/unified_v03_check_predictions_20261017/paired_predictions.npz": "9b3b295bd542a26498f54d2f46697dcbbb2d111abc1ebcbc64f672ce137c4fa9",
+    "experiments/chronological_runs/unified_v03_check_calibration_20261017/metadata.json": "a97213df1eaa74ca0a6d552609c7fde94750ab3c1372c07a8bd831cbbd323f00",
+    "experiments/chronological_runs/unified_v03_check_calibration_20261017/paired_predictions.npz": "1f7c59e7df4d1da043e85efc219b8e867f65da9ffddb2dc54628e7e0ed2caede",
+    "experiments/chronological_runs/unified_v03_check_decision_20261017/decision.json": "4f29c510920bd78850ea68de69aa924739debbb4a5ecef1bc7c96c7033e38e36",
+    "experiments/chronological_runs/unified_v03_check_risk_20261017/risk.json": "fcdc4c296abc35c0ff0cec22c5ce2b585891c3f796b341d5471da24b3d73f1ee",
+    "experiments/chronological_runs/unified_v03_check_repeats_20261017/summary.json": "cefb5440ccfd750ed8d5edfd7d0ca72f6770e5bdb6b941e5b578b1a49ec72711",
+    "docs/verification/unified_adapter_v03_unit_tests_20261017.txt": "74d988afc72d8c3cc6b7fdee5b3c32918f577e7fd28bdcc7ab66c2b47c2cc6bc"
+  }
+}
