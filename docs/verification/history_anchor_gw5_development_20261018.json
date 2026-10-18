@@ -1,0 +1,23 @@
+{
+  "schema": "gw5_source_delivery_status_v1",
+  "date": "2026-10-18",
+  "status": "SOURCE_PREPARED_SERVER_VALIDATION_PENDING",
+  "branch": "research/history-anchor-gw5",
+  "base_commit": "ee1237ed7c4a71bca73b2bf0b523b90bf02d34f1",
+  "local_tests_executed": false,
+  "local_syntax_checks_executed": false,
+  "local_model_execution": false,
+  "server_verification_executed_in_this_session": false,
+  "new_GW5_performance_results_available": false,
+  "historical_baseline_training_repeated": false,
+  "historical_baseline_inference_repeated": false,
+  "new_training_arms": ["HISTORY_FIXED", "HISTORY_ANCHORED", "PHASE_SHRINK", "BIAS_SHRINK"],
+  "extra_trainable_parameters_over_GW4_RECEIVER": 0,
+  "source_policy": "certified_existing_GW4_controls_and_GW2_anchor_read_only",
+  "initialization_policy": "same_GW2_checkpoint_and_zero_GW4_residuals_not_trained_GW4_warmstart",
+  "adaptation_epoch_cap": 5,
+  "server_unit_modules": ["tests.test_history_anchor", "tests.test_history_anchor_workflow"],
+  "server_commands_document": "docs/igstgnn_history_anchor_gw5_server.md",
+  "design_document": "docs/igstgnn_history_anchor_gw5.md",
+  "interpretation": "source_preparation_is_not_verification_or_predictive_improvement"
+}
