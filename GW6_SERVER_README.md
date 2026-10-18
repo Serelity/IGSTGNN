@@ -68,3 +68,22 @@ python -m unittest tests.test_graph_memory_gw6_model tests.test_graph_memory_gw6
 ```
 
 本地未执行这些 Python 模型检查。服务器测试通过后，沿用既有环境变量，更新 `GW6_TAG` 再运行 `bash experiments/graph_memory_gw6/run.sh all`。初版 `all` 在单元测试失败时即停止，此时尚未开始真实批量预检或训练。
+
+## BEST/LAST 预测漂移诊断
+
+`diagnose_drift.py` 仅用标准库和 NumPy 读取已有预测归档，分析整体平移、预测时距、每三步共用的输出通道、节点和真实目标值区间。它核对完成轮数、角色、检查点身份、归档 SHA256、真值和有效掩码等共享轴，再将结果写入新的诊断目录。这个入口独立于训练和模型模块。
+
+在 GW6 仓库目录、`igstgnn` 环境执行：
+
+```bash
+export GW6_RUN="$PWD/experiments/chronological_runs/contra_original_gw6_joint_s2025"
+export GW6_DRIFT_OUT="$GW6_RUN/drift_$(date +%Y%m%d_%H%M%S)"
+python verify_gw6_bundle.py &&
+python -m unittest tests.test_graph_memory_gw6_drift -v &&
+python experiments/graph_memory_gw6/diagnose_drift.py \
+  --run-dir "$GW6_RUN" --epochs 20 --output-dir "$GW6_DRIFT_OUT"
+```
+
+诊断器自动选择与当前已完成实验身份匹配的完整 BEST/LAST 评估目录，可显式传 `--best-dir` 和 `--last-dir`。输出包含 `summary.json`、`report.md`、输入清单和各分组 CSV；完成后会打印报告，可直接贴回。新增数值测试及诊断脚本均需服务器执行，本地仅做静态审查和文件字节检查。
+
+解释时区分两种量：`平均预测变化的平方 / 预测变化的均方` 是整体均值平移占预测变化平方能量的比例，不是 MAE 退化的解释比例。将 LAST 减去其相对 BEST 的总体平均预测变化，仅用于诊断整体偏移能否解释现象；这是同一验证归档上的参考均值对齐，不是新的模型成绩或部署修正。真实值区间采用共享目标值分位数，重复边界合并，单位沿用原始目标。
