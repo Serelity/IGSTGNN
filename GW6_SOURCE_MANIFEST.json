@@ -11,8 +11,8 @@
       "sha256": "55e29e50a375df86ce57f74c6f59da622b57067cb176e12952101b02c4b603b5"
     },
     "GW6_SERVER_README.md": {
-      "bytes": 3411,
-      "sha256": "f1a51ee0641fa557b8e368788822a083bea8ff54af8e932e3ca1f1b12dfd2f1c"
+      "bytes": 4983,
+      "sha256": "0d5c48aed1e20e7bbc38dd1390f40119aab45a6c6d2a9505cc0b2d83aa3657f5"
     },
     "LICENSE": {
       "bytes": 1073,
@@ -2919,8 +2919,8 @@
       "sha256": "5e4b0aa0679e2ebf03501aeb62960630195bdb7e20d5ba0cc4000f50b4167585"
     },
     "tests/test_graph_memory_gw6_model.py": {
-      "bytes": 15734,
-      "sha256": "8d68088f86e28348841f7a298b18a19c4c2f43d48d1d95d4c96a8bab4f324cfc"
+      "bytes": 18262,
+      "sha256": "abf353042ce80dffc0829b8991daa85de928a051a98f3daf3f64fb874f173707"
     },
     "tests/test_graph_memory_gw6_workflow.py": {
       "bytes": 10578,

@@ -53,3 +53,18 @@ bash experiments/graph_memory_gw6/run.sh resume
 - `evaluate.py`：共享真值轴、原指标回放、历史参考与本轮对照分列、困难集/偏差/逐时距报告。
 
 本分支不包含数据或服务器检查点。已有 GW6 checkout 更新时执行 `git fetch origin` 和 `git merge --ff-only origin/research/graph-memory-gw6`；运行期间保持源码固定。
+
+## 两项逐位回归检查失败后的更新
+
+初版的递推控制/冻结探针测试把 GW4 原有的“仅残差可训练”参考状态，与 GW6 的“全骨干可训练”或“全骨干冻结”状态直接比较。即使在 `no_grad()` 下，部分 PyTorch 版本的高维 Linear/matmul 仍可能根据参数 `requires_grad` 选择不同计算路径，见 [ATen should_fold 源码](https://github.com/pytorch/pytorch/blob/v2.6.0/aten/src/ATen/native/LinearAlgebra.cpp#L1780-L1833)。更新后的参考模型先对齐各阶段的参数训练状态和 eval 状态，仍使用独立模型副本及严格 `torch.equal`；首层历史消息提取也增加逐位检查。若仍失败，断言会给出 PyTorch 版本、差异元素数、最大绝对误差及首个差异值。具体服务器差异仍需更新后复验，不能仅凭旧断言认定是浮点舍入。
+
+该更新只修改测试和说明，模型、训练策略和历史基准源码保持原样；逐位合同适用于相同执行状态。更新交付哈希后，先在服务器复验：
+
+```bash
+git fetch origin
+git merge --ff-only origin/research/graph-memory-gw6
+python verify_gw6_bundle.py
+python -m unittest tests.test_graph_memory_gw6_model tests.test_graph_memory_gw6_workflow tests.test_graph_memory_gw6_evaluation -v
+```
+
+本地未执行这些 Python 模型检查。服务器测试通过后，沿用既有环境变量，更新 `GW6_TAG` 再运行 `bash experiments/graph_memory_gw6/run.sh all`。初版 `all` 在单元测试失败时即停止，此时尚未开始真实批量预检或训练。

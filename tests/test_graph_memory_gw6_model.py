@@ -38,6 +38,34 @@ class GraphMemoryGW6Tests(unittest.TestCase):
             model.selector.residual.bias.normal_(std=.1)
         return model.eval()
 
+    def assert_exact_prediction(self, actual, expected, context):
+        """Keep bitwise regression strict and make server failures actionable."""
+        self.assertEqual(actual.shape, expected.shape, context)
+        self.assertEqual(actual.dtype, expected.dtype, context)
+        self.assertEqual(actual.device, expected.device, context)
+        if torch.equal(actual, expected):
+            return
+        actual, expected = actual.detach(), expected.detach()
+        different = actual != expected
+        first = tuple(int(i) for i in different.nonzero()[0])
+        finite = torch.isfinite(actual) & torch.isfinite(expected)
+        error = (actual.double()-expected.double()).abs()
+        self.fail(f'{context}: bitwise prediction mismatch; torch={torch.__version__}, '
+            f'device={actual.device}, dtype={actual.dtype}, '
+            f'different={int(different.sum())}/{actual.numel()}, '
+            f'finite_pairs={int(finite.sum())}/{actual.numel()}, '
+            f'max_abs={float(error[finite].max()) if bool(finite.any()) else None}, '
+            f'first_index={first}, actual={float(actual[first])}, expected={float(expected[first])}')
+
+    def assert_same_anchor_execution_state(self, reference, candidate):
+        # no_grad() alone does not equalize Tensor.requires_grad. PyTorch may
+        # select different high-dimensional Linear/matmul kernels from those
+        # flags even with autograd disabled (ATen should_fold).
+        self.assertEqual({n: p.requires_grad for n, p in reference.named_parameters()},
+            {n: p.requires_grad for n, p in candidate.named_parameters()})
+        self.assertEqual({n: m.training for n, m in reference.named_modules()},
+            {n: m.training for n, m in candidate.named_modules()})
+
     def test_construction_preserves_all_anchor_tensors_names_and_rng(self):
         anchor = self.anchor()
         before, rng = tensor_tree_hash(anchor.state_dict()), rng_fingerprint()
@@ -52,11 +80,16 @@ class GraphMemoryGW6Tests(unittest.TestCase):
             self.assertEqual(tensor_tree_hash(restored.state_dict()), tensor_tree_hash(model.state_dict()))
 
     def test_recurrent_control_is_exact_original_forward_and_joint_training(self):
-        anchor = self.anchor()
+        # Compare independent models under the joint control's all-trainable
+        # flags, rather than the GW4 residual-only training flags.
+        anchor = self.anchor().requires_grad_(True).eval()
         x, report = self.batch()
         model = GraphMemoryIGSTGNN(copy.deepcopy(anchor), 'RECURRENT_CONTROL').eval()
+        self.assert_same_anchor_execution_state(anchor, model.anchor)
         with torch.no_grad():
-            self.assertTrue(torch.equal(anchor(x, incident_data=report), model(x, incident_data=report)))
+            expected = anchor(x, incident_data=report)
+            actual = model(x, incident_data=report)
+        self.assert_exact_prediction(actual, expected, 'RECURRENT_CONTROL eval')
         # The native engine's train() must activate old backbone gradients and
         # dropout for both the recurrent joint control and direct joint arms.
         for arm in DEFAULT_ARMS:
@@ -69,16 +102,19 @@ class GraphMemoryGW6Tests(unittest.TestCase):
                     arm == 'RECURRENT_CONTROL')
 
     def test_frozen_probe_zero_output_recovers_gw4_exactly_and_learns(self):
-        anchor = self.anchor()
+        # The probe freezes the residual too; match that execution state in
+        # its independent reference without changing any reference tensors.
+        anchor = self.anchor().requires_grad_(False).eval()
         x, report = self.batch()
         with torch.no_grad():
             expected = anchor(x, incident_data=report)
         for arm in DEFAULT_ARMS[1:]:
             model = GraphMemoryIGSTGNN(copy.deepcopy(anchor), arm, stage='probe').train()
+            self.assert_same_anchor_execution_state(anchor, model.anchor)
             anchor_hash = tensor_tree_hash(model.anchor.state_dict())
             rng = rng_fingerprint()
             actual = model(x, incident_data=report)
-            self.assertTrue(torch.equal(actual, expected))
+            self.assert_exact_prediction(actual, expected, f'{arm} frozen probe')
             self.assertEqual(rng, rng_fingerprint())
             self.assertTrue(all(not p.requires_grad for p in model.anchor.parameters()))
             self.assertFalse(any(m.training for m in model.anchor.modules()))
@@ -116,7 +152,10 @@ class GraphMemoryGW6Tests(unittest.TestCase):
             if hasattr(conv, 'call_index'):
                 conv.call_index = 0
             actual, memory, receiver = history_graph_memory(conv, x, dynamic, static)
-            torch.testing.assert_close(actual, expected, atol=2e-5, rtol=2e-5)
+            if hasattr(conv, 'weights'):
+                self.assert_exact_prediction(actual, expected, 'GW4 historical memory capture')
+            else:
+                torch.testing.assert_close(actual, expected, atol=2e-5, rtol=2e-5)
             self.assertEqual(tuple(memory.shape), (2, 4, 5, 2, 10, 8))
             windows = x.unfold(1, native.k_t, 1).permute(0, 1, 2, 4, 3)
             transformed = native.activation(native.fc_list_updt(windows.reshape(2, 10, 4, 24))).reshape(2, 10, 4, 3, 8)
