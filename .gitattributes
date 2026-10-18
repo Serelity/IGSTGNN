@@ -36,3 +36,12 @@ experiments/chronological/run_unified_adapter_v03.sh text eol=lf
 experiments/chronological/original_igstgnn_558ab01/* -text -whitespace
 experiments/chronological/run_original_graph_window.sh text eol=lf
 experiments/chronological/run_original_graph_message.sh text eol=lf
+
+# GW6 server entrypoints and fingerprints must survive Git checkout.
+experiments/graph_memory_gw6/* text eol=lf
+tests/test_graph_memory_gw6_*.py text eol=lf
+tests/__init__.py text eol=lf
+docs/igstgnn_graph_memory_gw6_server.md text eol=lf
+GW6_SERVER_README.md text eol=lf
+GW6_SOURCE_MANIFEST.json text eol=lf
+verify_gw6_bundle.py text eol=lf
