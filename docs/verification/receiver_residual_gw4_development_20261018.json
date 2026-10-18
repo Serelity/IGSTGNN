@@ -1,0 +1,21 @@
+{
+  "schema": "gw4_source_delivery_status_v1",
+  "date": "2026-10-18",
+  "status": "SOURCE_PREPARED_SERVER_VALIDATION_PENDING",
+  "branch": "research/receiver-residual-gw4",
+  "base_commit": "37247f171a48b8452e8a6f05cb625e995045f3d6",
+  "local_tests_executed": false,
+  "local_model_execution": false,
+  "server_verification_executed_in_this_session": false,
+  "new_performance_results_available": false,
+  "historical_baseline_training_repeated": false,
+  "historical_baseline_inference_repeated": false,
+  "new_training_arms": ["STATIC_RESIDUAL", "MESSAGE_RESIDUAL", "RECEIVER_RESIDUAL"],
+  "source_policy": "certified_GW2_POST_MESSAGE_BEST_read_only",
+  "old_parameters_frozen": true,
+  "old_modules_eval": true,
+  "additional_adaptation_epoch_cap": 5,
+  "server_commands_document": "docs/igstgnn_receiver_residual_gw4_server.md",
+  "research_document": "docs/gw4_innovation_review_20261018.md",
+  "interpretation": "source_preparation_is_not_validation_or_predictive_improvement"
+}
