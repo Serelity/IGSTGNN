@@ -41,7 +41,7 @@ if [[ -n "${GW8_GW7_BEST_EVAL:-}" ]]; then COMMON+=(--gw7-best-eval "$GW8_GW7_BE
 if [[ -n "${GW8_GW7_LAST_EVAL:-}" ]]; then COMMON+=(--gw7-last-eval "$GW8_GW7_LAST_EVAL"); fi
 run_check() {
   "$PYTHON_BIN" verify_gw8_bundle.py
-  "$PYTHON_BIN" -m unittest tests.test_lag_transport_gw8_model tests.test_lag_transport_gw8_protocol -v
+  "$PYTHON_BIN" -m unittest tests.test_lag_transport_gw8_model tests.test_lag_transport_gw8_protocol tests.test_gw8_historical_replay -v
   "$PYTHON_BIN" -u -m experiments.lag_transport_gw8.verify "${COMMON[@]}" --batch-size 48 --output "$GW8_CHECK_OUTPUT"
 }
 run_train() {

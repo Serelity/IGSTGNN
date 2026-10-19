@@ -86,6 +86,30 @@ export GW8_TAG="$(date +%Y%m%d_%H%M%S)"
 bash experiments/lag_transport_gw8/run.sh evaluate
 ```
 
+### 已完成训练后出现 KeyError: ORIGINAL
+
+首版 GW8 评估器直接从 GW7 的 validation_replay 读取历史 ORIGINAL/GW2_BASE/RECEIVER_RESIDUAL，但 GW7 当时仅写入了四个新训练臂的回放记录。历史预测仍在归档中，对应的真实回放记录位于其认证的 GW6 来源缓存。
+
+修复版从冻结身份链定位 GW6 的 BEST/LAST 缓存，检查两级元数据/归档哈希、历史预测与六项轴的 shape/dtype/值以及 checkpoint 角色一致，再继承真实通过的历史记录。GW7 文件、GW8 模型、训练入口、来源认证和已训练权重保持原字节；评估器不属于 GW8 训练源码身份清单，所以无需重训或修改 identity.json。
+
+在原 GW8 checkout 拉取同一分支，然后用新 tag 重跑评价：
+
+```bash
+git pull --ff-only origin research/edge-slot-kernel-gw8
+conda activate igstgnn
+export PYTHON_BIN="$(command -v python)"
+export GW8_GW7_RUN="$(realpath ../IGSTGNN-GW7/experiments/chronological_runs/contra_original_gw7_screen_s2025)"
+export GW8_DATA="$(realpath ../data/xtraffic/Contra_Costa)"
+export GW8_RUN="$PWD/experiments/chronological_runs/contra_original_gw8_screen_s2025"
+export GW8_TAG="$(date +%Y%m%d_%H%M%S)_evalfix"
+
+python verify_gw8_bundle.py &&
+python -m unittest tests.test_gw8_historical_replay -v &&
+bash experiments/lag_transport_gw8/run.sh evaluate
+```
+
+若已分配 GPU 且在 gpu05 直接运行，先设 `export GW8_DIRECT=1`。evaluate 模式只重做 BEST/LAST 和筛查，不调用训练或优化器。保留旧失败目录，新 tag 避免覆盖。新增回归测试和修复版评估仍需服务器实际执行确认，本地未运行 Python 或模型。
+
 ## 查看结果
 
 运行结束后，父 shell 中保持相同 GW8_RUN/GW8_TAG：

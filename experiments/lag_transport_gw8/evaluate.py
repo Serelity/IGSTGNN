@@ -19,6 +19,7 @@ from experiments.lag_transport_gw8.reference import (
     recertify, protected_paths, read_json, require, verify_identity_digest)
 from experiments.chronological import evaluate_original_graph_message as metrics
 from experiments.chronological.graph_message_reuse import RUNTIME_KEYS
+from experiments.graph_memory_gw6 import evaluate as history_eval
 
 SCHEMA='original_igstgnn_lag_transport_gw8_archive_v1'
 PRODUCER_SCHEMA='gw8_lag_transport_producer_v1'
@@ -27,6 +28,8 @@ CASES=(*HISTORICAL,*train.ARMS)
 AXIS_KEYS=('y','valid','sample_ids','node_ids','road_labels','direct_support')
 PRODUCERS=('experiments/lag_transport_gw8/evaluate.py',
     'experiments/lag_transport_gw8/reference.py',
+    'experiments/graph_memory_gw6/evaluate.py',
+    'experiments/graph_memory_gw6/reference.py',
     'experiments/chronological/evaluate_original_graph_message.py',
     'experiments/chronological/evaluate_unified_adapter_v03.py')
 
@@ -69,14 +72,85 @@ def selection(directory,state,checkpoint,arm):
     return weights,role
 
 
+def certified_historical_replay(reference,checkpoint,values,metadata):
+    """Recover GW7's omitted historical replay from its certified GW6 cache.
+
+    GW7 copied historical predictions and roles but emitted validation_replay
+    only for its new arms. Do not repair the immutable GW7 metadata or infer a
+    passing replay: require the actual ancestor record and identical arrays.
+    """
+    ancestor=reference['gw7_source_reference']
+    saved=ancestor['archives'][checkpoint]; directory=Path(saved['directory'])
+    metadata_path=directory/'metadata.json'; archive_path=directory/'paired_predictions.npz'
+    require(metrics.sha256(metadata_path)==saved['metadata_sha256'],
+        'Historical GW6 metadata changed')
+    source=read_json(metadata_path)
+    require(source.get('schema')==history_eval.PRODUCER_SCHEMA
+        and source.get('status')=='GW6_PREDICTION_PASS'
+        and source.get('run_identity_sha256')==ancestor['source_identity_sha256']
+        and source.get('source_reference')==ancestor['gw6_source_reference']
+        and source.get('checkpoint_selection')==checkpoint
+        and source.get('producer_source')==history_eval.producer_source()
+        and source.get('engineering_only') is False
+        and source.get('test_evaluated') is False,
+        'Historical GW6 evaluation certificate differs')
+    require(metrics.sha256(archive_path)==saved['archive_sha256']
+        and source.get('archive_sha256')==saved['archive_sha256'],
+        'Historical GW6 archive changed')
+    with np.load(archive_path,allow_pickle=False) as payload:
+        require(str(np.asarray(payload['schema']).item())==history_eval.SCHEMA
+            and str(np.asarray(payload['axis_order']).item())=='sample,horizon,node',
+            'Historical GW6 archive schema or axes differ')
+        ancestor_values={key:payload[key]
+            for key in (*AXIS_KEYS,*('pred__'+name for name in HISTORICAL))}
+    require_matching_axes(values,ancestor_values)
+    provenance=dict(directory=str(directory.resolve()),
+        metadata_sha256=saved['metadata_sha256'],archive_sha256=saved['archive_sha256'],
+        checkpoint_selection=checkpoint,source_run_identity_sha256=ancestor['source_identity_sha256'])
+    replays={}
+    for name in HISTORICAL:
+        key='pred__'+name; current,previous=values[key],ancestor_values[key]
+        require(current.shape==previous.shape and current.dtype==previous.dtype
+            and np.array_equal(current,previous),
+            'Historical GW7/GW6 predictions differ: '+name)
+        role=source.get('checkpoint_roles',{}).get(name)
+        require(isinstance(role,dict) and metadata.get('checkpoint_roles',{}).get(name)
+            ==dict(role,historical=True,reused=True),
+            'Historical GW7/GW6 checkpoint role differs: '+name)
+        replay=source.get('validation_replay',{}).get(name)
+        require(isinstance(replay,dict) and replay.get('passed') is True,
+            'Missing or failed certified historical GW6 validation replay: '+name)
+        existing=metadata.get('validation_replay',{}).get(name)
+        require(existing is None or (isinstance(existing,dict) and existing.get('passed') is True),
+            'Conflicting historical GW7 validation replay: '+name)
+        replays[name]=dict(replay,mode='certified_historical_cache_no_new_forward',
+            equal_new_training_budget=False,certification_source=dict(provenance))
+    require(metrics.sha256(metadata_path)==saved['metadata_sha256'],
+        'Historical GW6 metadata changed during read')
+    require(metrics.sha256(archive_path)==saved['archive_sha256'],
+        'Historical GW6 archive changed during read')
+    return replays,provenance
+
+
 def load_historical(reference,checkpoint):
     saved=reference['archives'][checkpoint]; directory=Path(saved['directory'])
     require(metrics.sha256(directory/'metadata.json')==saved['metadata_sha256'],'GW7 metadata changed')
     metadata=read_json(directory/'metadata.json'); path=directory/'paired_predictions.npz'
+    require(metadata.get('checkpoint_selection')==checkpoint
+        and metadata.get('archive_sha256')==saved['archive_sha256'],
+        'GW7 historical cache selection or archive certificate differs')
     require(metrics.sha256(path)==saved['archive_sha256'],'GW7 cached predictions changed')
     with np.load(path,allow_pickle=False) as payload:
         values={key:payload[key] for key in (*AXIS_KEYS,*('pred__'+name for name in HISTORICAL))}
     require(metrics.sha256(path)==saved['archive_sha256'],'GW7 cache changed during read')
+    replays,provenance=certified_historical_replay(reference,checkpoint,values,metadata)
+    # The copy is an in-memory view for GW8 only. Source files stay immutable.
+    metadata=dict(metadata,validation_replay={**metadata.get('validation_replay',{}),**replays},
+        historical_replay_provenance=provenance)
+    require(metrics.sha256(directory/'metadata.json')==saved['metadata_sha256'],
+        'GW7 metadata changed during historical replay certification')
+    require(metrics.sha256(path)==saved['archive_sha256'],
+        'GW7 cache changed during historical replay certification')
     return values,metadata
 
 
@@ -124,6 +198,7 @@ def produce(args,output):
         require(historical_metadata['validation_replay'][name]['passed'] is True,
             'Missing historical validation replay')
         roles[name]=dict(historical_metadata['checkpoint_roles'][name],historical=True,reused=True)
+        replay[name]=dict(historical_metadata['validation_replay'][name])
     for arm,state in states.items():
         weights,roles[arm]=selection(args.run_dir/arm,state,args.checkpoint,arm)
         model=train.model_for_arm(data,modules,device,arm,gw4_weights,recurrent_weights,**identity['model_options'])
@@ -169,6 +244,7 @@ def produce(args,output):
         common_completed_new_epochs=train.SCREEN_EPOCHS,best_selection_includes_stage_zero=True,
         validation_replay=replay,mechanism_summary=mechanisms,benchmarks=benchmarks,
         initializations=identity['initializations'],runtime=runtime,producer_source=producer_source(),
+        historical_replay_provenance=historical_metadata['historical_replay_provenance'],
         historical_new_inference_calls=0,historical_equal_new_budget_controls=False,
         optimizer_updates=0,test_evaluated=False)
     path=output/'paired_predictions.npz'; np.savez_compressed(path,**archive)

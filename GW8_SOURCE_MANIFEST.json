@@ -3721,8 +3721,8 @@
       "sha256": "a3d74ac181341a254e688e8fcccddb2ed856711003af3a0334531159a5bc5afe"
     },
     "GW8_SERVER_README.md": {
-      "bytes": 6700,
-      "sha256": "593e680abe41995a1e2fcef8319ceae5b0ea231ecc1274262d5b200a5de37072"
+      "bytes": 8377,
+      "sha256": "3a77e9c0cf57e8c679ff6aecbf67411ce8864090f5fdd5efd71f6a4a9bd3b85d"
     },
     "verify_gw8_bundle.py": {
       "bytes": 1401,
@@ -3749,16 +3749,16 @@
       "sha256": "2851dc12d538f2b00018f861a684d93b249236ef4f4da955416196c8db0295b6"
     },
     "experiments/lag_transport_gw8/evaluate.py": {
-      "bytes": 21701,
-      "sha256": "b42e3a426b76cb18c4f69cc9c0ed73fb91c0cbced973309a4fe61f1444961eb5"
+      "bytes": 26498,
+      "sha256": "dc6587f277759c8456df1e2fecf9f037a4bf2e0d60e3517b9c3427e434f02a93"
     },
     "experiments/lag_transport_gw8/verify.py": {
       "bytes": 10352,
       "sha256": "d4aa279b9923f4aadcb67787ea365bb78ba3ec99c8adbe5d99a769a54292490c"
     },
     "experiments/lag_transport_gw8/run.sh": {
-      "bytes": 3925,
-      "sha256": "4205aeec59f78ebea4548ffad782c26f710efc6beb070cffe5acc979ecce7b3c"
+      "bytes": 3958,
+      "sha256": "f4297305a0ae9ba73fad213824d2aee18416be196828a73633e37ea99c803285"
     },
     "tests/test_lag_transport_gw8_model.py": {
       "bytes": 25927,
@@ -3767,6 +3767,10 @@
     "tests/test_lag_transport_gw8_protocol.py": {
       "bytes": 12427,
       "sha256": "202c11f999784ea1964245999dbc5327a8923ac448aa44ceaceed4ee70e76c47"
+    },
+    "tests/test_gw8_historical_replay.py": {
+      "bytes": 12500,
+      "sha256": "5dc5d51ac02e26711ae5fa6fe1c565a0302176270af505f1660e2883641f8940"
     }
   }
 }
