@@ -157,8 +157,8 @@
       "sha256": "e48993161aecb005bd2dcd6e71de00a5c927c69becffa07f89efebf3af51ab68"
     },
     "docs/igstgnn_branch_readout_gw9_design.md": {
-      "bytes": 8269,
-      "sha256": "5d91ee766ed19b877bc040e1f71c5138f8290f62fe6327eb27037084e3d99e7d"
+      "bytes": 8904,
+      "sha256": "35e4ac1084942492d50fd746d42743cb53dce737a2ca991afdea312e5e2557a7"
     },
     "docs/igstgnn_conditional_propagation_contract_20261015.md": {
       "bytes": 21397,
@@ -1061,28 +1061,32 @@
       "sha256": "45fb618d3d36821d9f44131299844e892a455efebfb1c0182f39381bd9c8b442"
     },
     "experiments/branch_readout_gw9/model.py": {
-      "bytes": 12655,
-      "sha256": "8e405c6d46912e1df97971c7c633c0e13811d595dff096a570317d502321eba7"
+      "bytes": 14202,
+      "sha256": "2ad89a4db97f89bdf9b25939d6505f96b521cbf4184a82fe720c2e35b838e005"
     },
     "experiments/branch_readout_gw9/probe.py": {
-      "bytes": 41565,
-      "sha256": "ae8ebf1c92dc275b38263ccd431f977891affc0624ed232cda775d661b682d10"
+      "bytes": 42715,
+      "sha256": "d84aa21419614e9e09358336625ddda6c11cf767823bf46e70895817e55f0413"
     },
     "experiments/branch_readout_gw9/reference.py": {
       "bytes": 8555,
       "sha256": "d7d124a7b567a516e9857d5870f9b0d8590c6d4a2c4dd7c22c63cc28414b42a7"
     },
+    "experiments/branch_readout_gw9/replay.py": {
+      "bytes": 18990,
+      "sha256": "cea29d9155ed16ce01c21463dab219fba65c9b149ea1764c04c6ee2b3a231008"
+    },
     "experiments/branch_readout_gw9/run.sh": {
-      "bytes": 4653,
-      "sha256": "030c31be9b1924f380f9a45d573f0701a81452de0b52801b532d69a401fcc10f"
+      "bytes": 4939,
+      "sha256": "79c333aff01a525ae1afa61bc0f1abcbf7f6bd1d8d918bf96de9673584f31574"
     },
     "experiments/branch_readout_gw9/train.py": {
-      "bytes": 25199,
-      "sha256": "d398b2ce1c94d82ba98c0e437324b6af037a3a1a73c0371c093c17444ac48e76"
+      "bytes": 25247,
+      "sha256": "62e4385f601470f65cf698d3992a29a418dcd912462096c88338ed62411ffe99"
     },
     "experiments/branch_readout_gw9/verify.py": {
-      "bytes": 11448,
-      "sha256": "5060cd5b9078e46f0bffae0c4b4a8102a31ace5bf207540bc72016a528036cd4"
+      "bytes": 14496,
+      "sha256": "f542f755554b247d79baf8133e85d8c3995bb8fffd599a9f46cc4d16f008d94d"
     },
     "experiments/chronological/analyze_b3_r_joint_gain.py": {
       "bytes": 15186,
@@ -2661,8 +2665,8 @@
       "sha256": "27de094f345124f830123709dd16bf002e13403dbb1b14e6db4db44a5c01c6a5"
     },
     "GW9_SERVER_README.md": {
-      "bytes": 8524,
-      "sha256": "b1f5022573a2adff36ed1e65781a0473a90ed74ca70f4f0413290634a7b741a7"
+      "bytes": 10462,
+      "sha256": "0ecebe509dad1d27ee8c612541846233435d904889398590bbcbc69c8fe2af7d"
     },
     "img/framework.png": {
       "bytes": 316280,
@@ -2997,16 +3001,20 @@
       "sha256": "1262cd3d1eaf657df2e76fa1eb48a7dd31cb3e2427cd65c040e71c86dfdf7c87"
     },
     "tests/test_branch_readout_gw9_model.py": {
-      "bytes": 20336,
-      "sha256": "d5b0fcbf72a2d4d251642bb766ba4a8ea16042f001da7942b3130713966b836c"
+      "bytes": 27351,
+      "sha256": "96b8b2abd1668877ec07a1c3be66dae1abc1856769bdf56d0873a233b49bc740"
     },
     "tests/test_branch_readout_gw9_probe.py": {
-      "bytes": 16449,
-      "sha256": "6b97f481b9369764f2793f038534ae6b86f4f9923b050168c5ceaeba9c1d4607"
+      "bytes": 18337,
+      "sha256": "1fc22b8e92e7d49d5d38908552c33f57b72433a2ec650b9f0c1ea8e24e12c3b3"
     },
     "tests/test_branch_readout_gw9_protocol.py": {
       "bytes": 12145,
       "sha256": "a5d292549e43c409eb62670faf4c6079f508d766ce2e12e4872c6fc2f0eb97f8"
+    },
+    "tests/test_branch_readout_gw9_replay.py": {
+      "bytes": 5229,
+      "sha256": "82a6122699ca69b9213a9613559afe337859dd6cf443141194fe1d8e777c4a1b"
     },
     "tests/test_candidate_road_evidence.py": {
       "bytes": 3601,

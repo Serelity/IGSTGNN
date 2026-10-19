@@ -18,6 +18,7 @@ import torch
 
 from experiments.branch_readout_gw9 import train
 from experiments.branch_readout_gw9.reference import certify,recertify,protected_paths,require
+from experiments.branch_readout_gw9.replay import compare_arrays
 from experiments.chronological.original_igstgnn_runtime import device_batch
 
 
@@ -139,7 +140,25 @@ def main(argv=None):
             model.train(); model.zero_grad(set_to_none=True)
             require(not model.anchor.training and all(not p.requires_grad for p in model.anchor.parameters()),
                 'Probe must keep its entire anchor frozen in evaluation mode')
-            prediction=data.scaler.inverse_transform(model(x,incident_data=incident,sensor_data=sensors))
+            rng=train.base.rng_state()
+            # Replay the source's forward dispatch independently of GW9 hooks.
+            # Parameters remain outside the optimizer; no backward is enabled.
+            try:
+                model.anchor.requires_grad_(True)
+                with torch.no_grad():
+                    source_prediction=model.anchor(x,incident_data=incident,sensor_data=sensors)
+            finally:
+                model.anchor.requires_grad_(False)
+            source_rng=train.base.tensor_tree_hash(train.base.rng_state())
+            train.epoch_tools.restore_rng(rng)
+            normalized=model(x,incident_data=incident,sensor_data=sensors)
+            require(torch.equal(normalized,source_prediction),
+                'Frozen zero-head forward differs from live-flag GW8 source forward')
+            require(train.base.tensor_tree_hash(train.base.rng_state())==source_rng,
+                'Frozen source-compatible forward changed source RNG consumption')
+            require(all(not p.requires_grad for p in model.anchor.parameters()),
+                'Frozen source-compatible forward did not restore parameter flags')
+            prediction=data.scaler.inverse_transform(normalized)
             target=data.scaler.inverse_transform(y)
             null=target.min() if target.min()<1 else target.new_tensor(0.)
             loss=modules.metrics.masked_mae(prediction,target,null)
@@ -153,9 +172,34 @@ def main(argv=None):
             model.assert_cache_clear()
             evidence['probe_arms'][arm]=dict(initialization=train.initialization(model),
                 anchor_gradients_absent=True,anchor_buffers_unchanged=True,head_task_gradient=True,
+                exact_live_flag_source_recovery=True,source_forward_grad_disabled=True,
+                source_forward_flags_restored=True,
                 anchor_training=False,optimizer_updates=0,loss=float(loss.detach()))
-            del model,prediction,target,loss; gc.collect()
+            del model,prediction,target,loss,source_prediction,normalized; gc.collect()
             if cuda: torch.cuda.empty_cache()
+        # Authenticate a real validation batch against the immutable GW8 cache
+        # before creating a training run. Full validation remains mandatory in
+        # probe stage zero; this is an early engineering check, not that gate.
+        from experiments.branch_readout_gw9.probe import load_baseline
+        baseline=load_baseline(reference)
+        model=train.model_for_arm(data,modules,args.device,'R_CONTINUE',gw4_weights,recurrent_weights,
+            hidden=args.hidden,stage='probe')
+        val_x,_,val_incident,val_sensors=device_batch(next(data.loaders['val_loader'].get_iterator()),args.device)
+        with torch.no_grad():
+            features=model.capture_features(val_x,incident_data=val_incident,sensor_data=val_sensors)
+            actual=data.scaler.inverse_transform(features['base']).squeeze(-1).cpu().numpy()
+        replay=compare_arrays(actual,baseline['pred__FROZEN_R'][:len(actual)])
+        replay.update(validation_samples=len(actual),full_validation_replay=False,
+            source_forward_policy=train.DESIGN['frozen_forward'])
+        evidence['frozen_validation_cache_replay']=replay
+        require(replay['exact_equal'],'Frozen first validation batch differs from certified GW8 cache: '+json.dumps(replay))
+        require(all(not p.requires_grad and p.grad is None for p in model.anchor.parameters())
+            and train.base.tensor_tree_hash(model.anchor.state_dict())==
+                reference['source_initialization']['model_tensor_sha256'],
+            'Frozen cache preflight changed anchor state or parameter flags')
+        model.assert_cache_clear()
+        del model,features,actual,baseline; gc.collect()
+        if cuda: torch.cuda.empty_cache()
         require(train.base.tensor_tree_hash(batch)==input_sha,'Preflight mutated inputs')
         recertify(reference)
         for name,digest in evidence['execution_source'].items():

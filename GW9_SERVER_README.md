@@ -62,7 +62,7 @@ export GW9_DIRECT=1
 
 `GW9_DIRECT=1` 只表示已获得 GPU 后直接执行，不会申请资源。父 shell 必须 export 这些变量；launcher 内部设置的变量不会返回父 shell。
 
-执行顺序是源码包校验 → 三组新增服务器测试 → 真实 batch 48、零优化器更新的前反向预检 → 两个头固定 3 轮 → 自动生成 probe 报告与锁定筛查。任一步失败即停止，不自动缩小 batch、修改卡尺、追加轮数或启动 joint。
+执行顺序是源码包校验 → 四组新增服务器测试 → 真实 batch 48、零优化器更新的前反向预检 → 两个头固定 3 轮 → 自动生成 probe 报告与锁定筛查。任一步失败即停止，不自动缩小 batch、修改卡尺、追加轮数或启动 joint。
 
 来源 BEST/LAST 自动选择认证匹配的完整归档；需明确指定时，在启动前设置：
 
@@ -135,6 +135,24 @@ bash experiments/branch_readout_gw9/run.sh evaluate
 ```
 
 单独预检：`bash experiments/branch_readout_gw9/run.sh check`。之后再调用 probe/joint 会重新预检；默认直接 probe 即可。每次预检报告写入 `${GW9_PROBE_RUN}_verification_${GW9_TAG}_${MODE}.json`；重复同一 mode 前更新 tag，避免覆盖。
+
+## 冻结 R 与历史缓存不一致时
+
+旧版在 probe 将全部骨干参数的 requires_grad 标志置为 False，而 GW8 缓存生成时这些标志为 True。修订版只在骨干单次前向的 `torch.no_grad()` 内临时恢复源标志，结束或异常后立即恢复 False；骨干全程 eval，头的前向与反向在恢复冻结后执行。骨干不加入优化器，参数值和缓冲区保持指纹，新增读出之外不产生梯度。此项处理对齐前向执行条件；是否解决实际服务器的差异仍以严格回放结果为准。
+
+真实预检现增加两项：冻结零头与同批源 R 逐元素相等，以及首批开发验证与认证 GW8 缓存逐元素相等。阶段零仍检查完整开发集，不放宽 `np.array_equal`，不修改源缓存、不修改精度筛查门槛。
+
+发生缓存不一致时，预检 JSON 包含最大/平均/RMS 差值、差异点数和首个差异位置。probe 内失败还会写出 `frozen_replay.json`，包含 native 指标与当前/历史设备信息。可运行无优化器更新的独立诊断：
+
+```bash
+export GW9_TAG="$(date +%Y%m%d_%H%M%S)"
+export GW9_REPLAY_OUTPUT="$PWD/experiments/chronological_runs/gw9_replay_$GW9_TAG"
+bash experiments/branch_readout_gw9/run.sh replay
+```
+
+默认只检查第一批，不能代替完整回放。设置 `GW9_REPLAY_BATCHES=0` 可诊断完整开发集。诊断比较源 R 开启/关闭统计、源 R 冻结标志和 GW9 捕获路径，不产生筛查通过或模型改进结论。
+
+若旧版在阶段零的首次验证即报错，此时尚未保存成对 `last.pt`、尚无训练更新。更新代码后保留失败目录，指定新目录，例如 `GW9_PROBE_RUN="$PWD/experiments/chronological_runs/contra_original_gw9_probe_replayfix_s2025"`，使用 `probe` 重新开始固定三轮。不要用 `probe-resume` 把不同源码身份混入旧运行；若失败目录已有 `last.pt`，先核查实际完成的预算。
 
 ## 解释边界
 

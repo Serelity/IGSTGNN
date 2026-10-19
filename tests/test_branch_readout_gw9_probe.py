@@ -301,6 +301,37 @@ class BranchReadoutProbeTests(unittest.TestCase):
         self.assertFalse(result['joint_training_started'])
         self.assertFalse(result['test_evaluated'])
 
+    def test_cache_mismatch_keeps_strict_gate_and_records_numerical_difference(self):
+        probe.base.configure_runtime('cpu',1,2025)
+        extractor = FrozenExtractor()
+        loader = SyntheticLoader()
+        truth_rows, base_rows = [], []
+        with torch.no_grad():
+            for raw in loader.get_iterator():
+                truth_rows.append(raw['y_data'].squeeze(-1).numpy())
+                base_rows.append(extractor.capture_features(raw['x_data'])['base'].squeeze(-1).numpy())
+        truth, expected = np.concatenate(truth_rows), np.concatenate(base_rows)
+        changed = expected.copy(); changed[0,1,1] += .125
+        baseline = dict(y=truth, valid=truth!=0, direct_support=np.ones((3,2),dtype=bool),
+            pred__FROZEN_R=changed)
+        data = SimpleNamespace(loaders=dict(train_loader=loader,val_loader=SyntheticLoader()),
+            config=dict(lrate=.01,wdecay=0.,clip_grad_value=1.),
+            scaler=SimpleNamespace(inverse_transform=lambda value:value))
+        runner = probe.ProbeEngine(extractor,data,SimpleNamespace(metrics=native_metrics),'cpu',baseline)
+        before = probe.base.tensor_tree_hash(extractor.anchor.state_dict())
+        with patch('builtins.print'), self.assertRaisesRegex(ValueError,'certified GW8 BEST cache'):
+            runner.evaluate()
+        details = runner.last_frozen_replay
+        self.assertFalse(details['exact_equal'])
+        self.assertEqual(details['mismatch_count'],1)
+        self.assertAlmostEqual(details['max_abs'],.125)
+        self.assertEqual(details['first_mismatch']['index'],[0,1,1])
+        self.assertIn('actual_native',details)
+        self.assertIn('cached_native',details)
+        self.assertFalse(details['anchor_requires_grad_at_boundary'])
+        self.assertEqual(before,probe.base.tensor_tree_hash(extractor.anchor.state_dict()))
+        self.assertTrue(runner.check_backbone())
+
     def test_probe_screen_rejects_control_late_or_regime_regression(self):
         mutations = (
             lambda b,l:b['BRANCH_READOUT'].update(mae_pooled=9.99),

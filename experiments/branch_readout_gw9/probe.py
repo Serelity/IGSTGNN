@@ -23,6 +23,7 @@ from experiments.branch_readout_gw9 import train
 from experiments.branch_readout_gw9.model import DESIGN, PROBE_ARMS, ReadoutHead
 from experiments.branch_readout_gw9.reference import (
     certify, recertify, protected_paths, read_json, require, verify_identity_digest)
+from experiments.branch_readout_gw9.replay import compare_arrays
 from experiments.chronological import evaluate_original_graph_message as metrics
 from experiments.chronological.graph_message_reuse import RUNTIME_KEYS
 from experiments.chronological.original_igstgnn_runtime import device_batch
@@ -68,6 +69,7 @@ def load_baseline(reference):
     with np.load(directory/'paired_predictions.npz', allow_pickle=False) as payload:
         result = {name: payload[name].copy() for name in AXIS_KEYS}
         result['pred__FROZEN_R'] = payload['pred__R_CONTINUE'].copy()
+    result['_cache_runtime'] = read_json(directory/'metadata.json').get('runtime', {})
     require(base.sha256(directory/'metadata.json') == saved['metadata_sha256']
         and base.sha256(directory/'paired_predictions.npz') == saved['archive_sha256'],
         'GW8 BEST cache changed while reading')
@@ -173,10 +175,18 @@ class ProbeEngine:
         truth, support = np.concatenate(truths), np.concatenate(supports)
         require(np.array_equal(truth, self.baseline['y'])
             and np.array_equal(support, self.baseline['direct_support']), 'Probe validation axes differ')
-        require(predictions['FROZEN_R'].dtype == self.baseline['pred__FROZEN_R'].dtype
-            and np.array_equal(predictions['FROZEN_R'], self.baseline['pred__FROZEN_R']),
-            'Frozen R prediction differs from certified GW8 BEST cache')
         require(all(np.isfinite(value).all() for value in predictions.values()), 'Nonfinite probe validation')
+        self.last_frozen_replay = compare_arrays(predictions['FROZEN_R'], self.baseline['pred__FROZEN_R'])
+        self.last_frozen_replay.update(
+            actual_native=metrics.native_metrics(predictions['FROZEN_R'], truth, self.modules),
+            cached_native=metrics.native_metrics(self.baseline['pred__FROZEN_R'], truth, self.modules),
+            anchor_requires_grad_at_boundary=any(p.requires_grad for p in self.extractor.anchor.parameters()),
+            device_name=torch.cuda.get_device_name(self.device) if self.device.type == 'cuda' else 'CPU',
+            torch=str(torch.__version__), cuda=torch.version.cuda,
+            cached_runtime=self.baseline.get('_cache_runtime', {}),
+            policy='strict_dtype_shape_and_values_no_tolerance_relaxation')
+        require(self.last_frozen_replay['exact_equal'],
+            'Frozen R prediction differs from certified GW8 BEST cache: '+json.dumps(self.last_frozen_replay))
         self.check_backbone()
         records = {name: record(value, truth, self.baseline['valid'], self.modules)
             for name, value in predictions.items()}
@@ -397,6 +407,7 @@ def finalize(runner, directory, identity, state):
             run_identity_sha256=identity['identity_sha256'], source_reference=identity['source_reference'],
             checkpoint_selection=role, head_roles=roles[role], validation_replay=replay,
             frozen_R_exact_cache_replay=True, backbone_tensor_sha256=runner.backbone_tensor_sha256,
+            frozen_R_replay=getattr(runner, 'last_frozen_replay', None),
             backbone_updates=0, head_updates=state['head_updates'], completed_epoch=PROBE_EPOCHS,
             execution_source=source_hashes(), archive_sha256=base.sha256(child/'paired_predictions.npz'),
             timing=getattr(runner, 'last_validation_timing', None),
@@ -604,9 +615,13 @@ def main(argv=None):
                 state = run_epochs(runner, args.run_dir, identity, state=state)
             return finalize(runner, args.run_dir, identity, state)
         except BaseException as error:
+            replay = getattr(locals().get('runner'), 'last_frozen_replay', None)
+            if replay is not None:
+                base.write_json(args.run_dir/'frozen_replay.json', replay)
             base.write_json(args.run_dir/('failure_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')+'.json'),
                 dict(status='GW9_PROBE_FAILED', error_type=type(error).__name__, error=str(error),
                     resume_semantics='paired_last_atomic_epoch_incomplete_epoch_replayed_for_both_heads',
+                    frozen_replay=replay,
                     test_evaluated=False))
             raise
 

@@ -24,6 +24,7 @@ DESIGN = dict(version='GW9', anchor='certified_GW8_R_CONTINUE_BEST',
     SUM_CONTROL='Linear(concat(S,tanh(S)))->Tanh->bias_free_zero_Linear',
     BRANCH_READOUT='Linear(concat(S,tanh(Q)))->Tanh->bias_free_zero_Linear',
     probe='frozen_eval_anchor_shared_features_two_identical_capacity_heads',
+    frozen_forward='eval_no_grad_with_GW8_source_requires_grad_flags_during_anchor_call_only_then_restore_frozen_flags',
     joint='all_anchor_parameters_trainable_with_same_capacity_head_controls',
     target_inputs=False, additional_report_inputs=False,
     parameter_initialization_preserves_rng=True, novelty_status='unestablished',
@@ -185,6 +186,29 @@ class BranchReadoutIGSTGNN(nn.Module):
             features = {name: value.detach() for name, value in features.items()}
         return features
 
+    def _anchor_forward(self, history_data, incident_data, sensor_data):
+        if self.stage != 'probe':
+            return self.anchor(history_data, incident_data=incident_data, sensor_data=sensor_data)
+        parameters = tuple(self.anchor.parameters())
+        flags = tuple(parameter.requires_grad for parameter in parameters)
+        if any(flags) or any(parameter.grad is not None for parameter in parameters):
+            raise RuntimeError('Probe anchor must be frozen without gradients before its forward')
+        if any(module.training for module in self.anchor.modules()):
+            raise RuntimeError('Probe anchor must remain entirely in evaluation mode')
+        # GW8 evaluation retained its constructor's requires_grad=True flags.
+        # Match those dispatch inputs while disabling autograd for this one
+        # native call. Restore the frozen boundary even when the call fails.
+        # Whether this resolves the reported cache mismatch requires a server
+        # replay; the exact certified-cache check is deliberately unchanged.
+        with torch.no_grad():
+            try:
+                for parameter in parameters:
+                    parameter.requires_grad_(True)
+                return self.anchor(history_data, incident_data=incident_data, sensor_data=sensor_data)
+            finally:
+                for parameter, flag in zip(parameters, flags):
+                    parameter.requires_grad_(flag)
+
     def _run(self, history_data, incident_data, sensor_data, capture, apply_head):
         # A rejected nested invocation must not destroy the enclosing capture.
         if self._in_forward:
@@ -205,7 +229,7 @@ class BranchReadoutIGSTGNN(nn.Module):
                         return self._observe_layer(index, module, inputs, output)
                     self._handles.append(layer.register_forward_hook(observe))
                 self._handles.append(self.original.tiid_module.register_forward_hook(self._observe_tiid))
-            base = self.anchor(history_data, incident_data=incident_data, sensor_data=sensor_data)
+            base = self._anchor_forward(history_data, incident_data, sensor_data)
             if capture:
                 features = self._features(base)
                 if self._diagnostics is not None:

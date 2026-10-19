@@ -252,6 +252,125 @@ class BranchReadoutGW9Tests(unittest.TestCase):
             self.assertTrue(all(not module.training for module in model.anchor.modules()))
             model.assert_cache_clear()
 
+    def test_probe_anchor_call_matches_source_flags_without_enabling_autograd(self):
+        anchor = self.anchor()
+        reference = copy.deepcopy(anchor).requires_grad_(True).eval()
+        model = BranchReadoutIGSTGNN(copy.deepcopy(anchor), 'R_CONTINUE', stage='probe').train()
+        x, report = self.batch()
+        x = x.detach().requires_grad_(True)
+        observed = []
+        def observe(module, inputs, output):
+            self.assertTrue(all(parameter.requires_grad for parameter in module.parameters()))
+            self.assertTrue(all(parameter.grad is None for parameter in module.parameters()))
+            self.assertTrue(all(not child.training for child in module.modules()))
+            self.assertFalse(torch.is_grad_enabled())
+            self.assertFalse(output.requires_grad)
+            observed.append(True)
+        handle = model.anchor.register_forward_hook(observe)
+        before, rng = tensor_tree_hash(model.anchor.state_dict()), rng_fingerprint()
+        try:
+            for caller_grad_enabled in (False, True):
+                with self.subTest(caller_grad_enabled=caller_grad_enabled):
+                    with torch.no_grad():
+                        expected = reference(x, incident_data=report)
+                    with torch.set_grad_enabled(caller_grad_enabled):
+                        features = model.capture_features(x, incident_data=report)
+                        self.assertEqual(torch.is_grad_enabled(), caller_grad_enabled)
+                    self.assertTrue(torch.equal(expected, features['base']))
+                    self.assertTrue(all(not value.requires_grad for value in features.values()))
+                    self.assertTrue(all(not parameter.requires_grad and parameter.grad is None
+                        for parameter in model.anchor.parameters()))
+                    self.assertTrue(all(not child.training for child in model.anchor.modules()))
+                    self.assertEqual(before, tensor_tree_hash(model.anchor.state_dict()))
+                    self.assertEqual(rng, rng_fingerprint())
+                    self.assertIsNone(x.grad)
+                    model.assert_cache_clear()
+        finally:
+            handle.remove()
+        self.assertEqual(observed, [True, True])
+
+    def test_probe_anchor_failure_restores_flags_grad_context_and_observation_hooks(self):
+        model = BranchReadoutIGSTGNN(self.anchor(), 'BRANCH_READOUT', stage='probe').train()
+        x, report = self.batch()
+        before, rng = tensor_tree_hash(model.anchor.state_dict()), rng_fingerprint()
+        observed = []
+        def fail(*args, **kwargs):
+            self.assertTrue(all(parameter.requires_grad for parameter in model.anchor.parameters()))
+            self.assertFalse(torch.is_grad_enabled())
+            self.assertTrue(all(not child.training for child in model.anchor.modules()))
+            observed.append(True)
+            raise RuntimeError('probe anchor deliberate failure')
+        for caller_grad_enabled in (False, True):
+            with self.subTest(caller_grad_enabled=caller_grad_enabled):
+                with torch.set_grad_enabled(caller_grad_enabled):
+                    with patch.object(model.original.embedding, 'forward', side_effect=fail):
+                        with self.assertRaisesRegex(RuntimeError, 'probe anchor deliberate failure'):
+                            model.capture_features(x, incident_data=report)
+                    self.assertEqual(torch.is_grad_enabled(), caller_grad_enabled)
+                self.assertTrue(all(not parameter.requires_grad and parameter.grad is None
+                    for parameter in model.anchor.parameters()))
+                self.assertTrue(all(not child.training for child in model.anchor.modules()))
+                self.assertEqual(before, tensor_tree_hash(model.anchor.state_dict()))
+                self.assertEqual(rng, rng_fingerprint())
+                model.assert_cache_clear()
+        self.assertEqual(observed, [True, True])
+        self.assertEqual(tuple(model(x, incident_data=report).shape), (2, 12, 4, 1))
+        model.assert_cache_clear()
+
+    def test_probe_anchor_rejects_trainability_gradients_and_training_modes_at_boundary(self):
+        model = BranchReadoutIGSTGNN(self.anchor(), 'BRANCH_READOUT', stage='probe').eval()
+        x, report = self.batch()
+        parameter = next(model.anchor.parameters())
+        parameter.requires_grad_(True)
+        with self.assertRaisesRegex(RuntimeError, 'must be frozen without gradients'):
+            model.capture_features(x, incident_data=report)
+        self.assertTrue(parameter.requires_grad)
+        model.assert_cache_clear()
+        parameter.requires_grad_(False)
+        parameter.grad = torch.ones_like(parameter)
+        with self.assertRaisesRegex(RuntimeError, 'must be frozen without gradients'):
+            model.capture_features(x, incident_data=report)
+        self.assertTrue(bool((parameter.grad == 1).all()))
+        model.assert_cache_clear()
+        parameter.grad = None
+        model.original.embedding.train()
+        with self.assertRaisesRegex(RuntimeError, 'entirely in evaluation mode'):
+            model.capture_features(x, incident_data=report)
+        model.assert_cache_clear()
+        model.eval()
+        self.assertEqual(tuple(model(x, incident_data=report).shape), (2, 12, 4, 1))
+
+    def test_probe_source_compatible_forward_restores_freezing_before_head_backward(self):
+        model = BranchReadoutIGSTGNN(self.anchor(), 'BRANCH_READOUT', stage='probe').train()
+        x, report = self.batch()
+        x = x.detach().requires_grad_(True)
+        before, rng = tensor_tree_hash(model.anchor.state_dict()), rng_fingerprint()
+        observed = []
+        def observe_head(module, inputs, output):
+            self.assertTrue(torch.is_grad_enabled())
+            self.assertTrue(all(not parameter.requires_grad and parameter.grad is None
+                for parameter in model.anchor.parameters()))
+            self.assertTrue(all(not feature.requires_grad for feature in inputs))
+            self.assertTrue(output.requires_grad)
+            observed.append(True)
+        handle = model.head.register_forward_hook(observe_head)
+        try:
+            with torch.enable_grad():
+                prediction = model(x, incident_data=report)
+                (prediction-.3).square().mean().backward()
+        finally:
+            handle.remove()
+        self.assertEqual(observed, [True])
+        self.assertTrue(all(not parameter.requires_grad and parameter.grad is None
+            for parameter in model.anchor.parameters()))
+        self.assertGreater(float(model.head.output.weight.grad.abs().sum()), 0.)
+        self.assertTrue(all(bool(torch.isfinite(parameter.grad).all())
+            for parameter in model.head.parameters() if parameter.grad is not None))
+        self.assertEqual(before, tensor_tree_hash(model.anchor.state_dict()))
+        self.assertEqual(rng, rng_fingerprint())
+        self.assertIsNone(x.grad)
+        model.assert_cache_clear()
+
     def test_probe_shared_features_head_matches_model_prediction(self):
         model = BranchReadoutIGSTGNN(self.anchor(), 'BRANCH_READOUT', stage='probe').eval()
         with torch.no_grad():

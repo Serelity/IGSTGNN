@@ -42,6 +42,7 @@ EXECUTION_FILES = tuple(dict.fromkeys((*gw8.EXECUTION_FILES,
     'experiments/branch_readout_gw9/reference.py',
     'experiments/branch_readout_gw9/train.py',
     'experiments/branch_readout_gw9/evaluate.py',
+    'experiments/branch_readout_gw9/replay.py',
     'experiments/branch_readout_gw9/probe.py')))
 
 

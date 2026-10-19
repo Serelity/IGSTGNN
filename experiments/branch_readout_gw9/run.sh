@@ -12,7 +12,7 @@ export GW9_REPO_DIR="$REPO_DIR"
 MODE="${1:-probe}"
 if [[ $# -gt 0 ]]; then shift; fi
 [[ $# -eq 0 ]] || { printf 'Configure this launcher through environment variables.\n' >&2; exit 2; }
-case "$MODE" in check|probe|probe-resume|probe-evaluate|joint|joint-resume|evaluate) ;; *) printf 'Mode must be check, probe, probe-resume, probe-evaluate, joint, joint-resume or evaluate.\n' >&2; exit 2 ;; esac
+case "$MODE" in check|probe|probe-resume|probe-evaluate|joint|joint-resume|evaluate|replay) ;; *) printf 'Mode must be check, probe, probe-resume, probe-evaluate, joint, joint-resume, evaluate or replay.\n' >&2; exit 2 ;; esac
 PYTHON_BIN="${PYTHON_BIN:-$(command -v python || true)}"
 [[ -n "$PYTHON_BIN" && -x "$PYTHON_BIN" ]] || { printf 'Activate igstgnn or set PYTHON_BIN.\n' >&2; exit 1; }
 GW9_GW8_RUN="${GW9_GW8_RUN:-${GW8_RUN:-}}"
@@ -41,7 +41,7 @@ if [[ -n "${GW9_GW8_BEST_EVAL:-}" ]]; then COMMON+=(--gw8-best-eval "$GW9_GW8_BE
 if [[ -n "${GW9_GW8_LAST_EVAL:-}" ]]; then COMMON+=(--gw8-last-eval "$GW9_GW8_LAST_EVAL"); fi
 run_check() {
   "$PYTHON_BIN" verify_gw9_bundle.py
-  "$PYTHON_BIN" -m unittest tests.test_branch_readout_gw9_model tests.test_branch_readout_gw9_protocol tests.test_branch_readout_gw9_probe -v
+  "$PYTHON_BIN" -m unittest tests.test_branch_readout_gw9_model tests.test_branch_readout_gw9_protocol tests.test_branch_readout_gw9_probe tests.test_branch_readout_gw9_replay -v
   "$PYTHON_BIN" -u -m experiments.branch_readout_gw9.verify "${COMMON[@]}" --batch-size 48 --output "$GW9_CHECK_OUTPUT"
 }
 run_probe() {
@@ -64,4 +64,6 @@ case "$MODE" in
   joint) run_check; run_joint; run_evaluate ;;
   joint-resume) run_check; run_joint --resume; run_evaluate ;;
   evaluate) "$PYTHON_BIN" verify_gw9_bundle.py; run_evaluate ;;
+  replay) "$PYTHON_BIN" verify_gw9_bundle.py
+    "$PYTHON_BIN" -u -m experiments.branch_readout_gw9.replay "${COMMON[@]}" --batches "${GW9_REPLAY_BATCHES:-1}" --output-dir "${GW9_REPLAY_OUTPUT:-${GW9_PROBE_RUN}_replay_${GW9_TAG}}" ;;
 esac
