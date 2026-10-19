@@ -18,6 +18,7 @@ for VALUE in "$RESUME" "$PRECHECK"; do
 done
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 export OMP_NUM_THREADS="$THREADS" MKL_NUM_THREADS="$THREADS" PYTHONUNBUFFERED=1
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 cd "$ROOT"
 DATA_DIR="$(cd -- "$DATA_DIR" && pwd -P)"
 if [[ -L "$RUN_DIR" ]]; then
@@ -62,10 +63,11 @@ if [[ "$RESUME" == 1 ]]; then
     "$PYTHON" -c 'import json,sys; value=json.load(open(sys.argv[1])); sys.exit(0 if value.get("schema")=="original_igstgnn_baseline_training_v1" else "Resume target is not an original IGSTGNN run; source was not modified")' "$RUN_DIR/identity.json"
 fi
 if [[ "$PRECHECK" == 1 ]]; then
-    "$PYTHON" -m unittest tests.test_original_baseline_gw16_evaluate \
-        tests.test_original_baseline_gw16_compare tests.test_original_igstgnn_runner \
-        tests.test_original_igstgnn_source tests.test_original_igstgnn_runtime \
-        tests.test_original_igstgnn_checkpoint_compat -v
+    for TEST_PATTERN in 'test_original_baseline_gw16_*.py' \
+        'test_original_igstgnn_runner.py' 'test_original_igstgnn_source.py' \
+        'test_original_igstgnn_runtime.py' 'test_original_igstgnn_checkpoint_compat.py'; do
+        "$PYTHON" -m unittest discover -s "$ROOT/tests" -p "$TEST_PATTERN" -v
+    done
 fi
 ARGS=()
 if [[ "$RESUME" == 1 ]]; then

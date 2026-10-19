@@ -1,0 +1,19 @@
+{
+  "schema": "original_baseline_gw16_test_discovery_fix_v1",
+  "date": "2026-10-19",
+  "base_commit": "7d7afa5dc9db9a5f85adb32c4b0e89ae9456d54d",
+  "trigger": "server unittest dotted module imports failed with No module named tests before numerical work",
+  "change": "explicit repository PYTHONPATH and unittest discovery from absolute tests directory",
+  "original_model_changed": false,
+  "gw16_execution_sources_changed": false,
+  "tests_init_tracked_in_base": true,
+  "exact_server_import_cause_confirmed": false,
+  "local_python_executed": false,
+  "local_tests_executed": false,
+  "server_tests_pending": true,
+  "previous_delivery_manifest_scope": "original_baseline_gw16_development_20261019.json applies to parent delivery at 7d7afa5",
+  "files": {
+    "experiments/original_baseline_gw16/run.sh": "7a3c3f67819b3c39c11273d2d6a2e20c90c8fd209c694cc432ca5bd055365239",
+    "docs/original_baseline_gw16_server.md": "9ac58eabb30c77e04fb06222d661e43b545baaa2b5c068a1c1965aa246d32335"
+  }
+}

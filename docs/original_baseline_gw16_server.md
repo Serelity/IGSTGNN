@@ -31,6 +31,7 @@ git clone --single-branch --branch research/position-state-gw16 \
   https://github.com/Serelity/IGSTGNN.git "$GW16_BASE_CODE"
 cd "$GW16_BASE_CODE"
 conda activate igstgnn
+export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
 export GW16_DATA="/seu_share/home/huangkai/220243809/paper/IGSTGNN/data/xtraffic/Contra_Costa"
 ```
 
@@ -51,8 +52,8 @@ find /seu_share/home/huangkai/220243809/paper/IGSTGNN -maxdepth 9 -type f \
 ```bash
 export ORIGINAL_ARCHIVE='/实际找到的原版ZIP绝对路径'
 export ORIGINAL_EVAL="$PWD/experiments/chronological_runs/original_native_val_$(date +%Y%m%d_%H%M%S)"
-python -m unittest tests.test_original_baseline_gw16_evaluate \
-  tests.test_original_baseline_gw16_compare -v
+python -m unittest discover -s "$GW16_BASE_CODE/tests" \
+  -p 'test_original_baseline_gw16_*.py' -v && \
 python -m experiments.original_baseline_gw16.evaluate \
   --archive "$ORIGINAL_ARCHIVE" --data-dir "$GW16_DATA" \
   --output-dir "$ORIGINAL_EVAL" --device cuda:0 --threads 3
@@ -84,6 +85,8 @@ bash experiments/original_baseline_gw16/run.sh "$GW16_DATA" "$GW16_ORIGINAL_RUN"
 ```bash
 RESUME=1 bash experiments/original_baseline_gw16/run.sh "$GW16_DATA" "$GW16_ORIGINAL_RUN"
 ```
+
+服务器若出现 `ModuleNotFoundError: No module named 'tests'`，失败发生在测试导入阶段，尚未开始回放。更新到补丁后，先在代码根目录导出上述 `PYTHONPATH`，使用绝对 tests 目录的 `unittest discover`，不再依赖 `tests.test_...` 点号入口。仓库本身跟踪了 `tests/__init__.py`；不应仅凭该报错断定目录不含包文件，具体服务器路径状态仍需检查。此补丁不改变模型、训练参数、原版回放容差或已有结果。
 
 如果已经有 `original_igstgnn_baseline_training_v1` 原版run，可以直接回放：
 
