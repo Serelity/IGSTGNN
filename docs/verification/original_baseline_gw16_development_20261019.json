@@ -1,0 +1,31 @@
+{
+  "schema": "original_baseline_gw16_development_v1",
+  "date": "2026-10-19",
+  "base_commit": "e45063eedfda2d23acc743f3446d5d3cafd2235c",
+  "purpose": "Restore unmodified original IGSTGNN as main baseline; NATIVE_POS remains supplementary",
+  "existing_tracked_sources_modified": false,
+  "gw16_resume_identity_changed": false,
+  "original_model_source": "frozen_558ab01",
+  "original_registered_parameters_expected": 455220,
+  "original_training": "existing runner; maximum100 and patience20; original objective/curriculum/scheduler",
+  "server_authored_tests": 16,
+  "local_python_executed": false,
+  "local_tests_executed": false,
+  "local_inference_or_training": false,
+  "server_execution_pending": true,
+  "static_checks": [
+    "manual cross-module review",
+    "preserved original and GW16 source bytes",
+    "Bash -n syntax passed",
+    "source and delivery SHA256"
+  ],
+  "files": {
+    "experiments/original_baseline_gw16/__init__.py": "91a169b1383c5fcd0e4dbbda5b0c105c0e2d9093679b743edc963aa856c08f44",
+    "experiments/original_baseline_gw16/evaluate.py": "4fb14dfbfe51061a0048336b7c55592b7118d6bd1302f22bc09d9aa099ad293c",
+    "experiments/original_baseline_gw16/compare.py": "d3163d740f630390f95df8f15587ffc0e0777cc401bb6dafad3da6cbfbaeb6f5",
+    "experiments/original_baseline_gw16/run.sh": "7691cf22ba95035bf0db63bfa42dfada4c5f9c6b6aa8cc597a41cea42e1d29af",
+    "docs/original_baseline_gw16_server.md": "3f4cd667f226e2a91ce45b1ceb26b1a9241ceb2f9329f90ae572fa1d76e825ec",
+    "tests/test_original_baseline_gw16_evaluate.py": "4524e62a71854a3f0ccfa75a203e6d65855e1084390a5baabd16a1a5d70075f9",
+    "tests/test_original_baseline_gw16_compare.py": "3c7dc2082be76ba6ce2a5b778a84e5ebd0319404d18c76eeecf691cfc6627270"
+  }
+}
