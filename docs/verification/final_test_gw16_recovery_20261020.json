@@ -1,0 +1,26 @@
+{
+  "schema": "final_test_gw16_serialization_recovery_delivery_v1",
+  "date": "2026-10-20",
+  "base_commit": "e5dac19e446e375284bbe1f6a4b448e21f22a848",
+  "original_evaluator_sha256": "2ca57f55f5310909b67a7e22a38552ba02fa16ddeb2f0e8606d446f4fd3786a2",
+  "observed_server_tests_passed": 35,
+  "observed_original_forward_batches": 18,
+  "observed_failure": "strict_cached_metrics_or_runtime_comparison_after_original_cache_commit",
+  "suspected_cause": "mixed_native_prediction_strides_not_preserved_by_npz",
+  "exact_reproduction_required_on_server": true,
+  "existing_frozen_sources_changed": false,
+  "existing_predictions_or_metadata_changed": false,
+  "metric_tolerance_relaxed": false,
+  "local_python_executed": false,
+  "local_tests_executed": false,
+  "recovery_tests_authored": 8,
+  "recovery_tests_pending": true,
+  "bash_syntax_check_passed": true,
+  "files": {
+    "experiments/final_test_gw16_recovery/__init__.py": "abde4ef6294ca8d6000eb9cb4a974c8b2c14aeb2b448a5328eaac862d359a532",
+    "experiments/final_test_gw16_recovery/recover.py": "72a06c9f0a29a3499381a6e64522186e8a591724dfe72b986b960bd74f4a4870",
+    "experiments/final_test_gw16_recovery/run.sh": "22c9d27b8c0a03d57ba5382c43362026c43fc34602b51f72f0c3bfe794882b32",
+    "tests/test_final_test_gw16_recovery.py": "2c8a121dcb41d7c0d66fb1ffef89773f897d279b11c009d7268c05b177bfc436",
+    "docs/final_test_gw16_serialization_recovery.md": "4f0cbfa316a8e9f8949bf8b7d2cebe5579eb0de371d35c1416325eb4c566d105"
+  }
+}
