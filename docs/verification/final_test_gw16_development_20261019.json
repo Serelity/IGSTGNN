@@ -1,0 +1,27 @@
+{
+  "schema": "final_test_gw16_development_delivery_v1",
+  "date": "2026-10-19",
+  "base_commit": "ab8ef1b8d46bf98bb6ab658a576f281b51c80312",
+  "scope": "new_sibling_test_package_only",
+  "gw16_training_sources_changed": false,
+  "original_model_sources_changed": false,
+  "candidate_completed_epochs": 100,
+  "candidate_validation_best_epoch": 99,
+  "local_python_executed": false,
+  "local_tests_executed": false,
+  "server_tests_authored": 35,
+  "server_tests_pending": true,
+  "test_evaluated_before_delivery": false,
+  "evidence": "user_completed_training_and_paired_validation_attachment_88e40130-e09a-4c4e-9385-5681ef6827c2",
+  "files": {
+    "experiments/final_test_gw16/__init__.py": "c55b2ca3493b7d64e83112e0e1225819eed0c188eb98d07338a1b2d54acd7b99",
+    "experiments/final_test_gw16/data.py": "1a3f165a03a48b7e4f00f5308c7b0ff7117d5bf83cfdbb0e16702a71b623c5ae",
+    "experiments/final_test_gw16/evaluate.py": "2ca57f55f5310909b67a7e22a38552ba02fa16ddeb2f0e8606d446f4fd3786a2",
+    "experiments/final_test_gw16/state.py": "8d83b6e3b4ebc1d83bf691832236ed05bde61d3dcef4b3b3cbc735363ce85b55",
+    "experiments/final_test_gw16/run.sh": "36e09b59d020d5462e9ae78765e5966db6a6bd0a64bb621381660797efc482b2",
+    "tests/test_final_test_gw16_data.py": "fe43f6ddee6a6becea8abe4eb6b57fe30d8a56e68b2c0e3e2cb16313fe80f4ba",
+    "tests/test_final_test_gw16_evaluate.py": "3350295f922700764925a29c78f4fb24534e7b46770eb57173fae74442eeb70f",
+    "tests/test_final_test_gw16_state.py": "050507a302d8925f35ddc78aa68f8361177286afd14e7622157e9263359c6ad6",
+    "docs/final_test_gw16_server.md": "ca0cfe6fdd8678429607207b6e9b4a9d3934e6ccc414283eac30fe9d321b37dc"
+  }
+}
