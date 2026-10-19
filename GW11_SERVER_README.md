@@ -104,6 +104,22 @@ cat "$GW11_RUN/STATE_GATE/history.json"
 
 保留原 `GW11_RUN` 与 `GW11_MASK_DIR`，不要重新生成 TAG。换 shell 后先按日志重新 export 这两个原绝对路径，来源目录也保持不变。
 
+若变量丢失，先定位已初始化的运行，不按目录时间猜测或新建续跑目录：
+
+```bash
+find "$PWD/experiments/chronological_runs" -maxdepth 2 -type f \
+  -path '*/contra_gw11_state_gate_s2025_*/identity.json' -print
+```
+
+选择原运行后，将其 `identity.json` 所在目录设为 `GW11_RUN`。原掩码目录从身份文件恢复，避免把空变量展开为 `_mask_audit`：
+
+```bash
+export GW11_RUN="这里填原运行目录的绝对路径"
+export GW11_MASK_DIR="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["mask_gate"]["directory"])' "$GW11_RUN/identity.json")"
+```
+
+续跑和仅评价模式会在任何测试、审计之前要求显式绝对 `GW11_RUN` 及已有 `identity.json`；缺失时直接停止，不生成默认新目录。日志中的相对掩码路径会显示为绝对路径。若所有已知运行目录均无身份文件，不能恢复模型训练；保留已有目录和审计报告，使用新目录启动新实验时须去掉续跑/仅评价标记。
+
 ```bash
 export GW11_STAGE="all"
 export GW11_RESUME="1"

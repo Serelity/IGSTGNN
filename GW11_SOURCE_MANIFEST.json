@@ -2706,8 +2706,8 @@
       "sha256": "cfa368e61eb3e869dc335b5751053ac4bdcf8bea522bfd1bb2b307563299337a"
     },
     "experiments/state_gate_gw11/run.sh": {
-      "bytes": 3720,
-      "sha256": "9fd9a5c8e019773a43bbfe816fd2b4eba97a94c08a2ad387a872a042a7c5bd83"
+      "bytes": 4561,
+      "sha256": "54627d49763eb9e443ee600005bc99bd6dd8982491dad017eba669f62a339135"
     },
     "experiments/state_gate_gw11/state.py": {
       "bytes": 3959,
@@ -2726,8 +2726,8 @@
       "sha256": "251b80e8023e3d865c90d9c64e53ff29c18b72656dbd62893262ea33081a5715"
     },
     "GW11_SERVER_README.md": {
-      "bytes": 9345,
-      "sha256": "3723b56a87ad56d2ce50dcd637b4be59239b45886be7316d6705bb548f7c912f"
+      "bytes": 10366,
+      "sha256": "0f9422a2443af1a7870518397324bf750f4b02b013716b473f7ba12c75238534"
     },
     "GW6_SERVER_README.md": {
       "bytes": 6638,

@@ -2,16 +2,32 @@
 set -euo pipefail
 REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 [[ $# -eq 0 ]] || { printf 'Configure GW11 through environment variables.\n' >&2; exit 2; }
+GW11_STAGE="${GW11_STAGE:-all}"
+case "$GW11_STAGE" in all|audit|train) ;; *) printf 'GW11_STAGE must be all, audit or train.\n' >&2; exit 2;; esac
+case "${GW11_RESUME:-0}:${GW11_EVALUATE_ONLY:-0}" in
+  0:0|1:0|0:1) ;;
+  1:1) printf 'Choose resume or evaluate-only.\n' >&2; exit 2;;
+  *) printf 'GW11_RESUME and GW11_EVALUATE_ONLY must be 0 or 1.\n' >&2; exit 2;;
+esac
+if [[ "${GW11_RESUME:-0}" == 1 || "${GW11_EVALUATE_ONLY:-0}" == 1 ]]; then
+  [[ -n "${GW11_RUN:-}" && "${GW11_RUN:-}" == /* ]] || {
+    printf 'Resume/evaluate-only requires GW11_RUN set to the original absolute run directory. No default run was created.\n' >&2
+    printf 'Locate runs: find "%s/experiments/chronological_runs" -maxdepth 2 -type f -path "*/contra_gw11_state_gate_s2025_*/identity.json" -print\n' "$REPO_DIR" >&2
+    exit 2
+  }
+  [[ -d "$GW11_RUN" && -f "$GW11_RUN/identity.json" ]] || {
+    printf 'No identity.json in GW11_RUN: %s\nKeep this location and select the original initialized run; no training was started.\n' "$GW11_RUN" >&2
+    exit 2
+  }
+fi
 PYTHON_BIN="${PYTHON_BIN:-$(command -v python || true)}"
 [[ -n "$PYTHON_BIN" && -x "$PYTHON_BIN" ]] || { printf 'Activate igstgnn or set PYTHON_BIN.\n' >&2; exit 1; }
 GW11_PROBE_RUN="${GW11_PROBE_RUN:-$REPO_DIR/experiments/chronological_runs/contra_original_gw9_probe_replayfix_s2025}"
 GW11_TAG="${GW11_TAG:-$(date +%Y%m%d_%H%M%S)}"
 GW11_RUN="${GW11_RUN:-$REPO_DIR/experiments/chronological_runs/contra_gw11_state_gate_s2025_${GW11_TAG}}"
 GW11_MASK_DIR="${GW11_MASK_DIR:-${GW11_RUN}_mask_audit}"
+if [[ "$GW11_MASK_DIR" != /* ]]; then GW11_MASK_DIR="$REPO_DIR/$GW11_MASK_DIR"; fi
 GW11_DATA="${GW11_DATA:-$REPO_DIR/../data/xtraffic/Contra_Costa}"
-GW11_STAGE="${GW11_STAGE:-all}"
-case "$GW11_STAGE" in all|audit|train) ;; *) printf 'GW11_STAGE must be all, audit or train.\n' >&2; exit 2;; esac
-[[ ! ( "${GW11_RESUME:-0}" == 1 && "${GW11_EVALUATE_ONLY:-0}" == 1 ) ]] || { printf 'Choose resume or evaluate-only.\n' >&2; exit 2; }
 export PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8 CUBLAS_WORKSPACE_CONFIG=:4096:8
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-3}"
 export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-3}"
