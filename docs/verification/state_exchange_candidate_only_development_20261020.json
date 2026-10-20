@@ -1,0 +1,36 @@
+{
+  "schema": "state_exchange_candidate_only_development_v1",
+  "date": "2026-10-20",
+  "base_commit": "d0fe7bde40b3c68a5af9bfb9efbb920a0e0a4dd2",
+  "model": "GW16_STATE_EXCHANGE",
+  "new_training_datasets": [
+    "Alameda",
+    "Orange"
+  ],
+  "contra_existing_candidate_test_reused": true,
+  "original_model_training_or_inference_invoked": false,
+  "existing_training_source_files_changed": false,
+  "existing_candidate_resume_fingerprint_preserved": true,
+  "candidate_epochs_per_dataset": 100,
+  "candidate_batch_size": 48,
+  "new_server_tests_authored": 44,
+  "existing_candidate_tests_selected": 45,
+  "total_server_tests_selected": 89,
+  "baseline_tests_selected": false,
+  "local_python_or_model_execution": false,
+  "server_numerical_tests_pending": true,
+  "bash_syntax_check_passed": true,
+  "new_test_evaluated": false,
+  "files": {
+    "docs/state_exchange_candidate_only.md": "8ba136140a49ff50b4fc4782083ad0af232ffa9824c7e7eea78c75a1235cbe3b",
+    "experiments/state_exchange_multidata_candidate/__init__.py": "2b6405974cd9b379ca945071c9e49cf597dcc2f1f7b127e3cb3b5d3c89126bd1",
+    "experiments/state_exchange_multidata_candidate/batch_check.py": "1e96127a842fecd2e86d3ba8796405662973cc62f79df6bfd7cc6d536fb88e29",
+    "experiments/state_exchange_multidata_candidate/collect.py": "dc8ee7b6e692df3723bc3e6b8b18826952c2e4e126afba017a08346a2502caac",
+    "experiments/state_exchange_multidata_candidate/common.py": "a486f68c0053c4e8fb1892799d445ad573837aee8f6d332dc7a8c9f64a349bac",
+    "experiments/state_exchange_multidata_candidate/evaluate.py": "619a12f7c65893282fb6e26b37158bbdd0a3bea40f02509522d4320c86d7a5e5",
+    "experiments/state_exchange_multidata_candidate/run.sh": "7bff2805f665e2bb1346c9da577d063b3dd3ea7b8276dee5cd58a084b70dbe19",
+    "tests/test_state_exchange_candidate_batch_check.py": "598d4444dbffce734b6fb1d55a9d9ec946362329bbc6068f561632592f0402c8",
+    "tests/test_state_exchange_candidate_collect.py": "3941407c2cf86e7e502a110c172d0d1ab67a9819ffaa6fd68390183a6d48cdf4",
+    "tests/test_state_exchange_candidate_evaluate.py": "dce7435a44edcc57bd0819250448c8a46a84e3d8f493efc76a6ca6c689834503"
+  }
+}
