@@ -1,5 +1,6 @@
 """Server-side tests for original-model adaptation and resumable transactions."""
 from copy import deepcopy
+from collections import Counter
 import logging
 from pathlib import Path
 import random
@@ -72,6 +73,56 @@ class BaselineTests(unittest.TestCase):
 
     def test_engineering_batch_two_is_explicit(self):
         self.assertEqual(baseline.original_config('Orange', check=True)['bs'], 2)
+
+    def test_checkpoint_contains_plain_milestones_and_reads_with_restricted_torch_load(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            seed()
+            baseline.run_epochs(FakeEngine(), tmp, identity(), 1)
+            with patch.object(torch.serialization, 'add_safe_globals', create=True,
+                              side_effect=AssertionError('No global allowlist changes')):
+                saved = torch.load(Path(tmp)/'last.pt', map_location='cpu', weights_only=True)
+            self.assertIs(type(saved['scheduler_state']['milestones']), dict)
+            self.assertEqual(saved['scheduler_state']['milestones'], dict(Counter(baseline.MILESTONES)))
+            baseline.validate_saved(saved, identity(), tmp, 2)
+
+    def test_restored_scheduler_rebuilds_counter_and_preserves_later_milestones(self):
+        model = torch.nn.Linear(1, 1)
+        optimizer = torch.optim.Adam(model.parameters(), lr=.002)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
+            milestones=baseline.MILESTONES, gamma=.5)
+        for _ in range(39):
+            optimizer.zero_grad()
+            model(torch.ones(1, 1)).sum().backward()
+            optimizer.step()
+            scheduler.step()
+        saved_optimizer = deepcopy(optimizer.state_dict())
+        saved_scheduler = baseline.scheduler_snapshot(scheduler)
+        resumed_optimizer = torch.optim.Adam(model.parameters(), lr=.002)
+        resumed_scheduler = torch.optim.lr_scheduler.MultiStepLR(resumed_optimizer,
+            milestones=baseline.MILESTONES, gamma=.5)
+        resumed_optimizer.load_state_dict(saved_optimizer)
+        baseline.restore_scheduler(resumed_scheduler, saved_scheduler)
+        self.assertIsInstance(resumed_scheduler.milestones, Counter)
+        # MultiStepLR's closed-form path also requires Counter.elements().
+        self.assertEqual(resumed_scheduler._get_closed_form_lr(), scheduler._get_closed_form_lr())
+        self.assertEqual(baseline.scheduler_snapshot(resumed_scheduler), saved_scheduler)
+        for _ in range(39, 82):
+            for active_optimizer, active_scheduler in (
+                (optimizer, scheduler), (resumed_optimizer, resumed_scheduler)):
+                active_optimizer.zero_grad()
+                model(torch.ones(1, 1)).sum().backward()
+                active_optimizer.step()
+                active_scheduler.step()
+            self.assertEqual(resumed_optimizer.param_groups[0]['lr'], optimizer.param_groups[0]['lr'])
+        self.assertEqual(baseline.scheduler_snapshot(resumed_scheduler), baseline.scheduler_snapshot(scheduler))
+
+    def test_modified_milestones_are_rejected_even_with_resigned_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            saved = self._saved(tmp)
+            saved['scheduler_state']['milestones'][38] = 2
+            saved['state_payload_sha256'] = baseline.state_digest(saved)
+            with self.assertRaisesRegex(ValueError, 'milestones'):
+                baseline.validate_saved(saved, identity(), tmp, 2)
 
     def test_unknown_dataset_rejected(self):
         with self.assertRaises(ValueError):

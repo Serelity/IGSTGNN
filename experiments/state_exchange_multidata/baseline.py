@@ -5,6 +5,7 @@ curriculum and patience remain unchanged. Only the test-free outer transaction
 and the authenticated dataset dimensions differ from the Contra-only runner.
 """
 import argparse
+from collections import Counter
 import csv
 from datetime import datetime, timezone
 import hashlib
@@ -155,6 +156,26 @@ def state_digest(state):
     return tensor_tree_hash({key:value for key, value in state.items() if key != 'state_payload_sha256'})
 
 
+def scheduler_snapshot(scheduler):
+    """Keep checkpoints readable by older weights-only unpicklers.
+
+    MultiStepLR exposes a Counter in state_dict. Store only its integer mapping;
+    the live scheduler gets a Counter back before any resumed step is executed.
+    No deserialization allowlist or unrestricted pickle fallback is required.
+    """
+    saved = scheduler.state_dict()
+    saved['milestones'] = dict(saved['milestones'])
+    return saved
+
+
+def restore_scheduler(scheduler, saved):
+    milestones = saved.get('milestones')
+    _require(type(milestones) is dict and milestones == dict(Counter(MILESTONES))
+        and all(type(key) is int and type(value) is int for key, value in milestones.items()),
+        'Saved scheduler milestones differ from the original recipe')
+    scheduler.load_state_dict(dict(saved, milestones=Counter(milestones)))
+
+
 def validate_saved(state, identity, run, train_batches):
     """Authenticate the committed epoch, optimizer schedule and immutable BEST."""
     _require(state.get('identity_sha256') == identity['identity_sha256'], 'Saved identity differs')
@@ -172,6 +193,10 @@ def validate_saved(state, identity, run, train_batches):
     _require(order.shape == (length,) and np.array_equal(np.sort(order), np.arange(length)),
              'Saved training permutation is invalid')
     config = identity['training_config']
+    milestones = state['scheduler_state'].get('milestones')
+    _require(type(milestones) is dict and milestones == dict(Counter(MILESTONES))
+        and all(type(key) is int and type(value) is int for key, value in milestones.items()),
+        'Saved scheduler milestones differ from the original recipe')
     warm, step, updates = config['warm_epoch']*train_batches, config['cl_epoch']*train_batches, state['global_updates']
     curriculum = 12 if updates < warm else min(12, 1+(updates-warm)//step)
     _require(state['curriculum_length'] == curriculum and state['scheduler_state']['last_epoch'] == completed,
@@ -197,7 +222,7 @@ def validate_saved(state, identity, run, train_batches):
 def _commit(engine, run, identity, state, order):
     state.update(global_updates=engine._iter_cnt, curriculum_length=engine._cl_len,
         train_order=list(order), rng_state=rng_state(), model_state=engine.model.state_dict(),
-        optimizer_state=engine._optimizer.state_dict(), scheduler_state=engine._lr_scheduler.state_dict(),
+        optimizer_state=engine._optimizer.state_dict(), scheduler_state=scheduler_snapshot(engine._lr_scheduler),
         identity_sha256=identity['identity_sha256'])
     state['state_payload_sha256'] = state_digest(state)
     atomic_save(Path(run)/'last.pt', state)
@@ -222,7 +247,7 @@ def run_epochs(engine, run, identity, target_epoch, state=None):
     else:
         engine.model.load_state_dict(state['model_state'], strict=True)
         engine._optimizer.load_state_dict(state['optimizer_state'])
-        engine._lr_scheduler.load_state_dict(state['scheduler_state'])
+        restore_scheduler(engine._lr_scheduler, state['scheduler_state'])
         engine._iter_cnt, engine._cl_len = state['global_updates'], state['curriculum_length']
         restore_rng(state['rng_state'])
     def synchronize():

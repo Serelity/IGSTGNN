@@ -26,7 +26,7 @@
   "candidate_forward_inherits_existing_gw16": true,
   "local_python_executed": false,
   "local_model_or_tests_executed": false,
-  "server_tests_authored": 100,
+  "server_tests_authored": 103,
   "server_tests_pending": true,
   "server_engineering_pending": true,
   "batch_memory_check": {
@@ -38,9 +38,9 @@
   "new_test_evaluated": false,
   "statistical_significance_claimed": false,
   "files": {
-    "docs/state_exchange_three_datasets.md": "7b09906cdf46498f4ebd6221cbdfa88270ea046a25342477d0d2826af8fb11d1",
+    "docs/state_exchange_three_datasets.md": "7d39d90a6ee9f6a17e905ea0998bf55836a4b25ccbf5614c30cf2c0c436738d8",
     "experiments/state_exchange_multidata/__init__.py": "a528f4ce9734e9355387fe84df6100195c0abd00c10f22b51bb1afacc5596899",
-    "experiments/state_exchange_multidata/baseline.py": "6dec9ecc6c14f13fd74e204763609fbda8166f81e99adcc689ea7747fb151724",
+    "experiments/state_exchange_multidata/baseline.py": "b6ad59e7747a6c371336169631372d8a3c7c30ebf3d29f3901884189bdb18f61",
     "experiments/state_exchange_multidata/batch_check.py": "48dfcfb9bf7793846f3cabde87e6f7fd5fc9584f4649e4093923c15a6e92a9db",
     "experiments/state_exchange_multidata/collect.py": "13b944781fbc938d77d7fc1e250239bb1b2a2b5039b3449166c336e92b536013",
     "experiments/state_exchange_multidata/common.py": "e15fc535308a8280b6536ecf7353d21464158e9818aace5307ab126993dfad60",
@@ -50,12 +50,26 @@
     "experiments/state_exchange_multidata/registry.json": "d1c50ce48b80ce17845d9d165c4f48573918ec24d5cdee95f1686b1de20df7b9",
     "experiments/state_exchange_multidata/run.sh": "69b5d8372bbeaeaf15c8c0d808ac4c07f12fdccb67c400ca13e13de675b6ba4d",
     "experiments/state_exchange_multidata/train.py": "ec68c6b2a55aa3ccdd092af97dc5bd72b994abb50c3598a4bc01ad6ea79c6bdc",
-    "tests/test_state_exchange_multidata_baseline.py": "ac87eabcd900ce20f2faf1e2662baf1110aeba746ddd9f985bc0b13fafdd5ce6",
+    "tests/test_state_exchange_multidata_baseline.py": "1ecc8ed6d9960a7d37ab56e633c8da636a13b49bca3d180faf1af7db25e609da",
     "tests/test_state_exchange_multidata_batch_check.py": "a8d7dc9241d43e4abb2656411bd7c88db31d026f1b02de8605fca310802a7c58",
     "tests/test_state_exchange_multidata_collect.py": "957fd88e9283791f370e341bde82d9b3b114880ef0c568729654ff7923a411eb",
     "tests/test_state_exchange_multidata_data.py": "41cff85657e336ec1d43017b311a651a513509eb95db6365eaf76702d8299cb4",
     "tests/test_state_exchange_multidata_evaluate.py": "4468aa41b85be23db3fd2eedf496b4b2740fcd112c97e0d24f1c60586c5ae8d5",
     "tests/test_state_exchange_multidata_model.py": "c7bde61d97a912238dee8a4df7aa7fa1755acaa5d640ee233de2008b1c35f5d7",
     "tests/test_state_exchange_multidata_training.py": "2c08529d10a92c912f1dc29f129a8b3bb28a052781db59a32f51066732ad49ca"
+  },
+  "checkpoint_compatibility_revision": {
+    "parent_commit": "6296cb67f2bf73747126d69fe901e2df20711ace",
+    "observed_server_tests": 100,
+    "observed_server_errors": 8,
+    "cause": "weights_only_unpickler_rejects_collections_Counter_in_MultiStepLR_state",
+    "evidence_attachment": "d228f2af-02a0-4623-85af-afe4028eb7bb",
+    "formal_training_started": false,
+    "fix": "serialize_integer_milestones_mapping_and_restore_Counter_before_scheduler_load",
+    "unrestricted_pickle_fallback_added": false,
+    "deserialization_allowlist_modified": false,
+    "model_or_recipe_changed": false,
+    "new_regression_tests": 3,
+    "latest_server_tests_pending": true
   }
 }

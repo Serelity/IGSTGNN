@@ -74,6 +74,9 @@ batch48检查在最前面的48个训练窗口上做两次更新，权重随检�
 检查同时覆盖首次Adam状态分配和状态已常驻时的第二次前向/反向；显存不足时停止，不缩batch。
 中断后重复同一命令，恢复完整Adam、调度器、RNG、训练排列及原版课程长度。
 candidate第0轮为BEST候选；原版仅提交第0轮的恢复状态，仍不参与原版BEST选择。
+原版调度器的milestones以普通整数dict写入checkpoint，恢复时重建Counter供MultiStepLR使用。
+这样兼容服务器较早PyTorch的weights_only读取，不修改调度里程碑、不重置Adam或RNG。
+6296cb6首次服务器运行停在单元测试的Counter读取错误，尚未开始正式训练；修复版请下载到新目录运行。
 
 默认服务器父目录：
 `/seu_share/home/huangkai/220243809/paper/IGSTGNN`。
