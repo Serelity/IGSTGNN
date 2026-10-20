@@ -65,7 +65,7 @@ fi
 
 "$PYTHON_BIN" -u "$SCRIPT_DIR/diagnose_igstgnn_local_problem.py" \
   --root "$TASK_PARENT" --original-eval "$ORIGINAL_EVAL" \
-  --pase-eval "$PASE_EVAL" --data-dir "$DATA_DIR" --output-dir "$OUTPUT" "$@"
+  --pase-eval "$PASE_EVAL" --data-dir "$DATA_DIR" --output-dir "$OUTPUT" --bundle "$@"
 
 printf '\nResults: %s\n' "$OUTPUT"
 cat "$OUTPUT/report.md"

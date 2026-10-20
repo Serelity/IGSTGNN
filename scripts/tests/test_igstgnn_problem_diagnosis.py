@@ -1,7 +1,10 @@
 """Small numerical contracts for cached-prediction diagnosis; no model imports."""
 import importlib.util
 from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
+import zipfile
 
 import numpy as np
 
@@ -20,6 +23,41 @@ def changing_target():
 
 
 class PredictionDiagnosisTests(unittest.TestCase):
+    def test_case_csv_export_does_not_import_matplotlib(self):
+        target = changing_target()
+        rows = [dict(station_id=str(100+i), **{'Abs PM': str(i)}) for i in range(4)]
+        original_import = __import__
+        def no_drawing_import(name, *args, **kwargs):
+            if name.startswith('matplotlib'):
+                raise AssertionError('Data export must not require matplotlib')
+            return original_import(name, *args, **kwargs)
+        with patch('builtins.__import__', side_effect=no_drawing_import):
+            trace = DIAGNOSIS.case_values(target+3., target,
+                dict(sample_id=3909, region_name='test:0'), rows, np.arange(4), target)
+        self.assertEqual(len(trace), 9)
+        self.assertEqual({r['lead_minutes'] for r in trace}, {5,10,15})
+        for row in trace:
+            self.assertEqual(row['prediction'], row['target']+3.)
+            self.assertEqual(row['pase_prediction'], row['target'])
+            self.assertEqual(row['pase_regional_prediction'], row['regional_target'])
+            self.assertEqual(row['pase_local_prediction'], row['local_target'])
+
+    def test_bundle_is_outside_export_and_contains_exact_files(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)/'export'
+            output.mkdir()
+            (output/'report.md').write_text('validation data', encoding='utf-8')
+            np.savez_compressed(output/'paired_predictions.npz', target=changing_target())
+            original_hash = DIAGNOSIS.digest(output/'paired_predictions.npz')
+            bundle = DIAGNOSIS.bundle_output(output)
+            self.assertEqual(bundle.parent, output.parent)
+            self.assertNotEqual(bundle.parent, output)
+            with zipfile.ZipFile(bundle) as archive:
+                self.assertEqual(set(archive.namelist()), {'paired_predictions.npz','report.md'})
+            self.assertEqual(DIAGNOSIS.digest(output/'paired_predictions.npz'), original_hash)
+            with self.assertRaises(ValueError):
+                DIAGNOSIS.bundle_output(output)
+
     def test_perfect_prediction_has_no_error_and_does_not_match_pattern(self):
         target = changing_target()
         result, _ = DIAGNOSIS.decompose(target.copy(), target)

@@ -9,6 +9,8 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import shutil
+import zipfile
 
 import numpy as np
 
@@ -111,6 +113,13 @@ def read_pase(directory, original, original_metadata, rows):
     require(digest(file) == metadata['archive_sha256'], 'PASE cache checksum changed')
     with np.load(file, allow_pickle=False) as payload:
         arrays = {k: payload[k] for k in ('prediction', 'target', 'sample_ids', 'station_ids')}
+        if 'reference' in payload.files:
+            reference = payload['reference']
+            require(reference.shape == original['target'].shape and reference.dtype == np.float32
+                    and np.isfinite(reference).all()
+                    and np.array_equal(reference, np.broadcast_to(reference[:, :1], reference.shape)),
+                    'PASE historical last-observation reference differs across forecast leads')
+            arrays['last_observation'] = reference[:, 0].copy()
     for key in ('target', 'sample_ids', 'station_ids'):
         require(arrays[key].dtype == original[key].dtype and np.array_equal(arrays[key], original[key]),
                 'PASE and original must use identical values and axes: '+key)
@@ -126,6 +135,11 @@ def read_pase(directory, original, original_metadata, rows):
     require(region_identity['policy'] == 'road_direction_postmile' and region_identity['max_region_size'] == 32
             and region_identity['members'] == [r['members'] for r in expected_regions],
             'PASE must be the fixed road/direction/postmile partition, not a random-region variant')
+    expected_assignment = np.empty(len(rows), dtype=np.int64)
+    for r, region in enumerate(expected_regions):
+        expected_assignment[region['members']] = r
+    require(np.array_equal(region_identity['assignment'], expected_assignment),
+            'PASE metadata assignment differs from its fixed region members')
     require(digest(file) == metadata['archive_sha256'], 'PASE cache changed during read')
     return arrays, metadata
 
@@ -172,6 +186,77 @@ def write_csv(path, rows):
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
+
+
+def case_values(p, y, record, rows, valid, pase=None):
+    """Export every plotted point without importing a plotting library."""
+    pm, ym = p.mean(1), y.mean(1)
+    pl, yl = p-pm[:, None], y-ym[:, None]
+    ordering = np.argsort(np.mean(abs(np.diff(yl, axis=0)), axis=0), kind='stable')
+    positions = sorted(set(int(round(q*(len(ordering)-1))) for q in (0., .5, 1.)))
+    trace = []
+    for position in positions:
+        j = int(ordering[position]); node = int(valid[j])
+        for h in range(len(y)):
+            trace.append(dict(sample_id=record['sample_id'], region=record['region_name'],
+                station_id=rows[node]['station_id'], postmile=rows[node]['Abs PM'],
+                node_axis=node, lead=h+1, lead_minutes=5*(h+1),
+                target=float(y[h,j]), prediction=float(p[h,j]),
+                regional_target=float(ym[h]), regional_prediction=float(pm[h]),
+                local_target=float(yl[h,j]), local_prediction=float(pl[h,j]),
+                pase_prediction=None if pase is None else float(pase[h,j]),
+                pase_regional_prediction=None if pase is None else float(pase[h].mean()),
+                pase_local_prediction=None if pase is None else float(pase[h,j]-pase[h].mean())))
+    return trace
+
+
+def export_predictions(output, original, candidate, metadata, candidate_metadata,
+                       source, candidate_source, data_dir):
+    """Portable numeric data only: no checkpoints, object arrays, or raw dataset."""
+    payload = dict(target=original['target'], sample_ids=original['sample_ids'],
+                   station_ids=original['station_ids'],
+                   prediction__ORIGINAL_IGSTGNN=original['prediction'])
+    if candidate is not None:
+        payload['prediction__PASE'] = candidate['prediction']
+        payload['assignment'] = np.asarray(candidate_metadata['identity']['data']['partition']['assignment'], dtype=np.int64)
+        if 'last_observation' in candidate:
+            payload['last_observation'] = candidate['last_observation']
+    else:
+        with (data_dir/'sensors.csv').open(encoding='utf-8-sig', newline='') as stream:
+            station_rows = list(csv.DictReader(stream))
+        assignment = np.empty(len(station_rows), dtype=np.int64)
+        for r, region in enumerate(partition(station_rows)):
+            assignment[region['members']] = r
+        payload['assignment'] = assignment
+    require(all(v.dtype.kind != 'O' for v in payload.values()), 'Export must contain no pickled objects')
+    np.savez_compressed(output/'paired_predictions.npz', **payload)
+    shutil.copyfile(data_dir/'sensors.csv', output/'sensors.csv')
+    shutil.copyfile(source/'metadata.json', output/'original_metadata.json')
+    if candidate is not None:
+        shutil.copyfile(candidate_source/'metadata.json', output/'pase_metadata.json')
+    manifest = dict(schema='igstgnn_pase_portable_validation_export_v1',
+        samples=837, split='val', test_evaluated=False, prediction_units='original_released_flow_units',
+        source_original=str(source), source_pase=str(candidate_source) if candidate is not None else None,
+        original_prediction_source_sha256=metadata['archive_sha256'],
+        pase_prediction_source_sha256=candidate_metadata['archive_sha256'] if candidate is not None else None,
+        fields={key:dict(shape=list(value.shape), dtype=str(value.dtype)) for key,value in payload.items()},
+        exported_files_sha256={p.name:digest(p) for p in output.iterdir() if p.is_file()},
+        full_validation_arrays_included=True, model_weights_included=False, raw_dataset_included=False,
+        plotting_required_on_server=False)
+    (output/'export_manifest.json').write_text(json.dumps(manifest, indent=2)+'\n', encoding='utf-8')
+    return manifest
+
+
+def bundle_output(output):
+    archive = Path(str(output)+'.zip')
+    require(not archive.exists(), 'Export ZIP already exists; preserve it and use a fresh output')
+    # The archive is a sibling, so it cannot recursively include itself.
+    with zipfile.ZipFile(archive, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as package:
+        for file in sorted(output.rglob('*')):
+            if file.is_file():
+                package.write(file, arcname=str(file.relative_to(output)),
+                              compress_type=zipfile.ZIP_STORED if file.suffix=='.npz' else zipfile.ZIP_DEFLATED)
+    return archive
 
 
 def find_cache(root):
@@ -235,23 +320,14 @@ def plot_case(output, p, y, record, rows, valid, pase=None, pattern_summary=''):
         +'\nFixed nodes: '+str(len(valid))+'\n\nIGSTGNN skills\nRegion change: '+sf(record['region_change_skill'])
         +'\nLocal change skill: '+sf(record['local_change_skill'])
         +'\n\n'+pattern_summary+'\nRetrospective diagnosis\nNot causal attribution', va='top', fontsize=7, linespacing=1.4)
-    trace = []
     for col, j in enumerate(chosen):
         ax = fig.add_subplot(grid[1, col]); node = int(valid[j])
         curves(ax, y[:, j], p[:, j], None if pase is None else pase[:,j])
         ax.set_title(f'({chr(98+col)}) Station {rows[node]["station_id"]}\nPostmile {rows[node]["Abs PM"]}',
                      loc='left', fontsize=8)
-        for h in range(12):
-            trace.append(dict(sample_id=record['sample_id'], region=record['region_name'],
-                station_id=rows[node]['station_id'], lead=h+1, lead_minutes=int(xx[h]),
-                target=float(y[h,j]), prediction=float(p[h,j]), regional_target=float(ym[h]),
-                regional_prediction=float(pm[h]), local_target=float(yl[h,j]),
-                local_prediction=float(pl[h,j]),
-                pase_prediction=None if pase is None else float(pase[h,j])))
     fig.savefig(output/'case_prediction_error.pdf', bbox_inches='tight')
     fig.savefig(output/'case_prediction_error.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
-    write_csv(output/'case_plotted_values.csv', trace)
 
 
 def main(argv=None):
@@ -262,7 +338,11 @@ def main(argv=None):
                         help='Completed STATE_EXCHANGE validation BEST cache; optional paired comparison')
     parser.add_argument('--data-dir', type=Path)
     parser.add_argument('--output-dir', type=Path, required=True)
-    parser.add_argument('--no-figures', action='store_true')
+    drawing = parser.add_mutually_exclusive_group()
+    drawing.add_argument('--no-figures', dest='no_figures', action='store_true', help='Data only (default)')
+    drawing.add_argument('--figures', dest='no_figures', action='store_false', help='Optional matplotlib figures')
+    parser.set_defaults(no_figures=True)
+    parser.add_argument('--bundle', action='store_true', help='Create one portable ZIP beside the output directory')
     args = parser.parse_args(argv)
     source = (args.original_eval or find_cache(args.root)).resolve()
     data_dir = (args.data_dir or args.root/'data/xtraffic/Contra_Costa').resolve()
@@ -370,8 +450,10 @@ def main(argv=None):
                 pattern_records=sum(v['pattern_observed'] for v in selected),
                 pattern_fraction=sum(v['pattern_observed'] for v in selected)/len(selected)))
     write_csv(output/'by_region.csv', grouped)
+    s, r = example['sample_position'], example['region']; valid = masks[(s,r)]
+    write_csv(output/'case_plotted_values.csv', case_values(p[s][:,valid], y[s][:,valid], example, rows, valid,
+                                                           None if pp is None else pp[s][:,valid]))
     if not args.no_figures:
-        s, r = example['sample_position'], example['region']; valid = masks[(s,r)]
         label = f'Pattern records: {len(patterns)}/{len(records)}' if patterns else 'Pattern NOT OBSERVED\nNeutral example'
         plot_case(output, p[s][:,valid], y[s][:,valid], example, rows, valid,
                   None if pp is None else pp[s][:,valid], label)
@@ -399,8 +481,10 @@ def main(argv=None):
         '## 文件', '',
         '- diagnosis.json：完整来源、判据、覆盖、样例与限制。',
         '- window_regions.csv、by_region.csv、per_horizon.csv：所有记录及分组，不筛掉反例。',
-        ('- case_prediction_error.png / .pdf、case_plotted_values.csv：真实预测和真实值，采样点间直线连接。'
-         if not args.no_figures else '- --no-figures：未导出图像或绘图CSV。'),
+        '- paired_predictions.npz、sensors.csv、original_metadata.json、pase_metadata.json：供本地分析绘图的完整验证预测和来源。',
+        '- case_plotted_values.csv：选例中每个真实预测点，服务器不画图也导出。',
+        ('- case_prediction_error.png / .pdf：可选图像。'
+         if not args.no_figures else '- 数据导出模式：没有导入matplotlib；服务器不画图。'),
         '- 图中横轴是预测时距，不拼接重叠窗口，不虚构绝对时间或事故起始线。', '']
     if pp is not None:
         lines += ['## 同样本 BEST 预测直接比较', '',
@@ -408,13 +492,17 @@ def main(argv=None):
             '|---|---:|---:|---:|']
         for row in report['paired_comparison']['rows']:
             lines.append('| {} | {:.6f} | {:.6f} | {:.6f} |'.format(row['method'],row['node_mae'],row['region_mae'],row['local_mae']))
-        lines += ['', '以上对比复用完全相同的目标、节点、样本和固定掩码。图中PASE为蓝实线，IGSTGNN为红虚线。',
+        lines += ['', '以上对比复用完全相同的目标、节点、样本和固定掩码；完整预测已导出供本地画图。',
             '样例仅按IGSTGNN表现和真实变化选择，没有按PASE提升最大挑选；PASE无改善或更差也照常展示。',
             '这可以观察整套模型是否改善同类预测偏差；训练配方也有差异，交换机制贡献由消融回答。', '']
         write_csv(output/'paired_overall.csv', report['paired_comparison']['rows'])
     (output/'report.md').write_text('\n'.join(lines), encoding='utf-8')
+    export_predictions(output, arrays, improved, metadata, improved_meta,
+                       source, args.pase_eval, data_dir)
+    bundle = bundle_output(output) if args.bundle else None
     print(json.dumps(dict(status='DIAGNOSIS_COMPLETE', pattern_status=status, records=len(records),
-                         pattern_records=len(patterns), output_dir=str(output)), ensure_ascii=False), flush=True)
+                         pattern_records=len(patterns), output_dir=str(output),
+                         export_zip=str(bundle) if bundle else None), ensure_ascii=False), flush=True)
     print('Read '+str(output/'report.md'), flush=True)
     return report
 

@@ -13,6 +13,10 @@ PASE_PROBLEM_REPREDICT=1 bash scripts/run_igstgnn_problem_diagnosis.sh
 `PASE_PROBLEM_REPREDICT=1`分别从原版完整训练权重/日志和PASE完整100轮运行的验证BEST重新预测一次。
 不设置它时优先复用两套已认证的相同BEST验证缓存；缺少某套缓存时只补该模型的验证预测。
 
+服务器默认只导出数据，不导入matplotlib。最终生成一个与结果目录同名的ZIP，传回本地分析绘图即可。
+ZIP包含全部验证预测、目标、样本/站点/区域轴、传感器元数据、来源元数据、诊断JSON/CSV和每个绘图点；不包含模型权重或865MB原始数据。
+若预测完成后旧绘图步骤报错，直接调用分析脚本并传入已完成的两套验证目录、一个新输出目录和`--no-figures --bundle`，不重新运行.sh中的预测步骤。
+
 默认直接使用用户已经完成的路径：
 
 - 原版权重/日志：`IGSTGNN-code/experiments/igstgnn/Contra_Costa_igstgnn_s2025_20260908_193127/`。
@@ -38,7 +42,9 @@ PASE_PROBLEM_REPREDICT=1 bash scripts/run_igstgnn_problem_diagnosis.sh
 - `paired_overall.csv`：两模型在同一诊断子集上的站点、区域平均、局域偏离MAE。
 - `per_horizon.csv`：全部12个时距的配对误差。
 - `window_regions.csv`：全部合格窗口—区域，无删去反例。
-- `case_prediction_error.png`、`.pdf`：真实预测问题图草稿，三站选择依据真实局域变化活动的低/中/高位置。
+- `paired_predictions.npz`：全部837条验证记录的真值、原版/PASE预测及样本/站点/区域轴。
+- `export_manifest.json`：导出字段、文件SHA256、源缓存SHA256。
+- `case_prediction_error.png`、`.pdf`：仅显式加`--figures`时绘制；服务器默认不画图。
 - `case_plotted_values.csv`：图中每个点可回查。
 - `diagnosis.json`：模型与缓存来源、原版模式覆盖、同类记录的PASE改善计数及限制。
 
