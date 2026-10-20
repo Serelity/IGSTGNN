@@ -1,0 +1,55 @@
+{
+  "schema": "original_multidata_only_development_v1",
+  "date": "2026-10-20",
+  "base_commit": "978c456587362f26799d17a0377538a2078e3f70",
+  "model": "ORIGINAL_IGSTGNN_frozen_558ab01",
+  "datasets": [
+    "Alameda",
+    "Orange"
+  ],
+  "devices": {
+    "Alameda": "cuda:0",
+    "Orange": "cuda:1"
+  },
+  "concurrent_independent_workers": 2,
+  "existing_training_sources_changed": false,
+  "existing_training_resume_fingerprint_preserved": true,
+  "candidate_training_or_inference_invoked": false,
+  "contra_dependency": false,
+  "formal_max_epochs": 100,
+  "original_patience": 20,
+  "batch_size": 48,
+  "seed": 2025,
+  "native_validation_replay_required_before_test": true,
+  "new_tests_authored": 35,
+  "existing_original_tests_selected": 23,
+  "total_server_tests_selected": 58,
+  "local_python_or_model_execution": false,
+  "bash_syntax_check_passed": true,
+  "bash_orchestration_mock_check": {
+    "status": "passed",
+    "checks": [
+      "concurrent_workers_complete",
+      "same_command_resumes",
+      "failed_alameda_preserves_exit_and_orange_completes",
+      "failed_gpu_preflight_launches_nothing"
+    ],
+    "real_python_executed": false,
+    "setsid_and_flock_mocked_on_windows": true,
+    "linux_process_groups_and_locking": "server_pending"
+  },
+  "linux_signal_and_gpu_checks": "server_pending",
+  "server_numerical_tests_pending": true,
+  "new_test_evaluated": false,
+  "files": {
+    "docs/original_two_gpu_datasets.md": "f6c0f31195ac124cd7c16dee7b600f5d8db6ee9e68457011420960cdfd4d2f0d",
+    "experiments/original_multidata_only/__init__.py": "7ead7efb3fdb2d436e03f9af41db8f7a28366c59ba92e7f307bdf8016cb33a9c",
+    "experiments/original_multidata_only/batch_check.py": "c36b996ee0493b82b25b13d173591b3bf1146c7d70e1072e4d4c5b2580dfe006",
+    "experiments/original_multidata_only/common.py": "f03d796f461430d6313753e3537463ab576ea75691ac4730d9ee3e8622873f02",
+    "experiments/original_multidata_only/evaluate.py": "0c034cd7ac7a013977107be9d652af42cee71eb3a1646345885b79b241fd0764",
+    "experiments/original_multidata_only/run.sh": "1bdd223341cab9af1354ad7dc91e25be0d1c6a0d5a7fe0c75915262a7025c87e",
+    "tests/test_original_multidata_only_batch_check.py": "eecec113a1c233b017cc4b2420d010bbfe848604fcbb2c7d636a360a6f8c1d7c",
+    "tests/test_original_multidata_only_evaluate.py": "5db9375f2aa72ff4a6445c7a22ec48bd802ca0ff2a10a5b0b2d37f10fcf55a87",
+    "tests/test_original_multidata_only_launcher.py": "a382651c05221f4a33e9d99105221f91a0c66cc06f5dddbe814130f1ee01fa5a"
+  }
+}
