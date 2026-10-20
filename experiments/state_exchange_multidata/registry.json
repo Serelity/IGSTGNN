@@ -1,0 +1,53 @@
+{
+  "Alameda": {
+    "nodes": 521,
+    "total_samples": 14687,
+    "train_samples": 10280,
+    "val_samples": 2203,
+    "test_samples": 2204,
+    "type_count": 6,
+    "description_count": 30,
+    "hashes": {
+      "incident_all.npy": "e83d3b11bd58de351aea8dd01aca9bc96ae017e1eea0f2fe8d0ab56410428a4d",
+      "incident_stats.npz": "451d6635a247d4c1607b8fec833dd08456e4a3ceb9ecad83c56f0786981b61c0",
+      "adj_matrix.npy": "65eeff069b51e12f2c28bfffeda1cb24bb7202ead39d7b324e588ecf90a444d9",
+      "sensors.csv": "41a2f48e085bed843f359493d252b1cd4fc9c213be31e925bfe3fe7c982fdd9a",
+      "desc_mapping.json": "272ea2df52590e50eef3891dc0e1014cb4969b9eb3b25cb968c40cab82c8987c",
+      "type_mapping.json": "29387f266711b117cdc5ecb395993cef51d4d09ecf37ec6e4b3565513c5a00d2"
+    }
+  },
+  "Contra_Costa": {
+    "nodes": 496,
+    "total_samples": 5585,
+    "train_samples": 3909,
+    "val_samples": 837,
+    "test_samples": 839,
+    "type_count": 6,
+    "description_count": 29,
+    "hashes": {
+      "incident_all.npy": "bc6c5608457f88864625d683f9a66d17bc0fc31fe5acba366b6033708a099279",
+      "incident_stats.npz": "9f6590a3d1df5a0cd59e00717e3157520a4f5b99996976a4e41ddc6fc28b224c",
+      "adj_matrix.npy": "de2a74cc981853ff81dd494d6e7d212b7ae524fb9d6079c91323e56bcb22254f",
+      "sensors.csv": "682f3cdf75e643f0b37356ab69cbabb27389be5089f41d3b2cbc4bede3332094",
+      "desc_mapping.json": "9a2ff89b2b0057f8617652d305eee79eb3f04686d4bfc58821ed3271ae8a7b71",
+      "type_mapping.json": "6a836068bfcbea9868add90535e8efe329d684a074436ef47c5a53c257fd2a9d"
+    }
+  },
+  "Orange": {
+    "nodes": 990,
+    "total_samples": 18700,
+    "train_samples": 13090,
+    "val_samples": 2805,
+    "test_samples": 2805,
+    "type_count": 6,
+    "description_count": 32,
+    "hashes": {
+      "incident_all.npy": "3c42a96a23b7c691330daf7be469668bfcf81119971ad7059914fd9cb8e56c6c",
+      "incident_stats.npz": "d33e6e57a8cdfc463c9216e7d0c4ae51da3014b4fc438b57f49b8f681466d5a5",
+      "adj_matrix.npy": "c1494ef2b4f16538c384639c2493517638acdd4ac2dc2ba5a71adebdd4362a06",
+      "sensors.csv": "f6ae8a6e4d887b36ae9bc673a5434d570c03dde97973d37256652c7e4636882f",
+      "desc_mapping.json": "733852d2b52cb641c4e5d3bda4eac3a12cf9a3f6bff3e55161605cc9f34c46a9",
+      "type_mapping.json": "eb1bd1dcb6bc4063eb692fcbcbc34a36308846900fa564b41e8bb90cca1e7e63"
+    }
+  }
+}

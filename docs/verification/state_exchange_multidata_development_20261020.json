@@ -1,0 +1,61 @@
+{
+  "schema": "state_exchange_multidata_development_delivery_v1",
+  "date": "2026-10-20",
+  "base_commit": "810f4d05f9b529cc0e44416389d9f38a37551291",
+  "branch": "research/state-exchange-three-datasets",
+  "method": "GW16_STATE_EXCHANGE",
+  "new_formal_datasets": [
+    "Alameda",
+    "Orange"
+  ],
+  "existing_contra_frozen_test_reused": true,
+  "existing_model_sources_changed": false,
+  "existing_test_artifacts_changed": false,
+  "candidate_epochs": 100,
+  "original_max_epochs": 100,
+  "original_patience": 20,
+  "reproduction_batch_size": 48,
+  "author_cli_default_batch_claimed": false,
+  "seed": 2025,
+  "event_description_counts": {
+    "Alameda": 30,
+    "Contra_Costa": 29,
+    "Orange": 32
+  },
+  "new_datasets_train_models_from_scratch": true,
+  "candidate_forward_inherits_existing_gw16": true,
+  "local_python_executed": false,
+  "local_model_or_tests_executed": false,
+  "server_tests_authored": 100,
+  "server_tests_pending": true,
+  "server_engineering_pending": true,
+  "batch_memory_check": {
+    "batch": 48,
+    "same_training_batch_updates": 2,
+    "includes_resident_Adam_second_forward": true
+  },
+  "bash_syntax_check_passed": true,
+  "new_test_evaluated": false,
+  "statistical_significance_claimed": false,
+  "files": {
+    "docs/state_exchange_three_datasets.md": "7b09906cdf46498f4ebd6221cbdfa88270ea046a25342477d0d2826af8fb11d1",
+    "experiments/state_exchange_multidata/__init__.py": "a528f4ce9734e9355387fe84df6100195c0abd00c10f22b51bb1afacc5596899",
+    "experiments/state_exchange_multidata/baseline.py": "6dec9ecc6c14f13fd74e204763609fbda8166f81e99adcc689ea7747fb151724",
+    "experiments/state_exchange_multidata/batch_check.py": "48dfcfb9bf7793846f3cabde87e6f7fd5fc9584f4649e4093923c15a6e92a9db",
+    "experiments/state_exchange_multidata/collect.py": "13b944781fbc938d77d7fc1e250239bb1b2a2b5039b3449166c336e92b536013",
+    "experiments/state_exchange_multidata/common.py": "e15fc535308a8280b6536ecf7353d21464158e9818aace5307ab126993dfad60",
+    "experiments/state_exchange_multidata/data.py": "6e6d5f0b9e03e92b03a43ba51b2501d6d3cf7161fb23234a79f3188e3f93c3b8",
+    "experiments/state_exchange_multidata/evaluate.py": "7f515c4803cda6587810dec2d8cf201b27da6d27218d02fa424ebb21436e6696",
+    "experiments/state_exchange_multidata/model.py": "730a3c50ac3421b126870389465f0c65c212ffe1cb7b3ec9868d3db23a16b586",
+    "experiments/state_exchange_multidata/registry.json": "d1c50ce48b80ce17845d9d165c4f48573918ec24d5cdee95f1686b1de20df7b9",
+    "experiments/state_exchange_multidata/run.sh": "69b5d8372bbeaeaf15c8c0d808ac4c07f12fdccb67c400ca13e13de675b6ba4d",
+    "experiments/state_exchange_multidata/train.py": "ec68c6b2a55aa3ccdd092af97dc5bd72b994abb50c3598a4bc01ad6ea79c6bdc",
+    "tests/test_state_exchange_multidata_baseline.py": "ac87eabcd900ce20f2faf1e2662baf1110aeba746ddd9f985bc0b13fafdd5ce6",
+    "tests/test_state_exchange_multidata_batch_check.py": "a8d7dc9241d43e4abb2656411bd7c88db31d026f1b02de8605fca310802a7c58",
+    "tests/test_state_exchange_multidata_collect.py": "957fd88e9283791f370e341bde82d9b3b114880ef0c568729654ff7923a411eb",
+    "tests/test_state_exchange_multidata_data.py": "41cff85657e336ec1d43017b311a651a513509eb95db6365eaf76702d8299cb4",
+    "tests/test_state_exchange_multidata_evaluate.py": "4468aa41b85be23db3fd2eedf496b4b2740fcd112c97e0d24f1c60586c5ae8d5",
+    "tests/test_state_exchange_multidata_model.py": "c7bde61d97a912238dee8a4df7aa7fa1755acaa5d640ee233de2008b1c35f5d7",
+    "tests/test_state_exchange_multidata_training.py": "2c08529d10a92c912f1dc29f129a8b3bb28a052781db59a32f51066732ad49ca"
+  }
+}
