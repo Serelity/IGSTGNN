@@ -45,3 +45,9 @@ docs/igstgnn_graph_memory_gw6_server.md text eol=lf
 GW6_SERVER_README.md text eol=lf
 GW6_SOURCE_MANIFEST.json text eol=lf
 verify_gw6_bundle.py text eol=lf
+
+# Numerical source hashes and Linux launcher must be stable across checkouts.
+experiments/pase_paper_experiments/* text eol=lf
+tests/test_pase_paper_experiments_*.py text eol=lf
+scripts/run_pase_paper_experiments.sh text eol=lf
+.github/workflows/pase-paper-experiments.yml text eol=lf

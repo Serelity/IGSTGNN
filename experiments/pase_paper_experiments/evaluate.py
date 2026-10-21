@@ -147,6 +147,11 @@ def collect(model, data, config, split, device, logger, max_batches=None, diagno
             'Inference modified registered model tensors')
     require(rng_fingerprint() == random_before, 'Evaluation consumed RNG state')
     count = sum(len(value) for value in targets)
+    expected_forward_batches = min(loader.num_batch, max_batches) if max_batches else loader.num_batch
+    require(len(predictions) == expected_forward_batches,
+            'Evaluation loader ended before the declared number of batches')
+    if max_batches is None or max_batches >= loader.num_batch:
+        require(count == loader.size, 'Evaluation loader sample count differs from its complete split')
     arrays = dict(prediction=np.concatenate(predictions), target=np.concatenate(targets),
         sample_ids=np.arange(offset, offset+count, dtype=np.int64),
         station_ids=np.asarray(data.station_ids, dtype=np.int64))
@@ -158,7 +163,7 @@ def collect(model, data, config, split, device, logger, max_batches=None, diagno
     audit = dict(model_tensor_sha256=before,
         registered_tensors_unchanged=True, rng_unchanged=True, raw_inputs_unchanged=True,
         future_target_passed_to_forward=False, optimizer_updates=0,
-        forward_batches=min(loader.num_batch, max_batches) if max_batches else loader.num_batch,
+        forward_batches=expected_forward_batches,
         samples=count)
     if diagnostics:
         audit['exchange_diagnostics'] = dict(

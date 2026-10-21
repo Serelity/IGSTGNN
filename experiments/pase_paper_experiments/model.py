@@ -147,6 +147,13 @@ def build_model(data, config, arm, device):
             model.head.lift_map.requires_grad_(False)
         if not options['up'] and not options['down']:
             model.head.exchange.requires_grad_(False)
+        # The inherited GW16 capacity record describes the original head.
+        # Keep its template reference but report the replacement's actual size.
+        actual = sum(parameter.numel() for parameter in model.head.parameters())
+        target = model.capacity['target_head_parameters']
+        model.capacity = dict(model.capacity, actual_head_parameters=actual,
+            match_fraction=abs(actual-target)/target,
+            matching='paper_variant_actual_parameters_relative_to_GW16_template')
     model.paper_protocol = arm_spec(arm)
     return model.to(device)
 

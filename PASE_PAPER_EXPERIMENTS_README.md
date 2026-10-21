@@ -85,6 +85,11 @@ bash PASE-paper-code/scripts/run_pase_paper_experiments.sh resume
 bash PASE-paper-code/scripts/run_pase_paper_experiments.sh env
 ```
 
+For environment inspection on a login node without a GPU, use
+`PASE_DEVICE=cpu bash PASE-paper-code/scripts/run_pase_paper_experiments.sh env`.
+The CUDA build version will still be recorded, but confirm the actual GPU and
+driver record from the allocated GPU node for the manuscript.
+
 Default outputs (when PASE_RUN_ROOT is unset):
 
 ```text

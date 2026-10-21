@@ -196,10 +196,13 @@ class PaperModelTests(unittest.TestCase):
                     'NO_POSITION_BRANCH':1568}
         full_count = parameter_accounting(self.model())
         for arm, count in expected.items():
-            record = parameter_accounting(self.model(arm))
+            model = self.model(arm)
+            record = parameter_accounting(model)
             self.assertEqual(record['coefficient_registered'], count)
             self.assertEqual(record['registered']-full_count['registered'], count-2064)
             self.assertEqual(record['structurally_active'], record['registered'])
+            self.assertEqual(model.capacity['actual_head_parameters'],
+                             sum(parameter.numel() for parameter in model.head.parameters()))
         for arm in ('UP_ONLY', 'DOWN_ONLY'):
             record = parameter_accounting(self.model(arm))
             self.assertEqual(record['registered'], full_count['registered'])

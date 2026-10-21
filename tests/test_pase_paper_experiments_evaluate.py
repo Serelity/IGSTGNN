@@ -193,6 +193,16 @@ class PaperEvaluationTests(unittest.TestCase):
         self.assertEqual(metrics['mae'], 1.)
         self.assertEqual(audit['forward_batches'], 1)
         self.assertFalse(audit['future_target_passed_to_forward'])
+        with patch.object(evaluation, 'validation_loader', return_value=(Loader(), 3909)):
+            arrays, _, audit = evaluation.collect(model, data, config, 'test', 'cpu',
+                logging.getLogger('toy'))
+        self.assertEqual(len(arrays['target']), 4)
+        class ShortLoader(Loader):
+            def get_iterator(self):
+                yield next(super().get_iterator())
+        with (patch.object(evaluation, 'validation_loader', return_value=(ShortLoader(), 3909)),
+              self.assertRaisesRegex(ValueError, 'declared number of batches')):
+            evaluation.collect(model, data, config, 'test', 'cpu', logging.getLogger('toy'))
 
 
 if __name__ == '__main__':
