@@ -1,0 +1,39 @@
+name: PASE paper experiment checks
+
+on:
+  push:
+    branches: [research/pase-paper-experiments]
+    paths:
+      - experiments/pase_paper_experiments/**
+      - tests/test_pase_paper_experiments_*.py
+      - scripts/run_pase_paper_experiments.sh
+      - .github/workflows/pase-paper-experiments.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+          cache: pip
+      - name: Install the repository CPU test stack
+        run: |
+          python -m pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==1.24.4 scipy==1.11.4 tqdm==4.67.1
+      - name: Python and Bash syntax
+        run: |
+          python -m compileall -q experiments/pase_paper_experiments
+          bash -n scripts/run_pase_paper_experiments.sh
+      - name: Model, resume and evaluation contracts
+        run: python -m unittest discover -s tests -p 'test_pase_paper_experiments_*.py' -v
