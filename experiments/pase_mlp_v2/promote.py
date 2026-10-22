@@ -165,6 +165,25 @@ def reference_identity(directory):
         dataset=metadata['dataset'], source_identity_sha256=metadata['source_identity_sha256'])
 
 
+def write_report(directory, metadata):
+    metrics = metadata['native_metrics']['horizon_macro']
+    role = metadata['source_role']
+    lines = ['# PASE-Net MLP v2：已有最优模型登记', '',
+        '数据集：Contra Costa；seed：2025；来源：已完成的 CONCAT_MLP。',
+        '本次仅认证并导出已有权重；新增训练更新与模型前向次数均为0。',
+        'model.pt 是推理权重，不是续跑检查点；旧训练身份、结果和权重均保留。', '',
+        '| 版本 | BEST轮数 | 已训练轮数 | 验证MAE | 验证RMSE | 验证MAPE % |',
+        '|---|---:|---:|---:|---:|---:|',
+        '| PASE-Net MLP v2 | {} | {} | {:.6f} | {:.6f} | {:.6f} |'.format(
+            role['epoch'], role['completed_training_epochs'], metrics['mae'],
+            metrics['rmse'], metrics['mape_percent']), '',
+        '以上采用原生FP32逐时距计算后12步平均，来源于认证的已有验证缓存。',
+        '本次没有生成测试结果，也不构成新的独立验证；MLP版本的消融须单独对应。', '',
+        '模型张量SHA256：'+metadata['model_tensor_sha256'],
+        '来源身份SHA256：'+metadata['source_identity_sha256'], '']
+    (Path(directory)/'report.md').write_text('\n'.join(lines), encoding='utf-8')
+
+
 def promote(source_run, source_evaluation, output_dir):
     source_run, source_evaluation, output_dir = map(lambda p: Path(p).resolve(),
                                                    (source_run, source_evaluation, output_dir))
@@ -182,6 +201,8 @@ def promote(source_run, source_evaluation, output_dir):
                     and metadata['source_role'] == role
                     and metadata['model_tensor_sha256'] == tensor_tree_hash(weights),
                     'Existing output belongs to a different promotion; keep it immutable')
+            if not (output_dir/'report.md').is_file():
+                write_report(output_dir, metadata)
             return metadata
         output_dir.parent.mkdir(parents=True, exist_ok=True)
         temporary = output_dir.with_name('.'+output_dir.name+'.writing_'+uuid.uuid4().hex)
@@ -209,6 +230,7 @@ def promote(source_run, source_evaluation, output_dir):
         metadata['metadata_sha256'] = metadata_digest(metadata)
         write_json(temporary/'metadata.json', metadata)
         load_promoted(temporary, 'Contra_Costa')
+        write_report(temporary, metadata)
         temporary.rename(output_dir)
         return metadata
 
