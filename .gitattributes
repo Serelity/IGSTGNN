@@ -51,3 +51,7 @@ experiments/pase_paper_experiments/* text eol=lf
 tests/test_pase_paper_experiments_*.py text eol=lf
 scripts/run_pase_paper_experiments.sh text eol=lf
 .github/workflows/pase-paper-experiments.yml text eol=lf
+experiments/pase_mlp_v2/* text eol=lf
+tests/test_pase_mlp_v2_*.py text eol=lf
+scripts/run_pase_mlp_v2.sh text eol=lf
+.github/workflows/pase-mlp-v2.yml text eol=lf
