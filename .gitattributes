@@ -55,3 +55,7 @@ experiments/pase_mlp_v2/* text eol=lf
 tests/test_pase_mlp_v2_*.py text eol=lf
 scripts/run_pase_mlp_v2.sh text eol=lf
 .github/workflows/pase-mlp-v2.yml text eol=lf
+experiments/pase_compact_main/* text eol=lf
+tests/test_pase_compact_main_*.py text eol=lf
+scripts/run_pase_compact_main.sh text eol=lf
+.github/workflows/pase-compact-main.yml text eol=lf
