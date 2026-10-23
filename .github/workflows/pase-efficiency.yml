@@ -1,0 +1,23 @@
+name: PASE inference benchmark checks
+on:
+  push:
+    branches: [research/pase-compact-v3]
+    paths:
+      - scripts/benchmark_pase_compact.py
+      - scripts/run_pase_efficiency.sh
+      - tests/test_pase_efficiency.py
+      - .github/workflows/pase-efficiency.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+      - run: python -m py_compile scripts/benchmark_pase_compact.py
+      - run: bash -n scripts/run_pase_efficiency.sh
+      - run: python -m unittest discover -s tests -p test_pase_efficiency.py -v

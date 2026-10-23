@@ -59,3 +59,7 @@ experiments/pase_compact_main/* text eol=lf
 tests/test_pase_compact_main_*.py text eol=lf
 scripts/run_pase_compact_main.sh text eol=lf
 .github/workflows/pase-compact-main.yml text eol=lf
+scripts/benchmark_pase_compact.py text eol=lf
+scripts/run_pase_efficiency.sh text eol=lf
+tests/test_pase_efficiency.py text eol=lf
+.github/workflows/pase-efficiency.yml text eol=lf
