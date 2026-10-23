@@ -1,3 +1,13 @@
+# PASE-Net: compact local-regional exchange
+
+On `research/pase-compact-v3`, the current PASE model is the compact MLP version:
+the exchange scorer uses condition, regional state and local state, without a
+separate explicit position block. Other position paths and persistent centering
+remain. The server entry reuses the completed position-zero FULL and trains only
+its two matched one-way controls (seed 2025, 100 epochs each).
+See [current model and server instructions](PASE_COMPACT_V3_README.md).
+Earlier models, experiments and original IGSTGNN sources remain versioned below.
+
 # IGSTGNN: Incident-Guided Spatiotemporal Traffic Forecasting
 
 The `research/chronological-tiid` branch adds a separate **conditional development**
